@@ -10,6 +10,8 @@ import { Info, Lightbulb, BookOpen } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56bTranslations } from '@/lib/translations/forms56b';
 
 type CognitiveDomain = 'knowledge' | 'comprehension' | 'application' | 'analysis' | 'synthesis' | 'evaluation';
 type EQFDimension = 'knowledge' | 'skills' | 'responsibility';
@@ -105,7 +107,9 @@ const eqfDescriptors = [
 ];
 
 export function EQFLevelForm({ value, onChange, courseType = 'standalone', learningOutcomes = [], compositeSources = [], standaloneSources = [] }: EQFLevelFormProps) {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms56bTranslations[language];
+  const courseLabel = courseType === 'standalone' ? lt.eqfStandaloneLabel : lt.eqfMicroCredentialLabel;
   const [levelMode, setLevelMode] = useState<'single' | 'multiple' | ''>(value?.levelMode || '');
   const [singleLevel, setSingleLevel] = useState(value?.singleLevel || '');
   const [singleLevelConfirmed, setSingleLevelConfirmed] = useState(!!value?.singleLevelConfirmed);
@@ -148,14 +152,14 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
         let levelLabel = '';
         if (eqf.levelMode === 'multiple') {
           levelLabel = eqf.finalLevel || eqf.suggestedLevel
-            ? `Level ${eqf.finalLevel || eqf.suggestedLevel} (multi-level)`
-            : 'Multiple levels';
+            ? lt.eqfMultiLevelLabel.replace('{level}', String(eqf.finalLevel || eqf.suggestedLevel))
+            : lt.eqfMultipleLevels;
         } else if (eqf.singleLevel) {
-          levelLabel = `Level ${eqf.singleLevel}`;
+          levelLabel = lt.eqfLevelLabel.replace('{level}', String(eqf.singleLevel));
         }
         if (!levelLabel) return null;
         return {
-          title: src.workingTitle || src.fileName || src.documentId || 'Uploaded source',
+          title: src.workingTitle || src.fileName || src.documentId || lt.eqfUploadedSourceFallback,
           documentId: src.documentId,
           levelLabel,
           reasoning: eqf.reasoning || '',
@@ -292,10 +296,10 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium text-foreground">
-                  EQF levels from uploaded source files
+                  {lt.eqfSourceReferenceLabel}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  (read-only reference — for inspiration only)
+                  {lt.eqfSourceReferenceReadonly}
                 </span>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
@@ -303,7 +307,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
             <CollapsibleContent>
               <div className="px-4 pb-4 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  These EQF levels come from the files you uploaded. Define the EQF level for this new micro-credential below — the source values are not copied into your draft.
+                  {lt.eqfSourceReferenceHint}
                 </p>
                 {sourceReferenceLevels.map((src, idx) => (
                   <div key={src.documentId || idx} className="space-y-1 border-b border-border pb-2 last:border-b-0 last:pb-0">
@@ -322,9 +326,9 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
 
       {/* Header */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">EQF level</h3>
+        <h3 className="text-lg font-semibold">{lt.eqfHeading}</h3>
         <p className="text-sm text-muted-foreground">
-          Assigning an EQF level requires applying the official European Qualifications Framework descriptors for Knowledge, Skills, and Responsibility/Autonomy. The EQF uses eight levels, and developers must apply the 'best-fit' principle—choosing the level whose descriptors most closely match the expected learning outcomes. Select the level that most accurately reflects your {courseLabel}.
+          {lt.eqfHeadingDescription.replace('{courseLabel}', courseLabel)}
         </p>
       </div>
 
@@ -332,7 +336,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
       {sourceReferenceLevels.length > 1 &&
         new Set(sourceReferenceLevels.map((s) => s.levelLabel)).size > 1 && (
           <div className="rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-            <strong>Please note:</strong> your inspiration materials cover multiple EQF levels.
+            <strong>{lt.eqfMismatchWarningPrefix}</strong> {lt.eqfMismatchWarningText}
           </div>
         )}
 
@@ -342,25 +346,22 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           <DialogTrigger asChild>
             <button className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
               <Info className="h-4 w-4" />
-              What is the EQF?
+              {lt.eqfWhatIsEqf}
             </button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>What is the EQF and why does it matter?</DialogTitle>
+              <DialogTitle>{lt.eqfWhatIsEqfDialogTitle}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 text-sm">
               <p>
-                The European Qualifications Framework (EQF) is a shared European reference used to describe learning levels 
-                through eight levels and three descriptor dimensions: knowledge, skills, and responsibility/autonomy.
+                {lt.eqfWhatIsEqfP1}
               </p>
               <p>
-                No course will perfectly match a single EQF level, so developers must apply the "best-fit" principle 
-                recommended by the European Commission.
+                {lt.eqfWhatIsEqfP2}
               </p>
               <p>
-                Choosing an appropriate EQF level increases transparency, enables recognition and mobility, 
-                and ensures comparability across partner institutions and the wider European education landscape.
+                {lt.eqfWhatIsEqfP3}
               </p>
             </div>
           </DialogContent>
@@ -370,21 +371,21 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           <DialogTrigger asChild>
             <button className="inline-flex items-center gap-1 text-sm text-warning hover:text-warning/80">
               <Lightbulb className="h-4 w-4" />
-              Inspiration
+              {lt.eqfInspiration}
             </button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>How to decide the best EQF level</DialogTitle>
+              <DialogTitle>{lt.eqfInspirationDialogTitle}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 text-sm">
-              <p className="font-medium">Use these prompts:</p>
+              <p className="font-medium">{lt.eqfInspirationPromptsTitle}</p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>Compare the depth and complexity of your intended learning outcomes with each EQF level.</li>
-                <li>Consider the kinds of problems learners must solve and the skills they must apply.</li>
-                <li>Evaluate how much autonomy and responsibility learners demonstrate after completion.</li>
-                <li>Identify the strongest overall alignment, not a perfect match.</li>
-                <li>Remember: EQF reflects learning outcomes, not workload or teaching methods.</li>
+                <li>{lt.eqfInspiration1}</li>
+                <li>{lt.eqfInspiration2}</li>
+                <li>{lt.eqfInspiration3}</li>
+                <li>{lt.eqfInspiration4}</li>
+                <li>{lt.eqfInspiration5}</li>
               </ul>
             </div>
           </DialogContent>
@@ -394,15 +395,15 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           <PopoverTrigger asChild>
             <button className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
               <BookOpen className="h-4 w-4" />
-              Read more
+              {lt.eqfReadMore}
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-80 text-sm space-y-2">
             <p>
-              Each of the 8 levels of the EQF is defined by a set of descriptors indicating the learning outcomes relevant to qualifications at that level in any qualifications system.
+              {lt.eqfReadMoreText}
             </p>
             <p>
-              You can read the full description here:{' '}
+              {lt.eqfReadMoreLinkText}{' '}
               <a
                 href="https://europass.europa.eu/en/description-eight-eqf-levels"
                 target="_blank"
@@ -419,10 +420,10 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
       {/* Level Mode Question */}
       <Card className="p-6 space-y-4">
         <Label className="text-base font-medium">
-          Does this {courseLabel} correspond to a single EQF level or multiple levels? <span className="text-destructive">*</span>
+          {lt.eqfLevelModeQuestion.replace('{courseLabel}', courseLabel)} <span className="text-destructive">*</span>
         </Label>
         <p className="text-sm text-muted-foreground">
-          In most cases, {courseLabel}s align with a single EQF level. However, if your learning outcomes or content reflect different levels of complexity (e.g. progression or mixed levels), you may classify them across multiple dimensions.
+          {lt.eqfLevelModeHint.replace(/{courseLabel}/g, courseLabel)}
         </p>
         <RadioGroup value={levelMode} onValueChange={(val) => {
           if (val === 'single' && singleLevelLockedForComposite) return;
@@ -440,11 +441,11 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           >
             <RadioGroupItem value="single" id="eqf-single" className="mt-0.5" disabled={singleLevelLockedForComposite} />
             <div className="space-y-1">
-              <span className="font-medium text-foreground">This {courseLabel} corresponds to a single EQF level</span>
+              <span className="font-medium text-foreground">{lt.eqfSingleLevelOption.replace('{courseLabel}', courseLabel)}</span>
               <p className="text-sm text-muted-foreground">
                 {singleLevelLockedForComposite
-                  ? 'This option is disabled because the imported standalone courses span more than one EQF level.'
-                  : 'Select this if all learning outcomes align with one EQF level.'}
+                  ? lt.eqfSingleLevelDisabledHint
+                  : lt.eqfSingleLevelHint}
               </p>
             </div>
           </label>
@@ -459,9 +460,9 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           >
             <RadioGroupItem value="multiple" id="eqf-multiple" className="mt-0.5" />
             <div className="space-y-1">
-              <span className="font-medium text-foreground">This {courseLabel} spans multiple EQF levels</span>
+              <span className="font-medium text-foreground">{lt.eqfMultipleLevelOption.replace('{courseLabel}', courseLabel)}</span>
               <p className="text-sm text-muted-foreground">
-                Select this if your learning outcomes reflect different levels of complexity across knowledge, skills, and responsibility/autonomy.
+                {lt.eqfMultipleLevelHint}
               </p>
             </div>
           </label>
@@ -475,7 +476,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
           {(groupedOutcomes.knowledge.length > 0 || groupedOutcomes.skills.length > 0 || groupedOutcomes.responsibility.length > 0) && (
             <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
               <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-                You defined the following learning outcomes for this {courseLabel}:
+                {lt.eqfDefinedOutcomesIntro.replace('{courseLabel}', courseLabel)}
               </p>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                 {[...groupedOutcomes.knowledge, ...groupedOutcomes.skills, ...groupedOutcomes.responsibility]
@@ -489,10 +490,10 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
 
           <Card className="p-6 space-y-4">
             <Label className="text-base font-medium">
-              Select the EQF level that best fits this {courseLabel} <span className="text-destructive">*</span>
+              {lt.eqfSelectBestFitLabel.replace('{courseLabel}', courseLabel)} <span className="text-destructive">*</span>
             </Label>
             <p className="text-sm text-muted-foreground">
-              Review the descriptors below and select the level whose knowledge, skills, and responsibility/autonomy descriptions most closely match your learning outcomes.
+              {lt.eqfSelectBestFitHint}
             </p>
 
             <div className="space-y-3">
@@ -507,18 +508,18 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                       : 'border-border hover:border-primary/40'
                   }`}
                 >
-                  <p className="font-semibold text-foreground mb-3">Level {desc.level}</p>
+                  <p className="font-semibold text-foreground mb-3">{lt.eqfLevelWord} {desc.level}</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="space-y-1">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Knowledge</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{lt.eqfKnowledgeLabel}</p>
                       <p className="text-sm text-foreground capitalize">{desc.knowledge}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Skills</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{lt.eqfSkillsLabel}</p>
                       <p className="text-sm text-foreground capitalize">{desc.skills}</p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Responsibility & Autonomy</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{lt.eqfResponsibilityAutonomyLabel}</p>
                       <p className="text-sm text-foreground capitalize">{desc.autonomy}</p>
                     </div>
                   </div>
@@ -531,13 +532,13 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
             <>
               <Card className="p-6 space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-base font-medium">Selected EQF Level</Label>
+                  <Label className="text-base font-medium">{lt.eqfSelectedLevelLabel}</Label>
                   <div className="p-4 bg-primary/10 rounded-md border border-primary/20">
-                    <span className="text-2xl font-semibold">Level {singleLevel}</span>
+                    <span className="text-2xl font-semibold">{lt.eqfLevelWord} {singleLevel}</span>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  You have selected Level {singleLevel} as the overall EQF level for this {courseLabel}. Please confirm your selection below.
+                  {lt.eqfSelectedLevelConfirmText.replace('{level}', singleLevel).replace('{courseLabel}', courseLabel)}
                 </p>
                 <label className="flex items-start gap-3 rounded-lg border border-border p-4 cursor-pointer">
                   <Checkbox
@@ -546,9 +547,9 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                     className="mt-0.5"
                   />
                   <div className="space-y-1">
-                    <span className="font-medium text-foreground">I confirm that Level {singleLevel} is the best-fit overall EQF level</span>
+                    <span className="font-medium text-foreground">{lt.eqfConfirmCheckboxLabel.replace('{level}', singleLevel)}</span>
                     <p className="text-sm text-muted-foreground">
-                      You must confirm the selected EQF level before continuing.
+                      {lt.eqfConfirmCheckboxHint}
                     </p>
                   </div>
                 </label>
@@ -557,7 +558,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               {singleLevelConfirmed && (
                 <div className="p-6 bg-muted/50 rounded-lg border border-border">
                   <p className="text-sm leading-relaxed">
-                    When you have completed this EQF classification, you have ensured that the {courseLabel} has been assigned an EQF level based on the relevant official descriptors, and that this level supports learner mobility and facilitates recognition across institutions and national systems.
+                    {lt.eqfCompletionText.replace(/{courseLabel}/g, courseLabel)}
                   </p>
                 </div>
               )}
@@ -574,12 +575,12 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               {/* Knowledge Dropdown */}
               <div className="space-y-3">
                 <Label htmlFor="knowledge-select" className="text-base font-medium">
-                  Which knowledge descriptor is the best fit for this {courseLabel}?
+                  {lt.eqfKnowledgeQuestion.replace('{courseLabel}', courseLabel)}
                 </Label>
                 {groupedOutcomes.knowledge.length > 0 && (
                   <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      You defined the following learning outcomes for this {courseLabel}:
+                      {lt.eqfDefinedOutcomesIntro.replace('{courseLabel}', courseLabel)}
                     </p>
                     <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                       {groupedOutcomes.knowledge.map((outcome, idx) => (
@@ -592,7 +593,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                 )}
                 <Select value={descriptorMatches.knowledge} onValueChange={(val) => updateDescriptor('knowledge', val)}>
                   <SelectTrigger id="knowledge-select">
-                    <SelectValue placeholder="Select a knowledge level" />
+                    <SelectValue placeholder={lt.eqfSelectKnowledgePlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {eqfDescriptors.map((desc) => (
@@ -607,12 +608,12 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               {/* Skills Dropdown */}
               <div className="space-y-3">
                 <Label htmlFor="skills-select" className="text-base font-medium">
-                  Which skills descriptor is the best fit for this {courseLabel}?
+                  {lt.eqfSkillsQuestion.replace('{courseLabel}', courseLabel)}
                 </Label>
                 {groupedOutcomes.skills.length > 0 && (
                   <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      You defined the following learning outcomes for this {courseLabel}:
+                      {lt.eqfDefinedOutcomesIntro.replace('{courseLabel}', courseLabel)}
                     </p>
                     <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                       {groupedOutcomes.skills.map((outcome, idx) => (
@@ -625,7 +626,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                 )}
                 <Select value={descriptorMatches.skills} onValueChange={(val) => updateDescriptor('skills', val)}>
                   <SelectTrigger id="skills-select">
-                    <SelectValue placeholder="Select a skills level" />
+                    <SelectValue placeholder={lt.eqfSelectSkillsPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {eqfDescriptors.map((desc) => (
@@ -640,12 +641,12 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               {/* Responsibility/Autonomy Dropdown */}
               <div className="space-y-3">
                 <Label htmlFor="autonomy-select" className="text-base font-medium">
-                  Which responsibility/autonomy descriptor is the best fit for this {courseLabel}?
+                  {lt.eqfAutonomyQuestion.replace('{courseLabel}', courseLabel)}
                 </Label>
                 {groupedOutcomes.responsibility.length > 0 && (
                   <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-                      You defined the following learning outcomes for this {courseLabel}:
+                      {lt.eqfDefinedOutcomesIntro.replace('{courseLabel}', courseLabel)}
                     </p>
                     <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                       {groupedOutcomes.responsibility.map((outcome, idx) => (
@@ -658,7 +659,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                 )}
                 <Select value={descriptorMatches.responsibilityAutonomy} onValueChange={(val) => updateDescriptor('responsibilityAutonomy', val)}>
                   <SelectTrigger id="autonomy-select">
-                    <SelectValue placeholder="Select a responsibility/autonomy level" />
+                    <SelectValue placeholder={lt.eqfSelectAutonomyPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {eqfDescriptors.map((desc) => (
@@ -678,7 +679,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               <Card className="p-6 space-y-6">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label className="text-base font-medium">Suggested EQF Level (system-generated proposal)</Label>
+                    <Label className="text-base font-medium">{lt.eqfSuggestedLevelLabel}</Label>
                     <Dialog>
                       <DialogTrigger asChild>
                         <button className="inline-flex items-center text-primary hover:text-primary/80 transition-colors">
@@ -687,37 +688,37 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl">
                         <DialogHeader>
-                          <DialogTitle>How is the suggested level calculated?</DialogTitle>
+                          <DialogTitle>{lt.eqfSuggestedLevelDialogTitle}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 text-sm">
-                          <p className="font-medium">Calculation method:</p>
+                          <p className="font-medium">{lt.eqfCalcMethodTitle}</p>
                           <div className="space-y-3">
                             <div>
-                              <p className="font-medium">1. If one level is most frequent (mode):</p>
-                              <p className="text-muted-foreground pl-4">That level is used as the suggestion</p>
-                              <p className="text-muted-foreground pl-4 italic">Example: Level 5, Level 5, Level 6 → Suggestion: Level 5</p>
+                              <p className="font-medium">{lt.eqfCalcRule1Title}</p>
+                              <p className="text-muted-foreground pl-4">{lt.eqfCalcRule1Text}</p>
+                              <p className="text-muted-foreground pl-4 italic">{lt.eqfCalcRule1Example}</p>
                             </div>
                             <div>
-                              <p className="font-medium">2. If all three levels are different:</p>
-                              <p className="text-muted-foreground pl-4">The system selects the middle level (median)</p>
-                              <p className="text-muted-foreground pl-4 italic">Example: Level 4, Level 5, Level 6 → Suggestion: Level 5</p>
-                              <p className="text-muted-foreground pl-4 italic">Example: Level 3, Level 6, Level 7 → Suggestion: Level 6</p>
+                              <p className="font-medium">{lt.eqfCalcRule2Title}</p>
+                              <p className="text-muted-foreground pl-4">{lt.eqfCalcRule2Text}</p>
+                              <p className="text-muted-foreground pl-4 italic">{lt.eqfCalcRule2Example1}</p>
+                              <p className="text-muted-foreground pl-4 italic">{lt.eqfCalcRule2Example2}</p>
                             </div>
                             <div>
-                              <p className="font-medium">3. If two levels are equally frequent:</p>
-                              <p className="text-muted-foreground pl-4">The system calculates the average and rounds</p>
-                              <p className="text-muted-foreground pl-4 italic">Example: Level 4, Level 4, Level 6 → Suggestion: Level 5 (average of 4+4+6 = 4.67 ≈ 5)</p>
+                              <p className="font-medium">{lt.eqfCalcRule3Title}</p>
+                              <p className="text-muted-foreground pl-4">{lt.eqfCalcRule3Text}</p>
+                              <p className="text-muted-foreground pl-4 italic">{lt.eqfCalcRule3Example}</p>
                             </div>
                           </div>
                           <p className="pt-2">
-                            This ensures that the suggested level always reflects the most dominant category or a balanced average of the selected descriptors.
+                            {lt.eqfCalcMethodOutro}
                           </p>
                         </div>
                       </DialogContent>
                     </Dialog>
                   </div>
                   <div className="p-4 bg-primary/10 rounded-md border border-primary/20">
-                    <span className="text-2xl font-semibold">Level {suggestedLevel}</span>
+                    <span className="text-2xl font-semibold">{lt.eqfLevelWord} {suggestedLevel}</span>
                   </div>
                 </div>
               </Card>
@@ -725,19 +726,19 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               <Card className="p-6 space-y-6">
                 <div className="space-y-3">
                   <Label htmlFor="final-level" className="text-base font-medium">
-                    Final EQF Level (manual confirmation) <span className="text-destructive">*</span>
+                    {lt.eqfFinalLevelLabel} <span className="text-destructive">*</span>
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Please confirm or adjust the suggested level.
+                    {lt.eqfFinalLevelHint}
                   </p>
                   <Select value={finalLevel} onValueChange={setFinalLevel}>
                     <SelectTrigger id="final-level">
-                      <SelectValue placeholder="Select final EQF level" />
+                      <SelectValue placeholder={lt.eqfSelectFinalLevelPlaceholder} />
                     </SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4, 5, 6, 7, 8].map((level) => (
                         <SelectItem key={level} value={level.toString()}>
-                          Level {level}
+                          {lt.eqfLevelWord} {level}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -747,16 +748,16 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
                 {finalLevel && finalLevel !== suggestedLevel && (
                   <div className="space-y-2">
                     <Label htmlFor="reasoning" className="text-base font-medium">
-                      Reasoning for EQF best-fit classification <span className="text-destructive">*</span>
+                      {lt.eqfReasoningLabel} <span className="text-destructive">*</span>
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      It is acceptable to choose a different classification, as the understanding of 'best-fit' can vary and is not precisely defined within the EQF framework. Therefore, you can explain below why you have chosen a different overall EQF level than the suggested one.
+                      {lt.eqfReasoningHint}
                     </p>
                     <Textarea
                       id="reasoning"
                       value={reasoning}
                       onChange={(e) => setReasoning(e.target.value)}
-                      placeholder="Explain why you chose a different EQF level than the system suggestion..."
+                      placeholder={lt.eqfReasoningPlaceholder}
                       rows={5}
                       required
                     />
@@ -767,7 +768,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               {finalLevel && ((finalLevel === suggestedLevel) || (finalLevel !== suggestedLevel && reasoning)) && (
                 <div className="p-6 bg-muted/50 rounded-lg border border-border">
                   <p className="text-sm leading-relaxed">
-                    When you have completed this EQF classification, you have ensured that the {courseLabel} has been assigned an EQF level based on the relevant official descriptors, and that this level supports learner mobility and facilitates recognition across institutions and national systems. You have also ensured that the EQF metadata is integrated in a way that supports comparability of qualifications within and beyond the alliance.
+                    {lt.eqfCompletionTextMultiple.replace(/{courseLabel}/g, courseLabel)}
                   </p>
                 </div>
               )}

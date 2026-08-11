@@ -25,6 +25,8 @@ import {
 } from '@/components/ui/popover';
 import { Info, MapPin, Calendar, ChevronDown, ChevronUp, Clock, Plus, X, Pencil, Check, Sparkles, Search, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56cTranslations } from '@/lib/translations/forms56c';
 
 interface LearningActivity {
   id: string;
@@ -92,6 +94,8 @@ interface ContentReuseFormProps {
 }
 
 export default function ContentReuseForm({ data, onChange, courseType, learningActivitiesData, marketNeedsData, workingTitle, sourceInstructors }: ContentReuseFormProps) {
+  const { language, t } = useLanguage();
+  const lt = forms56cTranslations[language];
   const [physicalSectionOpen, setPhysicalSectionOpen] = useState(true);
   const [editingSkillId, setEditingSkillId] = useState<string | null>(null);
   const [editingSkillText, setEditingSkillText] = useState('');
@@ -133,7 +137,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
       setEscoResults(skills);
     } catch (error) {
       console.error('ESCO search error:', error);
-      setEscoSearchError('Unable to search ESCO. Please try again.');
+      setEscoSearchError(lt.escoSearchErrorMsg);
       setEscoResults([]);
     } finally {
       setIsSearchingEsco(false);
@@ -339,10 +343,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
           <CardContent className="pt-6 space-y-4">
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">
-                Additional prerequisites {courseType === 'standalone' ? 'for the standalone course' : 'beyond standalone courses'}
+                {courseType === 'standalone' ? lt.additionalPrereqTitleStandalone : lt.additionalPrereqTitleOther}
               </h3>
               <p className="text-sm text-muted-foreground">
-                List any special requirements the learner must fulfil before being eligible for the {courseType === 'standalone' ? 'standalone course' : 'standalone course or assessment'}. Examples: documented laboratory safety certificate, valid driver's license, vaccination record, prior professional experience, signed ethics declaration, etc.
+                {courseType === 'standalone' ? lt.additionalPrereqDescStandalone : lt.additionalPrereqDescOther}
               </p>
             </div>
 
@@ -356,7 +360,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     );
                     onChange({ ...data, additionalPrerequisites: updated });
                   }}
-                  placeholder={`Prerequisite ${idx + 1} — e.g. "Documented laboratory safety certificate from accredited provider"`}
+                  placeholder={lt.prerequisitePlaceholder.replace('{n}', String(idx + 1))}
                   className="flex-1 min-h-[60px] text-sm bg-background"
                 />
                 <Button
@@ -369,7 +373,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                   }}
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  Remove
+                  {lt.remove}
                 </Button>
               </div>
             ))}
@@ -390,12 +394,12 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add prerequisite
+              {lt.addPrerequisite}
             </Button>
 
             {(data.additionalPrerequisites || []).length === 0 && (
               <p className="text-xs text-muted-foreground italic">
-                No additional prerequisites added. Click "Add prerequisite" if there are special requirements{courseType === 'standalone' ? ' for this course' : ' beyond the standalone courses'}.
+                {courseType === 'standalone' ? lt.noAdditionalPrereqStandalone : lt.noAdditionalPrereqOther}
               </p>
             )}
           </CardContent>
@@ -406,9 +410,9 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
       <div className="space-y-6">
         {/* Section Header */}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Reuse of learning content within the alliance</h3>
+          <h3 className="text-lg font-semibold">{lt.reuseSectionTitle}</h3>
           <p className="text-sm text-muted-foreground">
-            Indicate whether the learning content and materials developed for this micro-credential may be reused by other course developers within the alliance. This information supports collaboration, responsible reuse, and clarity about how content may be adapted or shared in other educational contexts.
+            {lt.reuseSectionDesc}
           </p>
         </div>
 
@@ -419,7 +423,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             <div className="flex items-start gap-2">
               <div className="flex-1">
                 <Label className="text-base font-medium">
-                  Under which conditions may the learning content and materials be reused by other course developers within the alliance?
+                  {lt.reuseQuestion}
                   <span className="text-destructive ml-1">*</span>
                 </Label>
               </div>
@@ -428,21 +432,21 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                   <button
                     type="button"
                     className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
-                    aria-label="More information about reuse of learning content"
+                    aria-label={lt.reuseInfoAria}
                   >
                     <Info className="w-5 h-5" />
                   </button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Reuse of learning content</DialogTitle>
+                    <DialogTitle>{lt.reuseDialogTitle}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 text-muted-foreground">
                     <p>
-                      This question concerns internal reuse within the alliance.
+                      {lt.reuseDialogP1}
                     </p>
                     <p>
-                      It does not replace formal copyright or licensing agreements, but clarifies how other course developers may engage with and build upon the content.
+                      {lt.reuseDialogP2}
                     </p>
                   </div>
                 </DialogContent>
@@ -455,25 +459,25 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               onValueChange={handleReuseChange}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select reuse condition..." />
+                <SelectValue placeholder={lt.reuseSelectPlaceholder} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="open-access">
                   <div className="flex flex-col items-start">
-                    <span className="font-medium">Open access</span>
-                    <span className="text-xs text-muted-foreground">All content may be reused and re-didactised</span>
+                    <span className="font-medium">{lt.reuseOpenAccessLabel}</span>
+                    <span className="text-xs text-muted-foreground">{lt.reuseOpenAccessDesc}</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="by-request">
                   <div className="flex flex-col items-start">
-                    <span className="font-medium">By request</span>
-                    <span className="text-xs text-muted-foreground">Reuse possible after dialogue with lead designer</span>
+                    <span className="font-medium">{lt.reuseByRequestLabel}</span>
+                    <span className="text-xs text-muted-foreground">{lt.reuseByRequestDesc}</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="no">
                   <div className="flex flex-col items-start">
-                    <span className="font-medium">No</span>
-                    <span className="text-xs text-muted-foreground">Materials restricted to this micro-credential</span>
+                    <span className="font-medium">{lt.reuseNoLabel}</span>
+                    <span className="text-xs text-muted-foreground">{lt.reuseNoDesc}</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -482,7 +486,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             {/* Validation Message */}
             {!data.reuseCondition && (
               <p className="text-sm text-muted-foreground italic">
-                Please select one option.
+                {lt.selectOneOption}
               </p>
             )}
           </CardContent>
@@ -494,10 +498,9 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
         <CardContent className="pt-6 space-y-6">
           {/* Section Header */}
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Physical presence requirements</h3>
+            <h3 className="text-lg font-semibold">{lt.physicalSectionTitle}</h3>
             <p className="text-sm text-muted-foreground">
-              This section clarifies whether the micro-credential requires physical attendance.
-              The information is derived from the delivery modes defined earlier and ensures transparency for learners, institutions, and planners.
+              {lt.physicalSectionDesc}
             </p>
           </div>
 
@@ -507,7 +510,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               <CollapsibleTrigger className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-full text-left py-3 px-4 rounded-lg bg-muted/50 border">
                 <div className="flex items-center gap-2 flex-1">
                   <Calendar className="h-4 w-4" />
-                  <span className="text-sm font-medium">No physical attendance required based on current learning activity design.</span>
+                  <span className="text-sm font-medium">{lt.noPhysicalRequired}</span>
                 </div>
                 {physicalSectionOpen ? (
                   <ChevronUp className="h-4 w-4" />
@@ -518,8 +521,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               <CollapsibleContent className="pt-4">
                 <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg">
                   <p>
-                    Based on your learning activity design in Phase 5, no activities are marked as "Physical" or "Hybrid".
-                    If this changes, this section will become mandatory.
+                    {lt.noPhysicalRequiredDetail}
                   </p>
                 </div>
               </CollapsibleContent>
@@ -529,11 +531,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               {/* Physical days field */}
               <div className="space-y-3">
                 <Label htmlFor="physicalDays" className="text-base font-medium">
-                  Number of physical teaching days
+                  {lt.physicalDaysLabel}
                   <span className="text-destructive ml-1">*</span>
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Based on the learning activities that require physical presence, indicate the total number of days learners must attend in person.
+                  {lt.physicalDaysDesc}
                 </p>
                 <Input
                   id="physicalDays"
@@ -544,7 +546,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
                     onChange({ ...data, physicalDays: value });
                   }}
-                  placeholder="Enter number of days"
+                  placeholder={lt.physicalDaysPlaceholder}
                   className="max-w-xs"
                 />
                 
@@ -552,7 +554,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span>
-                    {physicalOrHybridActivities.length} learning {physicalOrHybridActivities.length === 1 ? 'activity requires' : 'activities require'} physical or hybrid delivery
+                    {(physicalOrHybridActivities.length === 1 ? lt.physicalOrHybridActivityCountSingular : lt.physicalOrHybridActivityCountPlural).replace('{n}', String(physicalOrHybridActivities.length))}
                   </span>
                 </div>
               </div>
@@ -560,11 +562,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               {/* Teaching locations field */}
               <div className={cn("space-y-3", !requiresLocations && "opacity-50")}>
                 <Label htmlFor="teachingLocations" className="text-base font-medium">
-                  Teaching locations
+                  {lt.teachingLocationsLabel}
                   {requiresLocations && <span className="text-destructive ml-1">*</span>}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Specify the location(s) where physical teaching will take place.
+                  {lt.teachingLocationsDesc}
                 </p>
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground mt-3" />
@@ -572,13 +574,13 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     id="teachingLocations"
                     value={teachingLocations}
                     onChange={(e) => onChange({ ...data, teachingLocations: e.target.value })}
-                    placeholder={"Campus X, Building A\nPartner institution Y, City, Country"}
+                    placeholder={lt.teachingLocationsPlaceholder}
                     disabled={!requiresLocations}
                     className="min-h-[100px]"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Enter one location per line
+                  {lt.teachingLocationsHint}
                 </p>
               </div>
             </div>
@@ -590,11 +592,9 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
       <div className="space-y-6">
         {/* Section Header / Meta Text */}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Course duration and learning period</h3>
+          <h3 className="text-lg font-semibold">{lt.durationSectionTitle}</h3>
           <p className="text-sm text-muted-foreground">
-            This step clarifies the temporal structure of the micro-credential.
-            The available options depend on the delivery modes defined earlier.
-            Fully asynchronous access is only possible if no physical or synchronous elements are included.
+            {lt.durationSectionDesc}
           </p>
         </div>
 
@@ -603,7 +603,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             {/* Overall course duration field */}
             <div className="space-y-4">
               <Label className="text-base font-medium">
-                How is the learning period for this micro-credential structured?
+                {lt.durationQuestion}
                 <span className="text-destructive ml-1">*</span>
               </Label>
 
@@ -638,11 +638,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                         isAsyncDisabled && "cursor-not-allowed"
                       )}
                     >
-                      Fully asynchronous, self-paced (access anytime)
+                      {lt.asyncOptionLabel}
                     </Label>
                     {isAsyncDisabled && (
                       <p className="text-xs text-muted-foreground">
-                        This option is unavailable because the course includes physical or synchronous learning activities.
+                        {lt.asyncOptionDisabledHint}
                       </p>
                     )}
                   </div>
@@ -657,7 +657,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                   />
                   <div className="flex-1">
                     <Label htmlFor="time-bound" className="text-sm font-medium cursor-pointer">
-                      Time-bound learning period
+                      {lt.timeBoundOptionLabel}
                     </Label>
                   </div>
                 </div>
@@ -669,7 +669,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               <div className="flex items-center gap-2 p-4 bg-muted/30 rounded-lg border">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  Learners may start and complete the course independently without a fixed time window.
+                  {lt.asyncSelectedHint}
                 </p>
               </div>
             )}
@@ -679,11 +679,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                 <div className="flex items-start gap-2">
                   <div className="flex-1">
                     <Label htmlFor="estimatedWeeks" className="text-base font-medium">
-                      Estimated duration of the learning period
+                      {lt.estimatedWeeksLabel}
                       <span className="text-destructive ml-1">*</span>
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Indicate the approximate length of the learning period.
+                      {lt.estimatedWeeksDesc}
                     </p>
                   </div>
                   <Dialog>
@@ -691,18 +691,18 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                       <button
                         type="button"
                         className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
-                        aria-label="More information about estimated duration"
+                        aria-label={lt.estimatedWeeksInfoAria}
                       >
                         <Info className="w-5 h-5" />
                       </button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Estimated duration</DialogTitle>
+                        <DialogTitle>{lt.estimatedWeeksDialogTitle}</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4 text-muted-foreground">
                         <p>
-                          Provide an approximate duration. This should reflect the overall learning timeline, not detailed scheduling.
+                          {lt.estimatedWeeksDialogBody}
                         </p>
                       </div>
                     </DialogContent>
@@ -718,10 +718,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                       const value = e.target.value === '' ? undefined : parseInt(e.target.value, 10);
                       onChange({ ...data, estimatedWeeks: value });
                     }}
-                    placeholder="Enter number"
+                    placeholder={lt.estimatedWeeksPlaceholder}
                     className="flex-1"
                   />
-                  <span className="text-sm text-muted-foreground font-medium">weeks</span>
+                  <span className="text-sm text-muted-foreground font-medium">{lt.weeksUnit}</span>
                 </div>
               </div>
             )}
@@ -729,7 +729,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             {/* Validation Message */}
             {!data.courseDurationMode && (
               <p className="text-sm text-muted-foreground italic">
-                Please select one option.
+                {lt.selectOneOption}
               </p>
             )}
           </CardContent>
@@ -740,14 +740,12 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
       <div className="space-y-6">
         {/* Section Header / Meta Text */}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Alignment with market-relevant skills</h3>
+          <h3 className="text-lg font-semibold">{lt.skillsSectionTitle}</h3>
           <p className="text-sm text-muted-foreground">
-            In Phase 3, market and stakeholder needs were used to identify a set of relevant skills.
-            This step ensures alignment between those identified market-relevant skills and the actual skills learners will develop through this micro-credential.
+            {lt.skillsSectionDesc1}
           </p>
           <p className="text-sm text-muted-foreground">
-            You may confirm, remove, or extend the skill set to reflect what the course genuinely delivers.
-            The final list represents the skills that this micro-credential credibly awards.
+            {lt.skillsSectionDesc2}
           </p>
         </div>
 
@@ -758,10 +756,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               <div className="flex items-start gap-2">
                 <div className="flex-1">
                   <Label className="text-base font-medium">
-                    Market-identified skills (from Phase 3)
+                    {lt.marketSkillsLabel}
                   </Label>
                   <p className="text-sm text-muted-foreground mt-1">
-                    These skills were identified based on external or market needs. Review whether they are actually achieved through the learning activities and assessment design of this course.
+                    {lt.marketSkillsDesc}
                   </p>
                 </div>
                 <Dialog>
@@ -769,18 +767,18 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
-                      aria-label="More information about market-identified skills"
+                      aria-label={lt.marketSkillsInfoAria}
                     >
                       <Info className="w-5 h-5" />
                     </button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Market-identified skills</DialogTitle>
+                      <DialogTitle>{lt.marketSkillsDialogTitle}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 text-muted-foreground">
                       <p>
-                        These skills were identified based on external or market needs. Review whether they are actually achieved through the learning activities and assessment design of this course.
+                        {lt.marketSkillsDialogBody}
                       </p>
                     </div>
                   </DialogContent>
@@ -854,7 +852,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               ) : (
                 <div className="p-4 rounded-lg border border-dashed bg-muted/20 text-center">
                   <p className="text-sm text-muted-foreground">
-                    No skills were identified in Phase 3. You can add skills in the section below.
+                    {lt.noSkillsIdentified}
                   </p>
                 </div>
               )}
@@ -865,10 +863,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               <div className="flex items-start gap-2">
                 <div className="flex-1">
                   <Label className="text-base font-medium">
-                    Additional skills developed through the course
+                    {lt.additionalSkillsLabel}
                   </Label>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Are there additional skills that learners will develop through this micro-credential that were not identified as market needs?
+                    {lt.additionalSkillsDesc}
                   </p>
                 </div>
                 <Dialog>
@@ -876,18 +874,18 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 mt-0.5"
-                      aria-label="More information about additional skills"
+                      aria-label={lt.additionalSkillsInfoAria}
                     >
                       <Info className="w-5 h-5" />
                     </button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Additional skills</DialogTitle>
+                      <DialogTitle>{lt.additionalSkillsDialogTitle}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-4 text-muted-foreground">
                       <p>
-                        Include skills that are meaningfully developed and assessed through the course, even if they were not part of the initial market analysis.
+                        {lt.additionalSkillsDialogBody}
                       </p>
                     </div>
                   </DialogContent>
@@ -920,18 +918,18 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
 
               {/* ESCO Search */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Search ESCO skills</Label>
+                <Label className="text-sm font-medium">{lt.searchEscoLabel}</Label>
                 <Popover open={escoSearchOpen} onOpenChange={setEscoSearchOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start gap-2">
                       <Search className="h-4 w-4" />
-                      Search ESCO skills and competences...
+                      {lt.searchEscoButton}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-[400px] p-0 z-[9999] bg-popover" align="start">
                     <Command shouldFilter={false}>
                       <CommandInput
-                        placeholder="Type to search ESCO..."
+                        placeholder={lt.searchEscoInputPlaceholder}
                         value={escoSearchValue}
                         onValueChange={setEscoSearchValue}
                       />
@@ -939,22 +937,22 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                         {isSearchingEsco && (
                           <div className="flex items-center justify-center py-6">
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            <span className="text-sm text-muted-foreground">Searching ESCO...</span>
+                            <span className="text-sm text-muted-foreground">{lt.searchingEsco}</span>
                           </div>
                         )}
                         {escoSearchError && (
                           <div className="py-6 text-center text-sm text-destructive">{escoSearchError}</div>
                         )}
                         {!isSearchingEsco && !escoSearchError && escoResults.length === 0 && escoSearchValue.length >= 2 && (
-                          <CommandEmpty>No skills found. Try a different search term.</CommandEmpty>
+                          <CommandEmpty>{lt.noSkillsFound}</CommandEmpty>
                         )}
                         {!isSearchingEsco && !escoSearchError && escoSearchValue.length < 2 && (
                           <div className="py-6 text-center text-sm text-muted-foreground">
-                            Enter at least 2 characters to search
+                            {lt.enterAtLeastTwoChars}
                           </div>
                         )}
                         {!isSearchingEsco && escoResults.length > 0 && (
-                          <CommandGroup heading="ESCO Skills & Competences">
+                          <CommandGroup heading={lt.escoGroupHeading}>
                             {escoResults.map((skill) => (
                               <CommandItem
                                 key={skill.uri}
@@ -975,12 +973,12 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
 
               {/* Manual skill input */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Or add a custom skill</Label>
+                <Label className="text-sm font-medium">{lt.customSkillLabel}</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     value={newSkillText}
                     onChange={(e) => setNewSkillText(e.target.value)}
-                    placeholder="Enter a skill manually..."
+                    placeholder={lt.customSkillPlaceholder}
                     className="flex-1"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -996,7 +994,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     disabled={!newSkillText.trim()}
                   >
                     <Plus className="h-4 w-4 mr-1" />
-                    Add
+                    {lt.add}
                   </Button>
                 </div>
               </div>
@@ -1006,10 +1004,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             <div className="space-y-4 pt-4 border-t">
               <div className="space-y-2">
                 <Label className="text-base font-medium">
-                  Final skills alignment check
+                  {lt.finalSkillsCheckLabel}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Check that the skills listed below accurately represent the skills learners will achieve by completing this {courseType === 'standalone' ? 'standalone course' : 'micro-credential'} — otherwise delete them above.
+                  {courseType === 'standalone' ? lt.finalSkillsCheckDescStandalone : lt.finalSkillsCheckDescOther}
                 </p>
               </div>
 
@@ -1026,7 +1024,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               ) : (
                 <div className="p-4 rounded-lg border border-dashed bg-muted/20 text-center">
                   <p className="text-sm text-muted-foreground">
-                    No skills have been confirmed. Please add or retain at least one skill.
+                    {lt.noSkillsConfirmed}
                   </p>
                 </div>
               )}
@@ -1040,13 +1038,13 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
         <Card>
           <CardContent className="pt-6 space-y-6">
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Who will lead the course</h3>
+              <h3 className="text-lg font-semibold">{lt.instructorsSectionTitle}</h3>
               <p className="text-sm text-muted-foreground">
-                Add the instructors or course leaders below. This is optional, but recording this information early can simplify administrative and communication processes later.
+                {lt.instructorsSectionDesc}
               </p>
               {sourceInstructors && sourceInstructors.length > 0 && (
                 <div className="mt-2 p-3 rounded-md border border-primary/20 bg-primary/5 text-sm text-foreground">
-                  Instructors from the underlying standalone {sourceInstructors.length === 1 ? 'source' : 'sources'} have been pre-filled below. You can edit, remove, or add additional instructors.
+                  {sourceInstructors.length === 1 ? lt.instructorsPreFilledSingular : lt.instructorsPreFilledPlural}
                 </div>
               )}
             </div>
@@ -1054,7 +1052,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
             {(data.instructors || []).map((instructor, idx) => (
               <div key={instructor.id} className="p-4 rounded-lg border bg-muted/30 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Instructor {idx + 1}</span>
+                  <span className="text-sm font-medium">{lt.instructorLabel.replace('{n}', String(idx + 1))}</span>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1068,7 +1066,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-sm">Name</Label>
+                    <Label className="text-sm">{lt.nameLabel}</Label>
                     <Input
                       value={instructor.name}
                       onChange={(e) => {
@@ -1077,11 +1075,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                         );
                         onChange({ ...data, instructors: updated });
                       }}
-                      placeholder="Full name"
+                      placeholder={lt.namePlaceholder}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-sm">Title</Label>
+                    <Label className="text-sm">{lt.titleLabel}</Label>
                     <Input
                       value={instructor.title}
                       onChange={(e) => {
@@ -1090,11 +1088,11 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                         );
                         onChange({ ...data, instructors: updated });
                       }}
-                      placeholder="e.g. Associate Professor"
+                      placeholder={lt.titlePlaceholder}
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-sm">Institution</Label>
+                    <Label className="text-sm">{lt.institutionLabel}</Label>
                     <Input
                       value={instructor.institution}
                       onChange={(e) => {
@@ -1103,12 +1101,12 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                         );
                         onChange({ ...data, instructors: updated });
                       }}
-                      placeholder="e.g. University of..."
+                      placeholder={lt.institutionPlaceholder}
                     />
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-sm">Additional information <span className="text-muted-foreground">(optional)</span></Label>
+                  <Label className="text-sm">{lt.additionalInfoLabel} <span className="text-muted-foreground">{lt.optionalLabel}</span></Label>
                   <Input
                     value={instructor.additionalInfo || ''}
                     onChange={(e) => {
@@ -1117,7 +1115,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                       );
                       onChange({ ...data, instructors: updated });
                     }}
-                    placeholder="e.g. contact email, area of expertise..."
+                    placeholder={lt.additionalInfoPlaceholder}
                   />
                 </div>
               </div>
@@ -1136,7 +1134,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add instructor
+              {lt.addInstructor}
             </Button>
           </CardContent>
         </Card>
@@ -1149,34 +1147,33 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
         <Card>
           <CardContent className="pt-6 space-y-6">
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Confirm title</h3>
+              <h3 className="text-lg font-semibold">{lt.confirmTitleSectionTitle}</h3>
               <p className="text-sm text-muted-foreground">
-                Review and confirm the final title for this {courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential'}. 
-                The working title from Phase 2 is shown below. You may revise it if needed.
+                {courseType === 'standalone' ? lt.confirmTitleDescStandalone : lt.confirmTitleDescOther}
               </p>
             </div>
 
             {workingTitle && (
               <div className="p-4 rounded-lg bg-muted/30 border">
-                <p className="text-sm text-muted-foreground mb-1">Working title from Phase 2:</p>
+                <p className="text-sm text-muted-foreground mb-1">{lt.workingTitleFromPhase2}</p>
                 <p className="font-medium">{workingTitle}</p>
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="confirmedTitle" className="text-base font-medium">
-                Final title
+                {lt.finalTitleLabel}
                 <span className="text-destructive ml-1">*</span>
               </Label>
               <Input
                 id="confirmedTitle"
                 value={data.confirmedTitle || workingTitle || ''}
                 onChange={(e) => onChange({ ...data, confirmedTitle: e.target.value })}
-                placeholder="Enter the final title..."
+                placeholder={lt.finalTitlePlaceholder}
                 className="max-w-xl"
               />
               <p className="text-sm text-muted-foreground italic">
-                This title will appear on the final credential and in official documentation.
+                {lt.finalTitleHint}
               </p>
             </div>
           </CardContent>
@@ -1189,10 +1186,10 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
           <CardContent className="pt-6 space-y-4">
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">
-                Additional information regarding this learning unit
+                {lt.adminNotesTitle}
               </h3>
               <p className="text-sm text-muted-foreground">
-                This is a free-text field. Add any information about this learning unit that hasn't found its place elsewhere in the framework — for example details about delivery, administration, handover between institutions, special arrangements, historical context, or anything else worth documenting. Add as many entries as you need.
+                {lt.adminNotesDesc}
               </p>
             </div>
 
@@ -1206,7 +1203,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                     );
                     onChange({ ...data, administrativeNotes: updated });
                   }}
-                  placeholder={`Note ${idx + 1} — e.g. "Delivered jointly with partner institution X every spring semester"`}
+                  placeholder={lt.adminNotePlaceholder.replace('{n}', String(idx + 1))}
                   className="flex-1 min-h-[60px] text-sm bg-background"
                 />
                 <Button
@@ -1219,7 +1216,7 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
                   }}
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  Remove
+                  {lt.remove}
                 </Button>
               </div>
             ))}
@@ -1240,12 +1237,12 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add information
+              {lt.addInformation}
             </Button>
 
             {(data.administrativeNotes || []).length === 0 && (
               <p className="text-xs text-muted-foreground italic">
-                No additional information added. This is optional — only add an entry if you have something extra worth documenting.
+                {lt.noAdminNotes}
               </p>
             )}
           </CardContent>

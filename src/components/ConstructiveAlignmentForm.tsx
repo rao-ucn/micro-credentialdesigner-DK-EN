@@ -8,6 +8,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Info, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getOutcomeText, isOutcomeComplete } from '@/lib/learning-outcomes';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 type CognitiveDomain = 'knowledge' | 'comprehension' | 'application' | 'analysis' | 'synthesis' | 'evaluation';
 type EQFDimension = 'knowledge' | 'skills' | 'responsibility';
@@ -68,41 +70,6 @@ const COMPETENCE_TO_EQF: Record<CompetenceDimension, EQFDimension> = {
   responsibility_autonomy: 'responsibility',
 };
 
-const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
-  knowledge: 'Knowledge',
-  skills: 'Skills',
-  responsibility: 'Responsibility and autonomy',
-};
-
-const ASSESSMENT_TYPE_LABELS: Record<string, string> = {
-  'written': 'Written',
-  'oral': 'Oral',
-  'combination': 'Combination of written and oral',
-};
-
-const INDIVIDUAL_GROUP_LABELS: Record<string, string> = {
-  'individual': 'Individual assessment',
-  'group': 'Group assessment',
-  'combination': 'Combination',
-};
-
-const DELIVERY_MODE_LABELS: Record<string, string> = {
-  'physical': 'Physical attendance required',
-  'online-possible': 'Online possible',
-  'fully-online': 'Fully online',
-};
-
-const ACTIVITY_TYPE_LABELS: Record<string, string> = {
-  'simulation': 'Simulation',
-  'portfolio': 'Portfolio with oral defence',
-  'case-based': 'Case-based assessment',
-  'project-based': 'Project-based assessment',
-  'practical-performance': 'Practical performance task',
-  'presentation': 'Presentation',
-  'observation-checklist': 'Observation checklist',
-  'other': 'Other',
-};
-
 const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
   data,
   onChange,
@@ -111,8 +78,45 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
   topicsData,
   assessmentData,
 }) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
-  
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
+
+  const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
+    knowledge: lt.caKnowledge,
+    skills: lt.caSkills,
+    responsibility: lt.caResponsibility,
+  };
+
+  const ASSESSMENT_TYPE_LABELS: Record<string, string> = {
+    'written': lt.caTypeWritten,
+    'oral': lt.caTypeOral,
+    'combination': lt.caTypeCombination,
+  };
+
+  const INDIVIDUAL_GROUP_LABELS: Record<string, string> = {
+    'individual': lt.caFormatIndividual,
+    'group': lt.caFormatGroup,
+    'combination': lt.caFormatCombination,
+  };
+
+  const DELIVERY_MODE_LABELS: Record<string, string> = {
+    'physical': lt.caDeliveryPhysical,
+    'online-possible': lt.caDeliveryOnlinePossible,
+    'fully-online': lt.caDeliveryFullyOnline,
+  };
+
+  const ACTIVITY_TYPE_LABELS: Record<string, string> = {
+    'simulation': lt.caActivitySimulation,
+    'portfolio': lt.caActivityPortfolio,
+    'case-based': lt.caActivityCaseBased,
+    'project-based': lt.caActivityProjectBased,
+    'practical-performance': lt.caActivityPracticalPerformance,
+    'presentation': lt.caActivityPresentation,
+    'observation-checklist': lt.caActivityObservationChecklist,
+    'other': lt.caActivityOther,
+  };
+
   const [formData, setFormData] = useState({
     alignmentConfirmed: data.alignmentConfirmed || '',
     misalignmentNote: data.misalignmentNote || '',
@@ -178,10 +182,10 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       <Card className="p-6">
         <div className="text-sm text-muted-foreground space-y-3">
           <p>
-            At this point, the core elements of the {courseLabel} have been defined. Learning outcomes describe what the learner must be able to demonstrate. These outcomes are supported by themes and topics, which structure the learning content. Finally, assessment defines how achievement of the learning outcomes is evaluated.
+            {lt.caIntro1.replace(/{course}/g, courseLabel)}
           </p>
           <p>
-            This section brings these elements together. The purpose is to review whether learning outcomes, content and assessment are aligned in a coherent and logical way.
+            {lt.caIntro2}
           </p>
         </div>
       </Card>
@@ -189,7 +193,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       {/* Part 1: Learning Outcomes Summary */}
       <Card className="p-6 space-y-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">Learning outcomes defined</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.caOutcomesDefined}</h3>
         </div>
         
         {hasLearningOutcomes ? (
@@ -211,7 +215,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
                   </Table>
                 ) : (
                   <p className="text-sm text-muted-foreground italic">
-                    No learning outcomes mapped to this dimension.
+                    {lt.caNoOutcomesForDimension}
                   </p>
                 )}
               </div>
@@ -221,9 +225,9 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 dark:bg-amber-950/30 dark:border-amber-800">
             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">No learning outcomes defined</p>
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">{lt.caNoOutcomesTitle}</p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                Learning outcomes must be defined before constructive alignment can be verified. Please return to the learning outcomes section.
+                {lt.caNoOutcomesText}
               </p>
             </div>
           </div>
@@ -233,18 +237,18 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       {/* Narrative between Learning Outcomes and Topics */}
       <div className="text-sm text-muted-foreground px-2">
         <p>
-          The learning outcomes define what the learner is expected to achieve. These outcomes should be addressed through the selected themes and topics. Review whether each learning outcome is meaningfully supported by the content areas listed below.
+          {lt.caNarrative}
         </p>
       </div>
 
       {/* Part 2: Topics and Themes Summary */}
       <Card className="p-6 space-y-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
-        <h3 className="text-lg font-semibold text-foreground">Topics and themes supporting the learning outcomes</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.caTopicsTitle}</h3>
         
         {hasThemes ? (
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              These themes represent the learning content boundaries for the {courseLabel}.
+              {lt.caTopicsIntro.replace(/{course}/g, courseLabel)}
             </p>
             <ul className="space-y-1">
               {filledThemes.map((theme, index) => (
@@ -257,7 +261,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
           </div>
         ) : (
           <p className="text-sm text-muted-foreground italic">
-            No topics or themes have been defined yet.
+            {lt.caNoTopics}
           </p>
         )}
       </Card>
@@ -265,13 +269,13 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       {/* Part 3: Assessment Approach Summary (only for micro-credentials) */}
       {courseType === 'micro-credential' && (
         <Card className="p-6 space-y-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
-          <h3 className="text-lg font-semibold text-foreground">Assessment approach defined so far</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.caAssessmentTitle}</h3>
           
           {hasAssessmentData ? (
             <div className="space-y-3">
               {assessmentData?.assessmentType && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">Overall assessment type:</span>
+                  <span className="text-sm font-medium text-foreground">{lt.caAssessmentType}</span>
                   <Badge variant="secondary">
                     {ASSESSMENT_TYPE_LABELS[assessmentData.assessmentType] || assessmentData.assessmentType}
                   </Badge>
@@ -280,7 +284,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
               
               {assessmentData?.individualOrGroup && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">Assessment format:</span>
+                  <span className="text-sm font-medium text-foreground">{lt.caAssessmentFormat}</span>
                   <Badge variant="secondary">
                     {INDIVIDUAL_GROUP_LABELS[assessmentData.individualOrGroup] || assessmentData.individualOrGroup}
                   </Badge>
@@ -289,7 +293,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
               
               {assessmentData?.deliveryMode && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">Delivery mode:</span>
+                  <span className="text-sm font-medium text-foreground">{lt.caDeliveryMode}</span>
                   <Badge variant="secondary">
                     {DELIVERY_MODE_LABELS[assessmentData.deliveryMode] || assessmentData.deliveryMode}
                   </Badge>
@@ -298,7 +302,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
               
               {assessmentData?.activityTypes && assessmentData.activityTypes.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-sm font-medium text-foreground">Assessment activity types:</span>
+                  <span className="text-sm font-medium text-foreground">{lt.caActivityTypes}</span>
                   <div className="flex flex-wrap gap-2">
                     {assessmentData.activityTypes.map((type) => (
                       <Badge key={type} variant="outline">
@@ -307,21 +311,21 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
                     ))}
                   </div>
                   {assessmentData.otherActivityType && (
-                    <p className="text-sm text-muted-foreground">Other: {assessmentData.otherActivityType}</p>
+                    <p className="text-sm text-muted-foreground">{lt.caOther} {assessmentData.otherActivityType}</p>
                   )}
                 </div>
               )}
               
               {assessmentData?.activityDescription && (
                 <div className="space-y-1">
-                  <span className="text-sm font-medium text-foreground">Activity description:</span>
+                  <span className="text-sm font-medium text-foreground">{lt.caActivityDescription}</span>
                   <p className="text-sm text-muted-foreground">{assessmentData.activityDescription}</p>
                 </div>
               )}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground italic">
-              No assessment approach has been defined yet. Return to the Define assessment section to complete this.
+              {lt.caNoAssessment}
             </p>
           )}
         </Card>
@@ -330,7 +334,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       {/* Part 5: Constructive Alignment Check */}
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">Constructive alignment check</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.caCheckTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -339,11 +343,11 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.caCheckWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Constructive alignment reduces the risk of designing learning activities or assessments that do not support the intended learning outcomes. This checkpoint helps ensure that later design decisions build on a coherent foundation.
+                  {lt.caCheckWhyText}
                 </p>
               </div>
             </DialogContent>
@@ -351,12 +355,12 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
         </div>
         
         <p className="text-sm text-muted-foreground">
-          When reviewing the elements above, consider whether constructive alignment has been achieved. Constructive alignment is present when learning outcomes, learning content and assessment mutually support each other.
+          {lt.caCheckHelp}
         </p>
 
         <div className="space-y-3">
           <Label className="text-base font-medium">
-            Based on the overview above, is constructive alignment ensured between learning outcomes, themes and topics, and assessment?
+            {lt.caCheckQuestion}
           </Label>
           
           <RadioGroup
@@ -367,14 +371,14 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
             <div className="flex items-start space-x-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
               <RadioGroupItem value="aligned" id="aligned" className="mt-0.5" />
               <Label htmlFor="aligned" className="text-sm font-normal cursor-pointer flex-1">
-                Yes, alignment is ensured
+                {lt.caAlignedLabel}
               </Label>
             </div>
             
             <div className="flex items-start space-x-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
               <RadioGroupItem value="misaligned" id="misaligned" className="mt-0.5" />
               <Label htmlFor="misaligned" className="text-sm font-normal cursor-pointer flex-1">
-                No, potential misalignment has been identified
+                {lt.caMisalignedLabel}
               </Label>
             </div>
           </RadioGroup>
@@ -383,7 +387,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
         {formData.alignmentConfirmed === 'misaligned' && (
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/30 dark:border-amber-800">
             <p className="text-sm text-amber-800 dark:text-amber-200">
-              If misalignment is identified, return to the relevant section to revise content or assessment. This section is for checking alignment, not for editing.
+              {lt.caMisalignedWarning}
             </p>
           </div>
         )}

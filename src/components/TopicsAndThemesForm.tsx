@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Info, Lightbulb, Plus, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 type CompetenceDimension = 'knowledge' | 'skills' | 'responsibility_autonomy';
 
@@ -39,7 +41,9 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
   courseType,
   learningOutcomes = [],
 }) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
   
   const [themes, setThemes] = useState<string[]>(data.themes || ['']);
 
@@ -102,7 +106,7 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Which major topics or themes must be included to enable learners to achieve the learning outcomes?
+            {lt.ttQLabel}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -112,17 +116,17 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why is this important?</DialogTitle>
+                <DialogTitle>{lt.ttWhyTitle}</DialogTitle>
               </DialogHeader>
               <div className="text-sm space-y-3">
                 <p>
-                  Major topics or themes must be strictly aligned with the learning outcomes to ensure that the content of the {courseLabel} remains focused and necessary.
+                  {lt.ttWhyText1.replace(/{course}/g, courseLabel)}
                 </p>
                 <p>
-                  This step prevents irrelevant or excessive content and guarantees that everything the learner engages with directly supports achieving the intended outcomes.
+                  {lt.ttWhyText2}
                 </p>
                 <p>
-                  Each theme must therefore be clearly linked to at least one learning outcome.
+                  {lt.ttWhyText3}
                 </p>
               </div>
             </DialogContent>
@@ -135,84 +139,84 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.ttInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm space-y-4">
                 <div>
-                  <h4 className="font-semibold mb-2">Understanding the difference between themes and learning outcomes</h4>
+                  <h4 className="font-semibold mb-2">{lt.ttDiffTitle}</h4>
                   <p className="text-muted-foreground mb-3">
-                    Themes and learning outcomes are not the same. They serve different functions in the design process.
+                    {lt.ttDiffIntro}
                   </p>
                   
                   <div className="border rounded-lg overflow-hidden mb-4">
                     <table className="w-full text-sm">
                       <thead className="bg-muted">
                         <tr>
-                          <th className="text-left p-3 font-medium border-r">Themes</th>
-                          <th className="text-left p-3 font-medium">Learning outcomes</th>
+                          <th className="text-left p-3 font-medium border-r">{lt.ttTableThemes}</th>
+                          <th className="text-left p-3 font-medium">{lt.ttTableOutcomes}</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr className="border-t">
-                          <td className="p-3 border-r">Describe content areas</td>
-                          <td className="p-3">Describe what the learner must be able to do</td>
+                          <td className="p-3 border-r">{lt.ttRow1Themes}</td>
+                          <td className="p-3">{lt.ttRow1Outcomes}</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3 border-r">Are not actions</td>
-                          <td className="p-3">Are observable and assessable actions</td>
+                          <td className="p-3 border-r">{lt.ttRow2Themes}</td>
+                          <td className="p-3">{lt.ttRow2Outcomes}</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3 border-r">Are not measurable</td>
-                          <td className="p-3">Must be measurable</td>
+                          <td className="p-3 border-r">{lt.ttRow3Themes}</td>
+                          <td className="p-3">{lt.ttRow3Outcomes}</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3 border-r">Provide structure for content</td>
-                          <td className="p-3">Provide the basis for assessment</td>
+                          <td className="p-3 border-r">{lt.ttRow4Themes}</td>
+                          <td className="p-3">{lt.ttRow4Outcomes}</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-3 border-r">Are derived from learning outcomes</td>
-                          <td className="p-3">Determine what content is needed</td>
+                          <td className="p-3 border-r">{lt.ttRow5Themes}</td>
+                          <td className="p-3">{lt.ttRow5Outcomes}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
 
                   <div className="space-y-2 text-muted-foreground mb-4">
-                    <p><strong>Themes</strong> are the input for learning.<br /><strong>Learning outcomes</strong> are the output of learning.</p>
-                    <p><strong>Themes</strong> identify what learners must work with.<br /><strong>Learning outcomes</strong> state what learners must be able to do as a result.</p>
+                    <p>{lt.ttDiffSummary1}<br />{lt.ttDiffSummary1b}</p>
+                    <p>{lt.ttDiffSummary2}<br />{lt.ttDiffSummary2b}</p>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">How to develop themes</h4>
+                  <h4 className="font-semibold mb-2">{lt.ttHowTitle}</h4>
                   <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    <li>Review each learning outcome and identify the types of knowledge, skills or reasoning it requires.</li>
-                    <li>Group related requirements into broader themes.</li>
-                    <li>Remove anything not essential for at least one learning outcome.</li>
-                    <li>Aim for 3-7 themes that cover everything without overlap.</li>
-                    <li>Consider whether themes naturally sequence from foundational to advanced.</li>
+                    <li>{lt.ttHowItem1}</li>
+                    <li>{lt.ttHowItem2}</li>
+                    <li>{lt.ttHowItem3}</li>
+                    <li>{lt.ttHowItem4}</li>
+                    <li>{lt.ttHowItem5}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Examples of themes (generic)</h4>
+                  <h4 className="font-semibold mb-2">{lt.ttExamplesTitle}</h4>
                   <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    <li>Fundamental concepts and terminology</li>
-                    <li>Key processes or workflows</li>
-                    <li>Methods and tools</li>
-                    <li>Ethical or professional considerations</li>
-                    <li>Applied techniques linked to the learning outcomes</li>
+                    <li>{lt.ttExampleItem1}</li>
+                    <li>{lt.ttExampleItem2}</li>
+                    <li>{lt.ttExampleItem3}</li>
+                    <li>{lt.ttExampleItem4}</li>
+                    <li>{lt.ttExampleItem5}</li>
                   </ul>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-2">Examples if the {courseLabel} were about the Sustainable Development Goals</h4>
+                  <h4 className="font-semibold mb-2">{lt.ttSdgTitle.replace(/{course}/g, courseLabel)}</h4>
                   <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    <li>Introduction to the SDGs</li>
-                    <li>Understanding global challenges and interconnections</li>
-                    <li>SDG indicators and evidence-based problem analysis</li>
-                    <li>Stakeholder roles and governance</li>
-                    <li>Methods for sustainable action and intervention design</li>
+                    <li>{lt.ttSdgItem1}</li>
+                    <li>{lt.ttSdgItem2}</li>
+                    <li>{lt.ttSdgItem3}</li>
+                    <li>{lt.ttSdgItem4}</li>
+                    <li>{lt.ttSdgItem5}</li>
                   </ul>
                 </div>
               </div>
@@ -223,7 +227,7 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
         {/* Learning Outcomes Reference Box */}
         {completeLearningOutcomes.length > 0 && (
           <Card className="p-4 space-y-3 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800">
-            <h4 className="text-sm font-semibold text-foreground">Learning outcomes for reference</h4>
+            <h4 className="text-sm font-semibold text-foreground">{lt.ttReferenceTitle}</h4>
             <ul className="space-y-2">
               {completeLearningOutcomes.map((outcome, index) => (
                 <li key={outcome.id} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -242,7 +246,7 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
               <Input
                 value={theme}
                 onChange={(e) => handleThemeChange(index, e.target.value)}
-                placeholder="Add one theme per line. Themes must be clearly defined and directly linked to the learning outcomes."
+                placeholder={lt.ttThemePlaceholder}
                 className="bg-background flex-1"
               />
               {themes.length > 1 && (
@@ -267,13 +271,13 @@ const TopicsAndThemesForm: React.FC<TopicsAndThemesFormProps> = ({
             className="mt-2"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add another theme
+            {lt.ttAddTheme}
           </Button>
         </div>
 
         {/* Quality reminder */}
         <p className="text-sm text-muted-foreground italic border-t border-border pt-4">
-          Each theme must be necessary and sufficient to support at least one learning outcome. Remove anything that is not essential.
+          {lt.ttReminder}
         </p>
       </Card>
     </div>

@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, Plus, Trash2, GripVertical, AlertTriangle, CheckCircle2, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56Translations } from '@/lib/translations/forms56';
 
 interface LearningActivity {
   id: string;
@@ -52,22 +54,9 @@ interface LearningActivitiesFormProps {
   onBreakSingleSourceIntegrity?: () => void;
 }
 
-const TIME_STRUCTURE_OPTIONS = [
-  { value: 'synchronous', label: 'Synchronous' },
-  { value: 'asynchronous', label: 'Asynchronous' },
-];
-
-const DELIVERY_MODE_OPTIONS = [
-  { value: 'online', label: 'Online' },
-  { value: 'physical', label: 'Physical' },
-  { value: 'hybrid', label: 'Hybrid' },
-];
-
-const PARTICIPATION_OPTIONS = [
-  { value: 'individual', label: 'Individual (self-paced)' },
-  { value: 'group', label: 'Group' },
-  { value: 'whole-class', label: 'Whole class' },
-];
+const TIME_STRUCTURE_VALUES = ['synchronous', 'asynchronous'] as const;
+const DELIVERY_MODE_VALUES = ['online', 'physical', 'hybrid'] as const;
+const PARTICIPATION_VALUES = ['individual', 'group', 'whole-class'] as const;
 
 export default function LearningActivitiesForm({
   data,
@@ -78,6 +67,8 @@ export default function LearningActivitiesForm({
   basedOnSingleSource,
   onBreakSingleSourceIntegrity,
 }: LearningActivitiesFormProps) {
+  const { language } = useLanguage();
+  const lt = forms56Translations[language];
   const [showCoverageDialog, setShowCoverageDialog] = useState(false);
   const [showActivityInfoDialog, setShowActivityInfoDialog] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -233,38 +224,42 @@ export default function LearningActivitiesForm({
   };
 
   // Get label for participation form
-  const getParticipationLabel = (value: string) => {
-    const option = PARTICIPATION_OPTIONS.find(o => o.value === value);
-    return option?.label || value;
+  const participationLabelMap: Record<string, string> = {
+    individual: lt.optIndividual,
+    group: lt.optGroup,
+    'whole-class': lt.optWholeClass,
   };
+  const getParticipationLabel = (value: string) => participationLabelMap[value] || value;
 
   // Get label for time structure
-  const getTimeStructureLabel = (value: string) => {
-    const option = TIME_STRUCTURE_OPTIONS.find(o => o.value === value);
-    return option?.label || value;
+  const timeStructureLabelMap: Record<string, string> = {
+    synchronous: lt.optSynchronous,
+    asynchronous: lt.optAsynchronous,
   };
+  const getTimeStructureLabel = (value: string) => timeStructureLabelMap[value] || value;
 
   // Get label for delivery mode
-  const getDeliveryModeLabel = (value: string) => {
-    const option = DELIVERY_MODE_OPTIONS.find(o => o.value === value);
-    return option?.label || value;
+  const deliveryModeLabelMap: Record<string, string> = {
+    online: lt.optOnline,
+    physical: lt.optPhysical,
+    hybrid: lt.optHybrid,
   };
+  const getDeliveryModeLabel = (value: string) => deliveryModeLabelMap[value] || value;
 
   return (
     <>
       <div className="space-y-6">
         {/* Header */}
         <div className="border-l-4 border-primary pl-4">
-          <h2 className="text-2xl font-bold text-foreground">Develop learning activities</h2>
+          <h2 className="text-2xl font-bold text-foreground">{lt.laTitle}</h2>
         </div>
 
         {/* Meta text */}
         <div className="text-muted-foreground space-y-2">
           <p>
-            Learning activities define how learners engage with content over time.
-            In this section, you will design a progressive sequence of learning activities that operationalise the learning outcomes and reflect the multimodal learning approaches you selected earlier.
+            {lt.laIntro1}
           </p>
-          <p>Each activity should have a clear purpose and contribute meaningfully to the learner's progression.</p>
+          <p>{lt.laIntro2}</p>
         </div>
 
         {/* Multimodal Learning Reference (Permanent Reminder) */}
@@ -274,18 +269,17 @@ export default function LearningActivitiesForm({
               <div className="flex items-start gap-2 mb-3">
                 <AlertTriangle className="h-4 w-4 text-primary mt-0.5" />
                 <p className="text-sm font-medium text-foreground">
-                  Multimodal learning reference
+                  {lt.laMultimodalRefTitle}
                 </p>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                You previously defined how learning should be supported through multimodal learning resources.
-                As you design learning activities, ensure that these approaches are reflected across the learning journey.
+                {lt.laMultimodalRefText}
               </p>
               
               <div className="space-y-3">
                 {multimodalData.contentRepresentation && multimodalData.contentRepresentation.length > 0 && (
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Content representation</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">{lt.laContentRepresentation}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {multimodalData.contentRepresentation.map((item) => (
                         <span key={item} className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
@@ -298,7 +292,7 @@ export default function LearningActivitiesForm({
                 
                 {multimodalData.activeEngagement && multimodalData.activeEngagement.length > 0 && (
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Active engagement with content</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">{lt.laActiveEngagement}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {multimodalData.activeEngagement.map((item) => (
                         <span key={item} className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
@@ -311,7 +305,7 @@ export default function LearningActivitiesForm({
                 
                 {multimodalData.applicationTransfer && multimodalData.applicationTransfer.length > 0 && (
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Application and transfer of learning</p>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">{lt.laApplicationTransfer}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {multimodalData.applicationTransfer.map((item) => (
                         <span key={item} className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
@@ -328,7 +322,7 @@ export default function LearningActivitiesForm({
 
         {/* Primary instruction */}
         <p className="font-medium text-foreground">
-          Build your learning activities as a progressive flow. Add activities one by one in the order learners will experience them.
+          {lt.laPrimaryInstruction}
         </p>
 
 
@@ -341,21 +335,21 @@ export default function LearningActivitiesForm({
                   <TableHead className="w-10"></TableHead>
                   <TableHead className="min-w-[200px]">
                     <div className="flex items-center gap-1.5">
-                      Learning activity
+                      {lt.laColActivity}
                       <button
                         type="button"
                         onClick={() => setShowActivityInfoDialog(true)}
                         className="text-muted-foreground hover:text-foreground transition-colors"
-                        aria-label="Info about learning activities"
+                        aria-label={lt.laInfoAria}
                       >
                         <Info className="h-4 w-4" />
                       </button>
                     </div>
                   </TableHead>
-                  <TableHead className="w-[140px]">Time structure</TableHead>
-                  <TableHead className="w-[130px]">Delivery mode</TableHead>
-                  <TableHead className="w-[160px]">Participation form</TableHead>
-                  <TableHead className="min-w-[150px]">Notes (optional)</TableHead>
+                  <TableHead className="w-[140px]">{lt.laColTimeStructure}</TableHead>
+                  <TableHead className="w-[130px]">{lt.laColDeliveryMode}</TableHead>
+                  <TableHead className="w-[160px]">{lt.laColParticipationForm}</TableHead>
+                  <TableHead className="min-w-[150px]">{lt.laColNotes}</TableHead>
                   <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -379,7 +373,7 @@ export default function LearningActivitiesForm({
                       <Input
                         value={activity.activity}
                         onChange={(e) => updateActivity(index, { activity: e.target.value })}
-                        placeholder="Describe the learning activity..."
+                        placeholder={lt.laPlaceholderActivity}
                         className="min-w-[180px]"
                       />
                     </TableCell>
@@ -389,12 +383,12 @@ export default function LearningActivitiesForm({
                         onValueChange={(value) => updateActivity(index, { timeStructure: value })}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select..." />
+                          <SelectValue placeholder={lt.laPlaceholderSelect} />
                         </SelectTrigger>
                         <SelectContent>
-                          {TIME_STRUCTURE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                          {TIME_STRUCTURE_VALUES.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {getTimeStructureLabel(value)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -406,12 +400,12 @@ export default function LearningActivitiesForm({
                         onValueChange={(value) => updateActivity(index, { deliveryMode: value })}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select..." />
+                          <SelectValue placeholder={lt.laPlaceholderSelect} />
                         </SelectTrigger>
                         <SelectContent>
-                          {DELIVERY_MODE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                          {DELIVERY_MODE_VALUES.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {getDeliveryModeLabel(value)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -423,12 +417,12 @@ export default function LearningActivitiesForm({
                         onValueChange={(value) => updateActivity(index, { participationForm: value })}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select..." />
+                          <SelectValue placeholder={lt.laPlaceholderSelect} />
                         </SelectTrigger>
                         <SelectContent>
-                          {PARTICIPATION_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                          {PARTICIPATION_VALUES.map((value) => (
+                            <SelectItem key={value} value={value}>
+                              {getParticipationLabel(value)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -438,7 +432,7 @@ export default function LearningActivitiesForm({
                       <Input
                         value={activity.notes}
                         onChange={(e) => updateActivity(index, { notes: e.target.value })}
-                        placeholder="Optional notes..."
+                        placeholder={lt.laPlaceholderNotes}
                         className="min-w-[130px]"
                       />
                     </TableCell>
@@ -463,14 +457,14 @@ export default function LearningActivitiesForm({
         {!isComplete && (
           <Button onClick={addActivity} variant="outline" className="gap-2">
             <Plus className="h-4 w-4" />
-            Add learning activity
+            {lt.laAddActivity}
           </Button>
         )}
 
         {activities.length === 0 && !isComplete && (
           <div className="text-center py-8 border-2 border-dashed rounded-lg text-muted-foreground">
-            <p>No learning activities added yet.</p>
-            <p className="text-sm">Click "Add learning activity" to begin designing your learner journey.</p>
+            <p>{lt.laEmptyTitle}</p>
+            <p className="text-sm">{lt.laEmptySubtitle}</p>
           </div>
         )}
 
@@ -487,13 +481,13 @@ export default function LearningActivitiesForm({
                       className="gap-2"
                     >
                       <CheckCircle2 className="h-4 w-4" />
-                      Complete learning activities
+                      {lt.laComplete}
                     </Button>
                   </span>
                 </TooltipTrigger>
                 {!canComplete && (
                   <TooltipContent>
-                    <p>Add at least one complete learning activity to continue.</p>
+                    <p>{lt.laCompleteTooltip}</p>
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -507,16 +501,18 @@ export default function LearningActivitiesForm({
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-foreground">Learning activities overview</h3>
+                    <h3 className="font-semibold text-foreground">{lt.laOverviewTitle}</h3>
                   </div>
                   <Button variant="outline" size="sm" onClick={handleEdit} className="gap-2">
                     <Edit className="h-4 w-4" />
-                    Edit
+                    {lt.laEdit}
                   </Button>
                 </div>
                 
                 <p className="text-sm text-muted-foreground mb-4">
-                  You have defined {activities.filter(isActivityComplete).length} learning {activities.filter(isActivityComplete).length === 1 ? 'activity' : 'activities'} for this micro-credential.
+                  {lt.laSummaryText
+                    .replace('{count}', String(activities.filter(isActivityComplete).length))
+                    .replace('{activityWord}', activities.filter(isActivityComplete).length === 1 ? lt.laActivitySingular : lt.laActivityPlural)}
                 </p>
 
                 <div className="space-y-3">
@@ -531,7 +527,7 @@ export default function LearningActivitiesForm({
                             {activity.activity}
                             {activity._sourceTitle && (
                               <span className="ml-2 text-xs font-normal text-muted-foreground">
-                                (from: {activity._sourceTitle})
+                                {lt.laFromSource.replace('{title}', activity._sourceTitle)}
                               </span>
                             )}
                           </p>
@@ -562,10 +558,9 @@ export default function LearningActivitiesForm({
             {/* Multimodal Confirmation Section */}
             <Card className="border-muted">
               <CardContent className="pt-4">
-                <h3 className="font-semibold text-foreground mb-2">Multimodal learning confirmation</h3>
+                <h3 className="font-semibold text-foreground mb-2">{lt.laMultimodalConfirmTitle}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  You previously defined how learning should be supported through multimodal learning resources.
-                  Before continuing, please confirm that the learning activities defined above collectively address the selected multimodal approaches.
+                  {lt.laMultimodalConfirmText}
                 </p>
                 <div className="flex items-center gap-3">
                   <Switch
@@ -574,7 +569,7 @@ export default function LearningActivitiesForm({
                     onCheckedChange={(checked) => updateData({ multimodalConfirmed: checked })}
                   />
                   <Label htmlFor="multimodal-confirm" className="text-sm cursor-pointer">
-                    I have checked that the learning activities cover the multimodal learning approaches defined earlier and listed above.
+                    {lt.laMultimodalConfirmLabel}
                   </Label>
                 </div>
               </CardContent>
@@ -583,9 +578,9 @@ export default function LearningActivitiesForm({
             {/* Participation Constraints Section */}
             <Card className="border-muted">
               <CardContent className="pt-4">
-                <h3 className="font-semibold text-foreground mb-2">Participation constraints</h3>
+                <h3 className="font-semibold text-foreground mb-2">{lt.laParticipationTitle}</h3>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Specify whether the delivery of this micro-credential depends on a minimum or maximum number of participants, or whether it can run without limitations.
+                  {lt.laParticipationText}
                 </p>
                 
                 <div className="space-y-6">
@@ -594,7 +589,7 @@ export default function LearningActivitiesForm({
                     <Alert variant="destructive" className="border-amber-500/50 bg-amber-50 text-amber-900 dark:bg-amber-950/30 dark:text-amber-200 dark:border-amber-500/30">
                       <AlertTriangle className="h-4 w-4 !text-amber-600 dark:!text-amber-400" />
                       <AlertDescription className="ml-2">
-                        <strong>OBS:</strong> One or more of your learning activities are set to <strong>Synchronous</strong>, which requires learners to participate at a specific time. This conflicts with the fully asynchronous, open-access nature of your course design.
+                        {lt.laSyncWarning}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -616,14 +611,14 @@ export default function LearningActivitiesForm({
                       }
                     />
                     <Label htmlFor="open-access" className="text-sm cursor-pointer leading-relaxed">
-                      This course is fully asynchronous and can run with open access, anytime and anywhere
+                      {lt.laOpenAccessLabel}
                     </Label>
                   </div>
 
                   {/* Minimum Participants */}
                   <div className={cn("space-y-3", participationConstraints.openAccess && "opacity-50 pointer-events-none")}>
                     <Label className="text-sm font-medium">
-                      Is a minimum number of participants required for the course to run?
+                      {lt.laMinRequiredLabel}
                     </Label>
                     <Select
                       value={participationConstraints.minimumRequired}
@@ -642,15 +637,15 @@ export default function LearningActivitiesForm({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="no">No minimum requirement</SelectItem>
-                        <SelectItem value="yes">Yes – specify minimum number</SelectItem>
+                        <SelectItem value="no">{lt.laNoMinimum}</SelectItem>
+                        <SelectItem value="yes">{lt.laYesSpecifyMin}</SelectItem>
                       </SelectContent>
                     </Select>
                     
                     {participationConstraints.minimumRequired === 'yes' && !participationConstraints.openAccess && (
                       <div className="flex items-center gap-3">
                         <Label htmlFor="min-number" className="text-sm whitespace-nowrap">
-                          Minimum participants required:
+                          {lt.laMinNumberLabel}
                         </Label>
                         <Input
                           id="min-number"
@@ -674,7 +669,7 @@ export default function LearningActivitiesForm({
                   {/* Maximum Participants */}
                   <div className={cn("space-y-3", participationConstraints.openAccess && "opacity-50 pointer-events-none")}>
                     <Label className="text-sm font-medium">
-                      Is there a maximum number of participants due to capacity or pedagogical constraints?
+                      {lt.laMaxRequiredLabel}
                     </Label>
                     <Select
                       value={participationConstraints.maximumRequired}
@@ -693,15 +688,15 @@ export default function LearningActivitiesForm({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="no">No maximum limit</SelectItem>
-                        <SelectItem value="yes">Yes – specify maximum number</SelectItem>
+                        <SelectItem value="no">{lt.laNoMaximum}</SelectItem>
+                        <SelectItem value="yes">{lt.laYesSpecifyMax}</SelectItem>
                       </SelectContent>
                     </Select>
                     
                     {participationConstraints.maximumRequired === 'yes' && !participationConstraints.openAccess && (
                       <div className="flex items-center gap-3">
                         <Label htmlFor="max-number" className="text-sm whitespace-nowrap">
-                          Maximum participants allowed:
+                          {lt.laMaxNumberLabel}
                         </Label>
                         <Input
                           id="max-number"
@@ -731,37 +726,37 @@ export default function LearningActivitiesForm({
         <Dialog open={showActivityInfoDialog} onOpenChange={setShowActivityInfoDialog}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Learning activity</DialogTitle>
+              <DialogTitle>{lt.laActivityDialogTitle}</DialogTitle>
               <DialogDescription className="sr-only">
-                Guidance on writing learning activities
+                {lt.laActivityDialogDesc}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 text-sm text-muted-foreground">
               <p>
-                Describe the activity from the learner's perspective. Focus on what the learner actively does, not on the teaching format or material type.
+                {lt.laActivityDialogP1}
               </p>
               <div>
-                <p className="font-medium text-foreground mb-2">A learning activity should:</p>
+                <p className="font-medium text-foreground mb-2">{lt.laActivityDialogShouldTitle}</p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>describe a concrete learner action</li>
-                  <li>show how the learner engages with content, others, or practice</li>
-                  <li>support progression towards the learning outcomes</li>
+                  <li>{lt.laActivityShould1}</li>
+                  <li>{lt.laActivityShould2}</li>
+                  <li>{lt.laActivityShould3}</li>
                 </ul>
               </div>
               <p>
-                Avoid listing formats alone (e.g. "video", "group work"). Instead, describe the learner's action in relation to the format.
+                {lt.laActivityDialogP2}
               </p>
               <div>
-                <p className="font-medium text-foreground mb-2">Examples of well-formulated learning activities:</p>
+                <p className="font-medium text-foreground mb-2">{lt.laActivityExamplesTitle}</p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Watch a short video and identify key concepts</li>
-                  <li>Read a case and analyse the main challenge using the framework</li>
-                  <li>Participate in a discussion to compare alternative solutions</li>
-                  <li>Apply the method to a new scenario individually</li>
-                  <li>Collaborate in a group to develop a shared solution</li>
-                  <li>Complete a quiz to check understanding</li>
-                  <li>Present findings and receive peer feedback</li>
-                  <li>Reflect in writing on how the concept applies to own practice</li>
+                  <li>{lt.laActivityExample1}</li>
+                  <li>{lt.laActivityExample2}</li>
+                  <li>{lt.laActivityExample3}</li>
+                  <li>{lt.laActivityExample4}</li>
+                  <li>{lt.laActivityExample5}</li>
+                  <li>{lt.laActivityExample6}</li>
+                  <li>{lt.laActivityExample7}</li>
+                  <li>{lt.laActivityExample8}</li>
                 </ul>
               </div>
             </div>
@@ -774,16 +769,15 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-primary" />
-                Multimodal approach coverage
+                {lt.laCoverageDialogTitle}
               </DialogTitle>
               <DialogDescription className="sr-only">
-                Some multimodal approaches are not reflected in your activities
+                {lt.laCoverageDialogDesc}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-muted-foreground">
-                Based on your earlier selections for multimodal learning resources, some approaches are not yet reflected in the learning activities.
-                You may revise the activities now or continue and address this later.
+                {lt.laCoverageDialogText}
               </p>
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
@@ -791,7 +785,7 @@ export default function LearningActivitiesForm({
                 variant="outline"
                 onClick={() => setShowCoverageDialog(false)}
               >
-                Revise learning activities
+                {lt.laReviseActivities}
               </Button>
               <Button
                 onClick={() => {
@@ -799,7 +793,7 @@ export default function LearningActivitiesForm({
                   setShowCoverageDialog(false);
                 }}
               >
-                Continue anyway
+                {lt.laContinueAnyway}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -821,32 +815,32 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Remove learning activity?
+                {lt.laRemoveTitle}
               </DialogTitle>
               <DialogDescription asChild>
                 <div className="space-y-3 text-sm">
                   {courseType === 'composite-micro-credential' ? (
                     <>
                       <p>
-                        This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                        {lt.laCompositeWarning1}
                       </p>
                       <p>
-                        Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                        {lt.laCompositeWarning2}
                       </p>
                       <p>
-                        This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to imported learning activities must break that original structure.
+                        {lt.laCompositeWarning3Remove}
                       </p>
                     </>
                   ) : (
                     <>
                       <p>
-                        This micro-credential is currently based directly on a single existing standalone course. If you remove a learning activity, it will no longer be a faithful representation of that source course.
+                        {lt.laSingleWarning1Remove}
                       </p>
                       <p>
-                        It will be treated as an independent micro-credential going forward, and the link to the original standalone course will be considered modified.
+                        {lt.laSingleWarning2}
                       </p>
                       <p>
-                        This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                        {lt.laSingleWarning3}
                       </p>
                     </>
                   )}
@@ -855,9 +849,9 @@ export default function LearningActivitiesForm({
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => { setPendingRemovalIndex(null); setRemovalDialogStep(null); }}>
-                Cancel
+                {lt.laCancel}
               </Button>
-              <Button onClick={openFinalRemovalConfirmation}>Continue</Button>
+              <Button onClick={openFinalRemovalConfirmation}>{lt.laContinue}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -872,21 +866,21 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Are you sure?
+                {lt.laAreYouSure}
               </DialogTitle>
               <DialogDescription>
-                This cannot be undone.
+                {lt.laCannotUndo}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => setRemovalDialogStep('warning')}>
-                Go back
+                {lt.laGoBack}
               </Button>
               <Button
                 onClick={confirmRemoveActivity}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Yes, continue
+                {lt.laYesContinue}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -908,32 +902,32 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Add learning activity?
+                {lt.laAddTitle}
               </DialogTitle>
               <DialogDescription asChild>
                 <div className="space-y-3 text-sm">
                   {courseType === 'composite-micro-credential' ? (
                     <>
                       <p>
-                        This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                        {lt.laCompositeWarning1}
                       </p>
                       <p>
-                        Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                        {lt.laCompositeWarning2}
                       </p>
                       <p>
-                        This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to imported learning activities must break that original structure.
+                        {lt.laCompositeWarning3Add}
                       </p>
                     </>
                   ) : (
                     <>
                       <p>
-                        This micro-credential is currently based directly on a single existing standalone course. If you add a new learning activity, it will no longer be a faithful representation of that source course.
+                        {lt.laSingleWarning1Add}
                       </p>
                       <p>
-                        It will be treated as an independent micro-credential going forward, and the link to the original standalone course will be considered modified.
+                        {lt.laSingleWarning2}
                       </p>
                       <p>
-                        This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                        {lt.laSingleWarning3}
                       </p>
                     </>
                   )}
@@ -942,9 +936,9 @@ export default function LearningActivitiesForm({
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => { setPendingAddActivity(false); setAddDialogStep(null); }}>
-                Cancel
+                {lt.laCancel}
               </Button>
-              <Button onClick={() => setAddDialogStep('confirm')}>Continue</Button>
+              <Button onClick={() => setAddDialogStep('confirm')}>{lt.laContinue}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -959,21 +953,21 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Are you sure?
+                {lt.laAreYouSure}
               </DialogTitle>
               <DialogDescription>
-                This cannot be undone.
+                {lt.laCannotUndo}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => setAddDialogStep('warning')}>
-                Go back
+                {lt.laGoBack}
               </Button>
               <Button
                 onClick={confirmAddActivity}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Yes, continue
+                {lt.laYesContinue}
               </Button>
             </DialogFooter>
           </DialogContent>

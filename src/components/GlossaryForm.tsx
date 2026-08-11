@@ -16,6 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 interface GlossaryEntry {
   id: string;
@@ -38,6 +40,8 @@ interface GlossaryFormProps {
 }
 
 export default function GlossaryForm({ data, onChange, courseType, onBreakCompositeIntegrity, basedOnSingleSource, onBreakSingleSourceIntegrity }: GlossaryFormProps) {
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
   const [validationError, setValidationError] = useState<string | null>(null);
   const [editDialogStep, setEditDialogStep] = useState<'warning' | 'confirm' | null>(null);
 
@@ -80,7 +84,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
     const validEntries = entries.filter(e => e.term.trim() && e.explanation.trim());
     
     if (validEntries.length === 0) {
-      setValidationError('Please ensure that each glossary entry includes both a term and a clear explanation.');
+      setValidationError(lt.glValidationError);
       return;
     }
 
@@ -90,7 +94,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
     );
 
     if (incompleteEntries.length > 0) {
-      setValidationError('Please ensure that each glossary entry includes both a term and a clear explanation.');
+      setValidationError(lt.glValidationError);
       return;
     }
 
@@ -130,17 +134,16 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
     <div className="space-y-6">
       {/* Header */}
       <div className="border-l-4 border-primary pl-4">
-        <h2 className="text-2xl font-bold text-foreground">Glossary</h2>
+        <h2 className="text-2xl font-bold text-foreground">{lt.glTitle}</h2>
       </div>
 
       {/* Metatext */}
       <div className="bg-muted/30 rounded-lg p-4 text-muted-foreground space-y-3">
         <p>
-          This step ensures that all learners share a clear and consistent understanding of key terms used throughout the micro-credential.
-          The glossary supports accessibility, transparency, and academic clarity, especially where specialised or technical terminology is involved.
+          {lt.glMeta1}
         </p>
         <p>
-          The glossary is a reference tool. It is not a repetition of learning content, but a clarification of language learners are expected to understand and use.
+          {lt.glMeta2}
         </p>
       </div>
 
@@ -149,8 +152,8 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
         <div className="border rounded-lg overflow-hidden">
           {/* Table Header */}
           <div className="grid grid-cols-[1fr_1fr_auto] gap-2 bg-muted/50 p-3 border-b">
-            <Label className="font-semibold text-foreground">Term / Concept</Label>
-            <Label className="font-semibold text-foreground">Explanation</Label>
+            <Label className="font-semibold text-foreground">{lt.glTermHeader}</Label>
+            <Label className="font-semibold text-foreground">{lt.glExplanationHeader}</Label>
             <div className="w-10" /> {/* Spacer for delete button */}
           </div>
 
@@ -167,14 +170,14 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
                 <Input
                   value={entry.term}
                   onChange={(e) => handleEntryChange(entry.id, 'term', e.target.value)}
-                  placeholder="Enter term..."
+                  placeholder={lt.glTermPlaceholder}
                   disabled={data.isComplete}
                   className="transition-all duration-200"
                 />
                 <Textarea
                   value={entry.explanation}
                   onChange={(e) => handleEntryChange(entry.id, 'explanation', e.target.value)}
-                  placeholder="Enter explanation..."
+                  placeholder={lt.glExplanationPlaceholder}
                   disabled={data.isComplete}
                   className="transition-all duration-200 min-h-[80px] resize-y"
                 />
@@ -185,7 +188,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
                   onClick={() => removeEntry(entry.id)}
                   disabled={entries.length <= 1 || data.isComplete}
                   className="text-muted-foreground hover:text-destructive"
-                  aria-label="Remove entry"
+                  aria-label={lt.glRemoveAria}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -203,7 +206,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add term
+            {lt.glAddTerm}
           </Button>
         )}
 
@@ -223,7 +226,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
               onClick={handleComplete}
               className="gap-2"
             >
-              Complete glossary
+              {lt.glComplete}
             </Button>
           ) : (
             <div className="flex items-center gap-4">
@@ -231,7 +234,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="font-medium">Glossary completed</span>
+              <span className="font-medium">{lt.glCompleted}</span>
             </div>
               <Button
                 type="button"
@@ -239,7 +242,7 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
                 onClick={handleEdit}
                 size="sm"
               >
-                Edit glossary
+                {lt.glEdit}
               </Button>
             </div>
           )}
@@ -256,31 +259,31 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Edit glossary?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.glEditDialogTitle}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 {courseType === 'composite-micro-credential' ? (
                   <>
                     <p>
-                      This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                      {lt.glEditCompositeText1}
                     </p>
                     <p>
-                      Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                      {lt.glEditCompositeText2}
                     </p>
                     <p>
-                      This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to the glossary must break that original structure.
+                      {lt.glEditCompositeText3}
                     </p>
                   </>
                 ) : (
                   <>
                     <p>
-                      This micro-credential is currently based directly on a single existing standalone course. If you edit the glossary, it will no longer be a faithful representation of that source course.
+                      {lt.glEditSingleText1}
                     </p>
                     <p>
-                      It will be converted back into a single combined standalone course that can be edited as a whole.
+                      {lt.glEditSingleText2}
                     </p>
                     <p>
-                      This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                      {lt.glEditSingleText3}
                     </p>
                   </>
                 )}
@@ -288,8 +291,8 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setEditDialogStep('confirm')}>Continue</AlertDialogAction>
+            <AlertDialogCancel>{lt.glCancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setEditDialogStep('confirm')}>{lt.glContinue}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -302,18 +305,18 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.glAreYouSure}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {lt.glCannotBeUndone}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setEditDialogStep('warning')}>Go back</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setEditDialogStep('warning')}>{lt.glGoBack}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmEdit}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Yes, continue
+              {lt.glYesContinue}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

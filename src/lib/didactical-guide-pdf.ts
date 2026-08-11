@@ -1,10 +1,13 @@
 import { jsPDF } from 'jspdf';
 import { CourseData } from '@/types/course';
+import type { Language } from '@/lib/i18n';
+import { pdfLabels } from '@/lib/translations/pdfLabels';
 
 const PRIMARY_COLOR = '#195562';
 const CHECK_BOX = '☐';
 
-export async function generateDidacticalGuidePDF(data: CourseData): Promise<void> {
+export async function generateDidacticalGuidePDF(data: CourseData, lang: Language = 'en'): Promise<void> {
+  const pl = pdfLabels[lang];
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -91,71 +94,38 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Course Design', pageWidth / 2, 14, { align: 'center' });
+  doc.text(pl.courseDesign, pageWidth / 2, 14, { align: 'center' });
 
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
-  doc.text('Didactical Guide Checklist', pageWidth / 2, 28, { align: 'center' });
+  doc.text(pl.didacticalGuideTitle, pageWidth / 2, 28, { align: 'center' });
 
   yPos = 52;
   doc.setTextColor(0, 0, 0);
 
   // Course title
-  const courseTitle = data.data['2.1']?.workingTitle || 'Untitled Course';
+  const courseTitle = data.data['2.1']?.workingTitle || pl.untitledCourse;
   addText(courseTitle, 14, true);
-  addText(`Document ID: ${data.documentId}  |  Generated: ${new Date().toLocaleDateString()}`, 8, false, '#666666');
+  addText(`${pl.documentIdLabel} ${data.documentId}  |  ${pl.didacticalGeneratedLabel} ${new Date().toLocaleDateString()}`, 8, false, '#666666');
   yPos += 4;
 
   // ==================
   // INTRO
   // ==================
-  addText('This checklist is auto-generated from your design choices in Phases 3 and 4. Use it as a reference when developing learning activities and assessment in Phase 5.', 9, false, '#444444');
+  addText(pl.didacticalIntro, 9, false, '#444444');
   yPos += 4;
 
   // ==================
   // SECTION 1: SUPPLEMENTARY LEARNING CONSIDERATIONS
   // ==================
-  addText('1. Supplementary Learning Considerations', 14, true, PRIMARY_COLOR);
+  addText(pl.section1Title, 14, true, PRIMARY_COLOR);
   yPos += 2;
 
   const supplementaryData = data.data['4.5']?.supplementaryData || {};
   const multimodalData = data.data['4.4']?.multimodalLearningData || {};
 
   // Considerations definitions
-  const considerations = [
-    {
-      id: 'exploration',
-      field: 'explorationDecision',
-      checkField: 'activeEngagement',
-      checkValue: 'exploration',
-      label: 'Exploration and shared experiences',
-      helpText: 'Joint exploration and shared experiences can support situated learning and the development of shared reference points among learners.',
-    },
-    {
-      id: 'reflection',
-      field: 'reflectionDecision',
-      checkField: 'activeEngagement',
-      checkValue: 'reflection',
-      label: 'Reflection activities',
-      helpText: 'Reflection activities support consolidation of learning and help learners connect new insights to prior knowledge and experience.',
-    },
-    {
-      id: 'challenge',
-      field: 'challengeDecision',
-      checkField: 'activeEngagement',
-      checkValue: 'challenge-based',
-      label: 'Challenge-based learning',
-      helpText: 'Challenge-based learning can support problem-solving, integration of knowledge and transfer to complex situations.',
-    },
-    {
-      id: 'realWorld',
-      field: 'realWorldDecision',
-      checkField: 'applicationTransfer',
-      checkValue: 'real-world',
-      label: 'Real-world or workplace-related activities',
-      helpText: 'Real-world or workplace-related activities can support transfer of learning beyond the course context and strengthen relevance to professional practice.',
-    },
-  ];
+  const considerations = pl.considerations;
 
   // Show which are incorporated (either from multimodal or from supplementary)
   const incorporatedItems: { label: string; helpText: string }[] = [];
@@ -171,21 +141,21 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   }
 
   if (incorporatedItems.length > 0) {
-    addInfoBox('Design reminders', 'The following elements have been marked for integration. Ensure each is reflected in your Phase 5 learning activities.');
+    addInfoBox(pl.designRemindersTitle, pl.designRemindersContent);
     yPos += 2;
     
     for (const item of incorporatedItems) {
-      addChecklistItem(`Have you designed activities that incorporate ${item.label.toLowerCase()}?`);
-      addText(`   Rationale: ${item.helpText}`, 8, false, '#666666');
+      addChecklistItem(pl.haveYouDesignedIncorporating(item.label.toLowerCase()));
+      addText(`   ${pl.rationalePrefix} ${item.helpText}`, 8, false, '#666666');
     }
   }
 
   // Feedback literacy
   if (supplementaryData.feedbackLiteracy === 'yes') {
     yPos += 2;
-    addChecklistItem('Have you implemented feedback literacy support as described?');
+    addChecklistItem(pl.feedbackLiteracyImplementedQuestion);
     if (supplementaryData.feedbackLiteracyDescription) {
-      addText(`   Your plan: "${supplementaryData.feedbackLiteracyDescription}"`, 8, false, '#666666');
+      addText(`   ${pl.yourPlanPrefix} "${supplementaryData.feedbackLiteracyDescription}"`, 8, false, '#666666');
     }
   }
 
@@ -194,107 +164,85 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   // ==================
   // SECTION 2: MULTIMODAL LEARNING RESOURCES CHECKLIST
   // ==================
-  addText('2. Multimodal Learning Resources', 14, true, PRIMARY_COLOR);
+  addText(pl.section2Title, 14, true, PRIMARY_COLOR);
   yPos += 2;
 
-  addInfoBox('Your selected modalities', 'Below is a checklist based on the content representation, engagement, and application modalities you selected in Phase 4. Use this to verify that all chosen modalities are represented in your Phase 5 activities.');
+  addInfoBox(pl.yourSelectedModalitiesTitle, pl.yourSelectedModalitiesContent);
   yPos += 2;
 
   // Content Representation
-  const contentOptions: Record<string, string> = {
-    'written': 'Written materials (texts, PDFs, articles)',
-    'visual': 'Visual materials (slides, diagrams, infographics)',
-    'video': 'Video materials (presentation videos)',
-    'audio': 'Audio explanations (podcasts)',
-    'interactive': 'Interactive digital content',
-    'demonstrations': 'Demonstrations or walkthroughs',
-    'other': 'Other format',
-  };
+  const contentOptions: Record<string, string> = pl.contentRepLabels;
 
   const selectedContent: string[] = multimodalData.contentRepresentation || [];
   if (selectedContent.length > 0) {
-    addText('Content Representation', 11, true);
+    addText(pl.contentRepresentationTitle, 11, true);
     for (const id of selectedContent) {
       const label = contentOptions[id] || id;
       if (id === 'video') {
-        addChecklistItem('Have you designed or planned video content for learners?');
+        addChecklistItem(pl.checklistVideo);
       } else if (id === 'audio') {
-        addChecklistItem('Have you designed or planned audio content (e.g. podcasts) for learners?');
+        addChecklistItem(pl.checklistAudio);
       } else if (id === 'written') {
-        addChecklistItem('Have you prepared written materials (texts, PDFs, articles)?');
+        addChecklistItem(pl.checklistWritten);
       } else if (id === 'visual') {
-        addChecklistItem('Have you prepared visual materials (slides, diagrams, infographics)?');
+        addChecklistItem(pl.checklistVisual);
       } else if (id === 'interactive') {
-        addChecklistItem('Have you designed interactive digital content for learners?');
+        addChecklistItem(pl.checklistInteractive);
       } else if (id === 'demonstrations') {
-        addChecklistItem('Have you planned demonstrations or walkthroughs?');
+        addChecklistItem(pl.checklistDemonstrations);
       } else if (id === 'other') {
-        const otherText = multimodalData.contentRepresentationOther || 'custom format';
-        addChecklistItem(`Have you prepared your custom content format: "${otherText}"?`);
+        const otherText = multimodalData.contentRepresentationOther || pl.customFormatFallback;
+        addChecklistItem(pl.checklistCustomFormat(otherText));
       }
     }
     yPos += 2;
   }
 
   // Active Engagement
-  const engagementOptions: Record<string, string> = {
-    'plenary': 'Discussions in plenary',
-    'peer-learning': 'Peer-learning interaction',
-    'exercises': 'Practical exercises or applied tasks',
-    'exploration': 'Exploration and experiencing together',
-    'reflection': 'Reflection activities',
-    'challenge-based': 'Challenge-based learning',
-    'other': 'Other',
-  };
+  const engagementOptions: Record<string, string> = pl.activeEngagementLabels;
 
   const selectedEngagement: string[] = multimodalData.activeEngagement || [];
   if (selectedEngagement.length > 0) {
-    addText('Active Engagement', 11, true);
+    addText(pl.activeEngagementTitle, 11, true);
     for (const id of selectedEngagement) {
       if (id === 'plenary') {
-        addChecklistItem('Have you designed plenary discussion activities?');
+        addChecklistItem(pl.checklistPlenary);
       } else if (id === 'peer-learning') {
-        addChecklistItem('Have you designed peer-learning interaction activities?');
+        addChecklistItem(pl.checklistPeerLearning);
       } else if (id === 'exercises') {
-        addChecklistItem('Have you designed practical exercises or applied tasks?');
+        addChecklistItem(pl.checklistExercises);
       } else if (id === 'exploration') {
-        addChecklistItem('Have you designed exploration and shared experience activities?');
+        addChecklistItem(pl.checklistExploration);
       } else if (id === 'reflection') {
-        addChecklistItem('Have you designed reflection activities?');
+        addChecklistItem(pl.checklistReflection);
       } else if (id === 'challenge-based') {
-        addChecklistItem('Have you designed challenge-based learning activities?');
+        addChecklistItem(pl.checklistChallengeBased);
       } else if (id === 'other') {
-        const otherText = multimodalData.activeEngagementOther || 'custom engagement';
-        addChecklistItem(`Have you designed your custom engagement method: "${otherText}"?`);
+        const otherText = multimodalData.activeEngagementOther || pl.customEngagementFallback;
+        addChecklistItem(pl.checklistCustomEngagement(otherText));
       }
     }
     yPos += 2;
   }
 
   // Application & Transfer
-  const transferOptions: Record<string, string> = {
-    'practice-tasks': 'Practice-oriented tasks',
-    'simulations': 'Simulations or scenarios',
-    'project-portfolio': 'Project or portfolio elements',
-    'real-world': 'Real-world or workplace-related activities',
-    'other': 'Other',
-  };
+  const transferOptions: Record<string, string> = pl.applicationLabels;
 
   const selectedTransfer: string[] = multimodalData.applicationTransfer || [];
   if (selectedTransfer.length > 0) {
-    addText('Application and Transfer', 11, true);
+    addText(pl.applicationAndTransferTitle, 11, true);
     for (const id of selectedTransfer) {
       if (id === 'practice-tasks') {
-        addChecklistItem('Have you designed practice-oriented tasks?');
+        addChecklistItem(pl.checklistPracticeTasks);
       } else if (id === 'simulations') {
-        addChecklistItem('Have you designed simulations or scenario-based activities?');
+        addChecklistItem(pl.checklistSimulations);
       } else if (id === 'project-portfolio') {
-        addChecklistItem('Have you included project or portfolio elements?');
+        addChecklistItem(pl.checklistProjectPortfolio);
       } else if (id === 'real-world') {
-        addChecklistItem('Have you designed real-world or workplace-related activities?');
+        addChecklistItem(pl.checklistRealWorld);
       } else if (id === 'other') {
-        const otherText = multimodalData.applicationTransferOther || 'custom application method';
-        addChecklistItem(`Have you designed your custom application method: "${otherText}"?`);
+        const otherText = multimodalData.applicationTransferOther || pl.customApplicationFallback;
+        addChecklistItem(pl.checklistCustomApplication(otherText));
       }
     }
   }
@@ -304,38 +252,17 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   // ==================
   // SECTION 3: ASSESSMENT FRAMEWORK (from Phase 3)
   // ==================
-  addText('3. Assessment Framework (from Phase 3)', 14, true, PRIMARY_COLOR);
+  addText(pl.section3Title, 14, true, PRIMARY_COLOR);
   yPos += 2;
 
   const assessmentData = data.data['3.6'] || {};
 
-  const ASSESSMENT_TYPE_LABELS: Record<string, string> = {
-    'written': 'Written',
-    'oral': 'Oral',
-    'combination': 'Combination of written and oral',
-  };
-  const INDIVIDUAL_GROUP_LABELS: Record<string, string> = {
-    'individual': 'Individual assessment',
-    'group': 'Group assessment',
-    'combination': 'Combination',
-  };
-  const DELIVERY_MODE_LABELS: Record<string, string> = {
-    'physical': 'Physical attendance required',
-    'online-possible': 'Online possible',
-    'fully-online': 'Fully online',
-  };
-  const ACTIVITY_TYPE_LABELS: Record<string, string> = {
-    'simulation': 'Simulation',
-    'portfolio': 'Portfolio with oral defence',
-    'case-based': 'Case-based assessment',
-    'project-based': 'Project-based assessment',
-    'practical-performance': 'Practical performance task',
-    'presentation': 'Presentation',
-    'observation-checklist': 'Observation checklist',
-    'other': 'Other',
-  };
+  const ASSESSMENT_TYPE_LABELS: Record<string, string> = pl.assessmentTypeLabels;
+  const INDIVIDUAL_GROUP_LABELS: Record<string, string> = pl.individualGroupLabels;
+  const DELIVERY_MODE_LABELS: Record<string, string> = pl.deliveryModeLabels;
+  const ACTIVITY_TYPE_LABELS: Record<string, string> = pl.activityTypeLabels;
 
-  addInfoBox('Your assessment framework', 'These are the assessment parameters you defined in Phase 3. Ensure your Phase 5 assessment design remains aligned with this framework.');
+  addInfoBox(pl.yourAssessmentFrameworkTitle, pl.yourAssessmentFrameworkContent);
   yPos += 2;
 
   const assessType = assessmentData.assessmentType;
@@ -344,32 +271,32 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   const actTypes: string[] = assessmentData.activityTypes || [];
 
   if (assessType) {
-    addText(`Assessment type: ${ASSESSMENT_TYPE_LABELS[assessType] || assessType}`, 10, true);
+    addText(`${pl.assessmentTypePrefix} ${ASSESSMENT_TYPE_LABELS[assessType] || assessType}`, 10, true);
   }
   if (indGroup) {
-    addText(`Format: ${INDIVIDUAL_GROUP_LABELS[indGroup] || indGroup}`, 10, true);
+    addText(`${pl.formatPrefix} ${INDIVIDUAL_GROUP_LABELS[indGroup] || indGroup}`, 10, true);
   }
   if (delivery) {
-    addText(`Delivery mode: ${DELIVERY_MODE_LABELS[delivery] || delivery}`, 10, true);
+    addText(`${pl.deliveryModePrefix} ${DELIVERY_MODE_LABELS[delivery] || delivery}`, 10, true);
   }
   if (actTypes.length > 0) {
-    addText(`Activity types: ${actTypes.map(t => ACTIVITY_TYPE_LABELS[t] || t).join(', ')}`, 10, true);
+    addText(`${pl.activityTypesPrefix} ${actTypes.map(t => ACTIVITY_TYPE_LABELS[t] || t).join(', ')}`, 10, true);
   }
   if (assessmentData.activityDescription) {
-    addText(`Description: ${assessmentData.activityDescription}`, 9, false, '#444444');
+    addText(`${pl.descriptionPrefix} ${assessmentData.activityDescription}`, 9, false, '#444444');
   }
 
   yPos += 4;
 
   // Assessment checklist items
-  addText('Assessment Design Checklist', 11, true);
-  addChecklistItem('Does your assessment design align with the assessment type defined above?');
-  addChecklistItem('Is the individual/group format correctly reflected in your assessment activities?');
-  addChecklistItem('Does the delivery mode match what was defined in Phase 3?');
+  addText(pl.assessmentDesignChecklistTitle, 11, true);
+  addChecklistItem(pl.checklistAlignAssessmentType);
+  addChecklistItem(pl.checklistIndividualGroupFormat);
+  addChecklistItem(pl.checklistDeliveryModeMatch);
   if (actTypes.length > 0) {
     for (const t of actTypes) {
       const label = ACTIVITY_TYPE_LABELS[t] || t;
-      addChecklistItem(`Have you developed the ${label.toLowerCase()} assessment activity?`);
+      addChecklistItem(pl.checklistDevelopedActivity(label.toLowerCase()));
     }
   }
 
@@ -381,7 +308,7 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   doc.setDrawColor(parseInt(PRIMARY_COLOR.slice(1, 3), 16), parseInt(PRIMARY_COLOR.slice(3, 5), 16), parseInt(PRIMARY_COLOR.slice(5, 7), 16));
   doc.line(margin, yPos, pageWidth - margin, yPos);
   yPos += 6;
-  addText('This checklist was auto-generated from your course design template. Use it as a working document during Phase 5 development.', 8, false, '#888888');
+  addText(pl.footerNote, 8, false, '#888888');
 
   // Save
   const sanitizedTitle = courseTitle.replace(/[^a-zA-Z0-9æøåÆØÅäöüÄÖÜ\s-]/g, '').trim().replace(/\s+/g, '_').slice(0, 40);

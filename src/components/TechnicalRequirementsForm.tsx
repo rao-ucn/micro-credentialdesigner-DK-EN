@@ -8,49 +8,51 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CourseType } from '@/types/course';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56bTranslations } from '@/lib/translations/forms56b';
 
-const accessibilityChecklist = [
+const getAccessibilityChecklist = (lt: typeof forms56bTranslations['en']) => [
   {
     key: 'multipleEngagement',
-    label: 'Does your learning material offer multiple means of engagement?',
+    label: lt.trChecklistMultipleEngagementLabel,
     link: 'https://www.cast.org/what-we-do/universal-design-for-learning/',
-    info: 'Examples: offering choice of topics or formats, using real-world cases, allowing different pacing, including interactive elements.',
+    info: lt.trChecklistMultipleEngagementInfo,
   },
   {
     key: 'multipleRepresentation',
-    label: 'Does your content provide multiple means of representation?',
+    label: lt.trChecklistMultipleRepresentationLabel,
     link: 'https://www.cast.org/what-we-do/universal-design-for-learning/',
-    info: 'Examples: combining text, video, audio, diagrams; providing captions or transcripts; using clear structure and visuals.',
+    info: lt.trChecklistMultipleRepresentationInfo,
   },
   {
     key: 'multipleAction',
-    label: 'Do learners have multiple means of action and expression?',
+    label: lt.trChecklistMultipleActionLabel,
     link: 'https://www.cast.org/what-we-do/universal-design-for-learning/',
-    info: 'Examples: allowing written, oral, or visual submissions; offering different tools for completing tasks; flexible formats for demonstrating learning.',
+    info: lt.trChecklistMultipleActionInfo,
   },
   {
     key: 'perceivable',
-    label: 'Is all information perceivable?',
+    label: lt.trChecklistPerceivableLabel,
     link: 'https://www.w3.org/WAI/standards-guidelines/wcag/',
-    info: 'Examples: captions on videos, transcripts for audio, alt-text for images, sufficient contrast, readable fonts, and documents that are OCR-processed and readable by assistive technologies.',
+    info: lt.trChecklistPerceivableInfo,
   },
   {
     key: 'operable',
-    label: 'Is the user interface fully operable?',
+    label: lt.trChecklistOperableLabel,
     link: 'https://www.w3.org/WAI/standards-guidelines/wcag/',
-    info: 'Examples: navigation via keyboard, clear and consistent interface elements, and use of established learning platforms (e.g. Teams, Moodle, Rise) that support standard accessibility features. Ensure that any additional tools or custom elements introduced do not reduce operability.',
+    info: lt.trChecklistOperableInfo,
   },
   {
     key: 'understandable',
-    label: 'Is the content understandable?',
+    label: lt.trChecklistUnderstandableLabel,
     link: 'https://www.w3.org/WAI/standards-guidelines/wcag/',
-    info: 'Examples: clear instructions, consistent layout, simple language, predictable navigation.',
+    info: lt.trChecklistUnderstandableInfo,
   },
   {
     key: 'robust',
-    label: 'Is the content robust and compatible with assistive technologies?',
+    label: lt.trChecklistRobustLabel,
     link: 'https://www.w3.org/WAI/standards-guidelines/wcag/',
-    info: 'Examples: compatibility with screen readers, proper HTML structure, use of standard formats.',
+    info: lt.trChecklistRobustInfo,
   },
 ];
 
@@ -67,7 +69,10 @@ export const TechnicalRequirementsForm = ({
   courseType = 'micro-credential',
   learningResources = []
 }: TechnicalRequirementsFormProps) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms56bTranslations[language];
+  const courseLabel = courseType === 'standalone' ? lt.trStandaloneLabel : lt.trMicroCredentialLabel;
+  const accessibilityChecklist = getAccessibilityChecklist(lt);
   
   const data = {
     platforms: value.platforms || [''],
@@ -118,7 +123,7 @@ export const TechnicalRequirementsForm = ({
       {/* Header with info icon */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold">Technical requirements and platform compatibility</h3>
+          <h3 className="text-lg font-semibold">{lt.trHeading}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -127,26 +132,26 @@ export const TechnicalRequirementsForm = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Technical requirements and accessibility</DialogTitle>
+                <DialogTitle>{lt.trDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="text-sm space-y-3">
                 <p>
-                  The purpose of this step is to confirm that all technical aspects of the {courseLabel} function reliably. Developers should ensure that the chosen platforms, tools and learning resources:
+                  {lt.trDialogIntro.replace('{courseLabel}', courseLabel)}
                 </p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>do not require unexpected costs for learners</li>
-                  <li>meet basic accessibility principles such as UDL and WCAG</li>
-                  <li>do not create barriers for participation</li>
+                  <li>{lt.trDialogBullet1}</li>
+                  <li>{lt.trDialogBullet2}</li>
+                  <li>{lt.trDialogBullet3}</li>
                 </ul>
                 <p>
-                  This confirmation prevents technical obstacles that may limit learning and engagement.
+                  {lt.trDialogOutro}
                 </p>
               </div>
             </DialogContent>
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          This step ensures that the {courseLabel} can be completed without technical barriers. The developer must identify which digital platforms and tools are used, whether any additional software costs apply, and whether all learning resources comply with basic accessibility principles.
+          {lt.trDescription.replace('{courseLabel}', courseLabel)}
         </p>
       </div>
 
@@ -154,7 +159,7 @@ export const TechnicalRequirementsForm = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Which digital learning platforms or external tools will be used?
+            {lt.trPlatformsLabel}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -164,11 +169,11 @@ export const TechnicalRequirementsForm = ({
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Digital platforms and tools</DialogTitle>
+                <DialogTitle>{lt.trPlatformsDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  List all digital learning platforms or external tools required for the {courseLabel} (e.g. Moodle, Teams, Canva, Rise, Miro, simulation tools).
+                  {lt.trPlatformsDialogText.replace('{courseLabel}', courseLabel)}
                 </p>
               </div>
             </DialogContent>
@@ -181,7 +186,7 @@ export const TechnicalRequirementsForm = ({
               <Input
                 value={platform}
                 onChange={(e) => handlePlatformChange(index, e.target.value)}
-                placeholder="Enter platform or tool name..."
+                placeholder={lt.trPlatformPlaceholder}
                 className="flex-1"
               />
               {data.platforms.length > 1 && (
@@ -209,7 +214,7 @@ export const TechnicalRequirementsForm = ({
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Add another platform/tool
+              {lt.trAddPlatform}
             </Button>
             
             {canCompletePlatforms && (
@@ -219,7 +224,7 @@ export const TechnicalRequirementsForm = ({
                 size="sm"
                 onClick={() => handleChange('platformsCompleted', true)}
               >
-                Complete
+                {lt.trComplete}
               </Button>
             )}
           </div>
@@ -229,7 +234,7 @@ export const TechnicalRequirementsForm = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                {completedPlatforms.length} platform{completedPlatforms.length !== 1 ? 's' : ''}/tool{completedPlatforms.length !== 1 ? 's' : ''} defined
+                {lt.trPlatformsDefined.replace(/{count}/g, String(completedPlatforms.length)).replace(/{plural}/g, completedPlatforms.length !== 1 ? 'e' : '')}
               </p>
               <Button
                 type="button"
@@ -238,7 +243,7 @@ export const TechnicalRequirementsForm = ({
                 onClick={() => handleChange('platformsCompleted', false)}
                 className="text-primary"
               >
-                Edit
+                {lt.trEdit}
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -256,7 +261,7 @@ export const TechnicalRequirementsForm = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Must learners purchase any software to complete the {courseLabel}?
+            {lt.trSoftwareLabel.replace('{courseLabel}', courseLabel)}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -266,11 +271,11 @@ export const TechnicalRequirementsForm = ({
             </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
-                <DialogTitle>Software purchase requirement</DialogTitle>
+                <DialogTitle>{lt.trSoftwareDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  If learners must pay for third-party software, specify it clearly and link it to the learning activities that require it.
+                  {lt.trSoftwareDialogText}
                 </p>
               </div>
             </DialogContent>
@@ -284,17 +289,17 @@ export const TechnicalRequirementsForm = ({
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="yes" id="software-yes" />
-            <Label htmlFor="software-yes" className="font-normal cursor-pointer">Yes</Label>
+            <Label htmlFor="software-yes" className="font-normal cursor-pointer">{lt.yes}</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="no" id="software-no" />
-            <Label htmlFor="software-no" className="font-normal cursor-pointer">No</Label>
+            <Label htmlFor="software-no" className="font-normal cursor-pointer">{lt.no}</Label>
           </div>
         </RadioGroup>
 
         {data.requiresSoftwarePurchase === 'yes' && data.platformsCompleted && completedPlatforms.length > 0 && (
           <div className="mt-4 space-y-3">
-            <Label className="text-sm font-medium">Select the platforms/tools requiring additional purchase:</Label>
+            <Label className="text-sm font-medium">{lt.trSelectPurchaseResources}</Label>
             <div className="space-y-2">
               {completedPlatforms.map((platform: string, index: number) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -314,7 +319,7 @@ export const TechnicalRequirementsForm = ({
 
         {data.requiresSoftwarePurchase === 'yes' && (!data.platformsCompleted || completedPlatforms.length === 0) && (
           <p className="text-sm text-muted-foreground mt-2">
-            Please complete the platforms/tools list above first.
+            {lt.trCompletePlatformsFirst}
           </p>
         )}
       </Card>
@@ -323,10 +328,10 @@ export const TechnicalRequirementsForm = ({
       <Card className="p-6 space-y-5">
         <div className="space-y-1">
           <Label className="text-base font-medium">
-            Accessibility and Universal Design checklist
+            {lt.trAccessibilityLabel}
           </Label>
           <p className="text-sm text-muted-foreground">
-            Confirm that your learning resources meet the following UDL and WCAG principles. All items must be answered.
+            {lt.trAccessibilityDescription}
           </p>
         </div>
 
@@ -360,11 +365,11 @@ export const TechnicalRequirementsForm = ({
                   </PopoverTrigger>
                   <PopoverContent className="w-72 text-sm">
                     <p>
-                      You can read more about this principle and how to apply it by following the link.
+                      {lt.trReadMoreInfo}
                     </p>
                     {item.link.includes('w3.org') && (
                       <p className="mt-1">
-                        You may also search for relevant keywords on the page (e.g. perceivable, understandable, assistive) to quickly find the specific guideline.
+                        {lt.trReadMoreW3}
                       </p>
                     )}
                     <a
@@ -373,7 +378,7 @@ export const TechnicalRequirementsForm = ({
                       rel="noopener noreferrer"
                       className="text-primary underline mt-2 inline-block"
                     >
-                      Read more →
+                      {lt.trReadMoreLink}
                     </a>
                   </PopoverContent>
                 </Popover>
@@ -385,11 +390,11 @@ export const TechnicalRequirementsForm = ({
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="yes" id={`${item.key}-yes`} />
-                  <Label htmlFor={`${item.key}-yes`} className="font-normal cursor-pointer">Yes</Label>
+                  <Label htmlFor={`${item.key}-yes`} className="font-normal cursor-pointer">{lt.yes}</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="no" id={`${item.key}-no`} />
-                  <Label htmlFor={`${item.key}-no`} className="font-normal cursor-pointer">No</Label>
+                  <Label htmlFor={`${item.key}-no`} className="font-normal cursor-pointer">{lt.no}</Label>
                 </div>
               </RadioGroup>
             </div>

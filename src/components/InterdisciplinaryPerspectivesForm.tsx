@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Info, Lightbulb, Plus, X } from 'lucide-react';
 import OverallAimForm from './OverallAimForm';
 import LearningOutcomesForm from './LearningOutcomesForm';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 interface LearningOutcome {
   id: string;
@@ -56,7 +58,9 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
   onBreakSingleSourceIntegrity,
   standaloneSources,
 }) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
 
   const [perspectives, setPerspectives] = useState<string[]>(
     data.perspectives && data.perspectives.length > 0 ? data.perspectives : ['']
@@ -93,7 +97,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
 
   const removePerspective = (index: number) => {
     if (perspectives.length > 1) {
-      const shouldContinue = window.confirm('Are you sure you want to remove this perspective?');
+      const shouldContinue = window.confirm(lt.ipRemoveConfirm);
       if (!shouldContinue) return;
 
       const updated = perspectives.filter((_, i) => i !== index);
@@ -110,9 +114,9 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
     <div className="space-y-6">
       {/* Header - Theme introduction metatext */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Learning aims and objectives</h3>
+        <h3 className="text-lg font-semibold">{lt.ipTitle}</h3>
         <p className="text-sm text-muted-foreground">
-          Learning aims and objectives define the direction and purpose of the {courseLabel}. They clarify what the learner is expected to achieve and why these aims matter in relation to the identified labour-market need. This theme supports developers in formulating aims that are coherent, relevant and aligned with the expected learning outcomes. Each item in this theme guides the developer through a structured reflection process, ensuring that choices are transparent and grounded in documented needs.
+          {lt.ipIntro.replace(/{course}/g, courseLabel)}
         </p>
       </div>
 
@@ -121,7 +125,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Label className="text-base font-medium">
-              Are there any interdisciplinary or cross-sector perspectives that influence the design of this {courseLabel}?
+              {lt.ipQLabel.replace(/{course}/g, courseLabel)}
             </Label>
             <Dialog>
               <DialogTrigger asChild>
@@ -131,17 +135,17 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Why?</DialogTitle>
+                  <DialogTitle>{lt.ipWhy}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm space-y-3">
                   <p>
-                    This step encourages you to explore whether the competence need extends beyond a single discipline or sector. Interdisciplinary or cross-sector perspectives can influence how the relevance, scope or ambition of the {courseLabel} should be framed.
+                    {lt.ipWhyText1.replace(/{course}/g, courseLabel)}
                   </p>
                   <p>
-                    Considering these perspectives helps clarify whether learners operate in environments influenced by multiple fields or whether the competence has broader value across domains.
+                    {lt.ipWhyText2}
                   </p>
                   <p>
-                    It is fully acceptable if your investigation finds no meaningful perspectives. Documenting either outcome supports transparency in the development process and strengthens the justification for the chosen aims.
+                    {lt.ipWhyText3}
                   </p>
                 </div>
               </DialogContent>
@@ -154,22 +158,22 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Inspiration</DialogTitle>
+                  <DialogTitle>{lt.ipInspiration}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Review labour-market or sector reports to identify challenges shared across disciplines.</li>
-                    <li>Consult practitioners in neighbouring fields to explore overlaps in tasks, tools or knowledge areas.</li>
-                    <li>Examine job profiles in related sectors to identify possible intersections.</li>
-                    <li>Consider whether technological developments, regulatory changes or collaborative practices influence the competence need across sectors.</li>
-                    <li>If your investigation does not reveal relevant perspectives, select the option indicating that none appeared feasible at this time.</li>
+                    <li>{lt.ipInspireItem1}</li>
+                    <li>{lt.ipInspireItem2}</li>
+                    <li>{lt.ipInspireItem3}</li>
+                    <li>{lt.ipInspireItem4}</li>
+                    <li>{lt.ipInspireItem5}</li>
                   </ul>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
           <p className="text-sm text-muted-foreground">
-            Identify whether interdisciplinary or cross-sector perspectives are relevant for this learning offer. If relevant perspectives exist, describe how they will be considered in the development of the {courseLabel}. If your investigation shows that no relevant perspectives exist, select the option indicating that none were currently feasible.
+            {lt.ipHelp.replace(/{course}/g, courseLabel)}
           </p>
         </div>
 
@@ -182,7 +186,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
           <div className="flex items-center space-x-3">
             <RadioGroupItem value="yes" id="perspectives-yes" />
             <Label htmlFor="perspectives-yes" className="font-normal cursor-pointer">
-              Yes – relevant perspectives have been identified
+              {lt.ipYesLabel}
             </Label>
           </div>
 
@@ -194,7 +198,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
                   <Textarea
                     value={perspective}
                     onChange={(e) => handlePerspectiveChange(index, e.target.value)}
-                    placeholder="Enter a perspective, sector or role"
+                    placeholder={lt.ipPerspectivePlaceholder}
                     className="flex-1 min-h-[80px]"
                   />
                   {perspectives.length > 1 && (
@@ -218,7 +222,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
                 className="gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Add another perspective
+                {lt.ipAddPerspective}
               </Button>
             </div>
           )}
@@ -226,7 +230,7 @@ const InterdisciplinaryPerspectivesForm: React.FC<InterdisciplinaryPerspectivesF
           <div className="flex items-center space-x-3">
             <RadioGroupItem value="none" id="perspectives-none" />
             <Label htmlFor="perspectives-none" className="font-normal cursor-pointer">
-              No relevant interdisciplinary or cross-sector perspectives identified at this stage
+              {lt.ipNoneLabel}
             </Label>
           </div>
         </RadioGroup>

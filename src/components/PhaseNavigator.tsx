@@ -1,6 +1,8 @@
 import { Phase, CourseType } from '@/types/course';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 interface PhaseNavigatorProps {
   phases: Phase[];
@@ -14,11 +16,13 @@ interface PhaseNavigatorProps {
 }
 
 export function PhaseNavigator({ phases, currentPhaseId, currentItemIndex, courseType, onPhaseSelect, completedPhases, completedSubPhases, courseData }: PhaseNavigatorProps) {
+  const { language } = useLanguage();
+  const lt = coreuiTranslations[language];
   const currentPhase = phases.find(p => p.id === currentPhaseId);
   const isMCType = courseType === 'micro-credential' || courseType === 'composite-micro-credential';
   const visibleSubPhases = currentPhase?.subPhases?.filter(sp => isMCType || !sp.mcOnly) ?? [];
   return (
-    <nav className="border-b border-border bg-card" aria-label="Course phases">
+    <nav className="border-b border-border bg-card" aria-label={lt.coursePhasesAriaLabel}>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between gap-2">
           {phases.map((phase, phaseIdx) => {
@@ -57,7 +61,7 @@ export function PhaseNavigator({ phases, currentPhaseId, currentItemIndex, cours
                           !isActive && 'text-muted-foreground'
                         )}
                       >
-                        {`Phase ${phase.number} – ${phase.id === 'phase5' && courseType === 'standalone' ? 'Learning processes' : phase.title}`}
+                        {`${lt.phaseLabel} ${phase.number} – ${phase.id === 'phase5' && courseType === 'standalone' ? lt.learningProcessesLabel : phase.title}`}
                       </div>
                     </div>
                   </div>

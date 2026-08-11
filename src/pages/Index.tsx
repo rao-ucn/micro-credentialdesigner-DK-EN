@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CourseData, CourseType, StandaloneSource } from '@/types/course';
-import { phases } from '@/data/phases';
+import { getPhases } from '@/data/phases';
 import { PhaseNavigator } from '@/components/PhaseNavigator';
 import { ItemForm } from '@/components/ItemForm';
 import { generateSecurityCode, hashSecurityCode, verifySecurityCode } from '@/lib/crypto';
@@ -21,6 +21,7 @@ import { CompositeUploadForm } from '@/components/CompositeUploadForm';
 import { NewMcUploadForm } from '@/components/NewMcUploadForm';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { indexPageTranslations } from '@/lib/translations/indexPage';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +38,9 @@ const isMCType = (ct: CourseType) => ct === 'micro-credential' || ct === 'compos
 
 const Index = () => {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lt = indexPageTranslations[language];
+  const phases = getPhases(language);
   const [welcomeStep, setWelcomeStep] = useState<'initial' | 'courseType' | 'compositeUpload' | 'newFromFileUpload' | 'loadExisting' | null>('initial');
   const [loadDocumentId, setLoadDocumentId] = useState('');
   
@@ -250,11 +253,11 @@ const Index = () => {
     setShowSecurityCodeDialog(true);
 
     toast({
-      title: 'New Micro-Credential Created',
+      title: lt.newMcCreatedTitle,
       description:
         sources.length === 1
-          ? 'A brand-new MC was created based on the uploaded file.'
-          : `A brand-new MC was created by merging ${sources.length} uploaded files.`,
+          ? lt.newMcCreatedSingleDesc
+          : lt.newMcCreatedMultiDesc.replace('{count}', String(sources.length)),
     });
   };
 
@@ -716,8 +719,8 @@ const Index = () => {
     const normalizedCode = inputCode.replace(/-/g, '').toUpperCase();
     if (!courseData || !inputCode || normalizedCode.length !== 12) {
       toast({
-        title: 'Invalid Code',
-        description: 'Please enter your 12-character security code (e.g., ABCD-EFGH-JKMN)',
+        title: lt.invalidCodeTitle,
+        description: lt.invalidCodeDesc,
         variant: 'destructive',
       });
       return;
@@ -760,8 +763,8 @@ const Index = () => {
         setIsImportedDocument(false);
         
         toast({
-          title: 'Unlocked & Saved',
-          description: 'Document imported and saved successfully',
+          title: lt.unlockedSavedTitle,
+          description: lt.unlockedSavedDesc,
         });
       } else {
         // Normal unlock from localStorage
@@ -772,14 +775,14 @@ const Index = () => {
         setInputCode('');
         
         toast({
-          title: 'Unlocked',
-          description: 'Document unlocked successfully',
+          title: lt.unlockedTitle,
+          description: lt.unlockedDesc,
         });
       }
     } catch (error) {
       toast({
-        title: 'Incorrect Code',
-        description: 'The security code is incorrect',
+        title: lt.incorrectCodeTitle,
+        description: lt.incorrectCodeDesc,
         variant: 'destructive',
       });
     } finally {
@@ -801,13 +804,13 @@ const Index = () => {
       setCourseData(updated);
       
       toast({
-        title: 'Saved',
-        description: 'Document saved successfully',
+        title: lt.savedTitle,
+        description: lt.savedDesc,
       });
     } catch (error) {
       toast({
-        title: 'Save Failed',
-        description: 'Failed to save document',
+        title: lt.saveFailedTitle,
+        description: lt.saveFailedDesc,
         variant: 'destructive',
       });
     }
@@ -836,8 +839,8 @@ const Index = () => {
     URL.revokeObjectURL(url);
 
     toast({
-      title: 'Exported',
-      description: 'Document exported as JSON',
+      title: lt.exportedTitle,
+      description: lt.exportedDesc,
     });
   };
 
@@ -956,8 +959,8 @@ const Index = () => {
         }
       } catch (error) {
         toast({
-          title: 'Import Failed',
-          description: 'Invalid JSON file. Make sure all selected files are valid export files.',
+          title: lt.importFailedTitle,
+          description: lt.importFailedDesc,
           variant: 'destructive',
         });
       } finally {
@@ -976,8 +979,8 @@ const Index = () => {
       const reuseCondition = pendingImport.data?.['6.5']?.contentReuseData?.reuseCondition;
       if (reuseCondition === 'no') {
         toast({
-          title: 'Reuse Restricted',
-          description: 'This file cannot be used to build a new micro-credential because reuse of learning content is marked as "No" within the alliance.',
+          title: lt.reuseRestrictedTitle,
+          description: lt.reuseRestrictedDesc,
           variant: 'destructive',
         });
         setPendingImport(null);
@@ -1023,8 +1026,8 @@ const Index = () => {
       setShowSecurityCodeDialog(true);
 
       toast({
-        title: 'New Micro-Credential Created',
-        description: 'A brand-new MC was created based on the uploaded file with a unique ID and security code.',
+        title: lt.newMcCreatedTitle,
+        description: lt.newMcFromUploadDesc,
       });
       return;
     }
@@ -1035,8 +1038,8 @@ const Index = () => {
     setWelcomeStep(null);
     setPendingImport(null);
     toast({
-      title: 'Imported',
-      description: 'Document imported. Please enter your security code to unlock and save locally.',
+      title: lt.importedTitle,
+      description: lt.importedDesc,
     });
   };
 
@@ -1047,16 +1050,16 @@ const Index = () => {
           <AlertDialogTitle>
             {importMode === 'new-from-file'
               ? ((pendingImport as any)?._mergedSourceCount > 1
-                  ? `Create new MC from ${(pendingImport as any)._mergedSourceCount} files?`
-                  : 'Create new MC from this file?')
-              : 'Import detected'}
+                  ? lt.createNewMcFromFilesTitle.replace('{count}', String((pendingImport as any)._mergedSourceCount))
+                  : lt.createNewMcFromFileTitle)
+              : lt.importDetectedTitle}
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-2 pt-2">
               {(pendingImport as any)?._mergedSourceCount > 1 ? (
                 <>
                   <p>
-                    We detected <strong>{(pendingImport as any)._mergedSourceCount} files</strong> that will be merged into one new Micro-Credential.
+                    {lt.detectedFilesMergedPrefix} <strong>{(pendingImport as any)._mergedSourceCount} {lt.standaloneCourseLabel ? '' : ''}</strong>{lt.detectedFilesMergedSuffix}
                   </p>
                   <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
                     {((pendingImport as any)._mergedSourceNames || []).map((n: string, i: number) => (
@@ -1067,40 +1070,40 @@ const Index = () => {
               ) : (
                 <>
                   <p>
-                    We detected a <strong>
-                      {pendingImport?.courseType === 'standalone' && 'Standalone Course'}
-                      {pendingImport?.courseType === 'micro-credential' && 'Micro-Credential'}
-                      {pendingImport?.courseType === 'composite-micro-credential' && 'Composite Micro-Credential'}
-                    </strong> in this file.
+                    {lt.detectedTypePrefix} <strong>
+                      {pendingImport?.courseType === 'standalone' && lt.standaloneCourseLabel}
+                      {pendingImport?.courseType === 'micro-credential' && lt.microCredentialLabel}
+                      {pendingImport?.courseType === 'composite-micro-credential' && lt.compositeMcLabel}
+                    </strong> {lt.detectedTypeSuffix}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Source Document ID: <span className="font-mono">{pendingImport?.documentId}</span>
+                    {lt.sourceDocumentIdLabel} <span className="font-mono">{pendingImport?.documentId}</span>
                   </p>
                 </>
               )}
               {importMode === 'new-from-file' ? (
                 <div className="text-sm space-y-2 rounded-md border border-primary/30 bg-primary/5 p-3">
                   <p className="font-semibold text-foreground">
-                    A brand-new Micro-Credential will be created.
+                    {lt.newMcWillBeCreated}
                   </p>
                   <p className="text-muted-foreground">
                     {(pendingImport as any)?._mergedSourceCount > 1
-                      ? 'All uploaded files will be merged into a single editable Micro-Credential. Lists (learning outcomes, activities, etc.) are combined; for non-list fields the first file\'s values are used. A new unique document ID and security code will be generated. The original files are not modified.'
-                      : 'A new unique document ID and a new security code will be generated. The original file is not modified. To keep editing the same document instead, cancel and use Continue from a JSON file.'}
+                      ? lt.mergeFilesNote
+                      : lt.singleFileNote}
                   </p>
                 </div>
               ) : (
                 <p className="text-sm">
-                  Continue editing this document? You'll be asked for the security code on the next screen.
+                  {lt.continueEditingQuestion}
                 </p>
               )}
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setPendingImport(null)}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => setPendingImport(null)}>{lt.cancel}</AlertDialogCancel>
           <AlertDialogAction onClick={confirmImport}>
-            {importMode === 'new-from-file' ? 'Create new MC' : 'Continue'}
+            {importMode === 'new-from-file' ? lt.createNewMc : lt.continueLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1111,37 +1114,33 @@ const Index = () => {
     <AlertDialog open={!!overwriteWarning} onOpenChange={(open) => { if (!open) setOverwriteWarning(null); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>A document with this ID is already saved</AlertDialogTitle>
+          <AlertDialogTitle>{lt.documentAlreadySavedTitle}</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-3 text-sm">
               <p>
-                Document ID <strong>{overwriteWarning?.data.documentId}</strong> is already
-                saved on this device.
+                {lt.docIdSavedPrefix} <strong>{overwriteWarning?.data.documentId}</strong> {lt.docIdSavedSuffix}
               </p>
               <p>
-                Your uploaded file was last updated{' '}
+                {lt.lastUpdatedPrefix}{' '}
                 <strong>
                   {overwriteWarning?.data.updatedAt
                     ? new Date(overwriteWarning.data.updatedAt).toLocaleString()
-                    : 'unknown'}
+                    : lt.unknownWord}
                 </strong>.
               </p>
               <p>
-                If these are different versions of the same document, overwriting will{' '}
-                <strong>permanently replace</strong> the saved version with your file.
+                {lt.differentVersionsPrefix}{' '}
+                <strong>{lt.permanentlyReplace}</strong> {lt.differentVersionsSuffix}
               </p>
               <p>
-                Alternatively, you can continue with a <strong>new ID</strong> — this saves
-                your uploaded file as a new document, equivalent to creating a new
-                micro-credential based on the uploaded file. The saved version is left
-                untouched.
+                {lt.alternativelyPrefix} <strong>{lt.newIdWord}</strong> {lt.alternativelySuffix}
               </p>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">
           <AlertDialogCancel onClick={() => setOverwriteWarning(null)}>
-            Cancel
+            {lt.cancel}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={async () => {
@@ -1158,20 +1157,20 @@ const Index = () => {
                 setIsImportedDocument(false);
                 setOverwriteWarning(null);
                 toast({
-                  title: 'Saved as new document',
-                  description: `Your file was saved with a new ID: ${newId}. The saved version was not changed.`,
+                  title: lt.savedAsNewTitle,
+                  description: lt.savedAsNewDesc.replace('{newId}', String(newId)),
                 });
               } catch (e) {
                 console.error('Save as new document failed:', e);
                 toast({
-                  title: 'Save failed',
-                  description: e instanceof Error ? e.message : 'Could not save as a new document.',
+                  title: lt.saveFailedGenericTitle,
+                  description: e instanceof Error ? e.message : lt.saveAsNewFailedDesc,
                   variant: 'destructive',
                 });
               }
             }}
           >
-            Continue with new ID
+            {lt.continueWithNewId}
           </AlertDialogAction>
           <AlertDialogAction
             onClick={async () => {
@@ -1185,20 +1184,20 @@ const Index = () => {
                 setIsImportedDocument(false);
                 setOverwriteWarning(null);
                 toast({
-                  title: 'Saved version overwritten',
-                  description: 'The saved document was replaced with your uploaded file.',
+                  title: lt.overwrittenTitle,
+                  description: lt.overwrittenDesc,
                 });
               } catch (e) {
                 toast({
-                  title: 'Save failed',
-                  description: 'Could not overwrite the saved version.',
+                  title: lt.saveFailedGenericTitle,
+                  description: lt.overwriteFailedDesc,
                   variant: 'destructive',
                 });
               }
             }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Overwrite saved version
+            {lt.overwriteSavedVersion}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1224,16 +1223,16 @@ const Index = () => {
         ...courseData,
         displaySecurityCode: securityCode
       };
-      await generatePDF(dataForPDF);
+      await generatePDF(dataForPDF, language);
       toast({
-        title: 'PDF Generated',
-        description: 'Your course design has been exported as PDF',
+        title: lt.pdfGeneratedTitle,
+        description: lt.pdfGeneratedDesc,
       });
     } catch (error) {
       console.error('PDF generation error:', error);
       toast({
-        title: 'PDF Generation Failed',
-        description: error instanceof Error ? error.message : 'Failed to generate PDF',
+        title: lt.pdfFailedTitle,
+        description: error instanceof Error ? error.message : lt.pdfFailedDescFallback,
         variant: 'destructive',
       });
     }
@@ -1251,8 +1250,8 @@ const Index = () => {
     setShowDeleteDialog(false);
     
     toast({
-      title: 'Deleted',
-      description: 'Local copy deleted',
+      title: lt.deletedTitle,
+      description: lt.deletedDesc,
     });
   };
 
@@ -2054,8 +2053,8 @@ const Index = () => {
                     const exists = await documentExists(loadDocumentId.trim());
                     if (!exists) {
                       toast({
-                        title: 'Document Not Found',
-                        description: 'No document with this ID exists in local storage. If you have a JSON export file, use "Import JSON" instead.',
+                        title: lt.documentNotFoundTitle,
+                        description: lt.documentNotFoundDesc,
                         variant: 'destructive',
                       });
                       return;
@@ -2071,13 +2070,13 @@ const Index = () => {
                       setLoadDocumentId('');
                       
                       toast({
-                        title: 'Document Loaded',
-                        description: 'Your document has been loaded successfully',
+                        title: lt.documentLoadedTitle,
+                        description: lt.documentLoadedDesc,
                       });
                     } catch (error) {
                       toast({
-                        title: 'Incorrect Code',
-                        description: 'The security code is incorrect',
+                        title: lt.incorrectCodeTitle,
+                        description: lt.incorrectCodeDesc,
                         variant: 'destructive',
                       });
                     }
@@ -2087,11 +2086,11 @@ const Index = () => {
                   disabled={!loadDocumentId.trim() || inputCode.replace(/-/g, '').length !== 12}
                 >
                   <Unlock className="mr-2 h-5 w-5" />
-                  Load Document
+                  {lt.loadDocumentButton}
                 </Button>
 
                 <Button onClick={() => { setWelcomeStep('initial'); setLoadDocumentId(''); setInputCode(''); }} variant="outline" className="w-full">
-                  Back
+                  {lt.backButton}
                 </Button>
               </div>
             )}
@@ -2101,21 +2100,21 @@ const Index = () => {
 
 
                 <div>
-                  <Label className="text-lg font-semibold mb-4 block text-primary">Choose what fits you</Label>
+                  <Label className="text-lg font-semibold mb-4 block text-primary">{lt.chooseWhatFitsYou}</Label>
                   <RadioGroup value={selectedCourseType || ''} onValueChange={(value) => setSelectedCourseType(value as CourseType)} className="gap-8">
 
                     {/* Section 1 — Create new from scratch */}
                     <div className="space-y-3">
                       <div className="text-sm font-medium text-muted-foreground">
-                        Create new from scratch
+                        {lt.createFromScratch}
                       </div>
                       <Card className="p-4 cursor-pointer hover:border-primary hover:shadow-[0_0_0_2px_hsl(var(--primary)/0.15)] transition-all duration-200">
                         <div className="flex items-start space-x-3">
                           <RadioGroupItem value="standalone" id="standalone" className="mt-1" />
                           <Label htmlFor="standalone" className="cursor-pointer flex-1 space-y-1">
-                            <div className="font-medium text-base">Standalone Course</div>
+                            <div className="font-medium text-base">{lt.standaloneTitle}</div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              A simple learning offer without formal assessment (non-credit bearing).
+                              {lt.standaloneDesc}
                             </div>
                           </Label>
                         </div>
@@ -2125,9 +2124,9 @@ const Index = () => {
                         <div className="flex items-start space-x-3">
                           <RadioGroupItem value="micro-credential" id="micro-credential" className="mt-1" />
                           <Label htmlFor="micro-credential" className="cursor-pointer flex-1 space-y-1">
-                            <div className="font-medium text-base">Micro-Credential</div>
+                            <div className="font-medium text-base">{lt.microCredentialTitle}</div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              A complete, credit-bearing offer with formal assessment and EU metadata.
+                              {lt.microCredentialDesc}
                             </div>
                           </Label>
                         </div>
@@ -2137,7 +2136,7 @@ const Index = () => {
                     {/* Section 2 — Build a new MC based on existing work */}
                     <div className="space-y-3">
                       <div className="text-sm font-medium text-muted-foreground">
-                        Build a new Micro-Credential based on existing standalone courses
+                        {lt.buildOnExisting}
                       </div>
                       <Card className="p-4 cursor-pointer hover:border-primary hover:shadow-[0_0_0_2px_hsl(var(--primary)/0.15)] transition-all duration-200">
                         <div className="flex items-start space-x-3">
@@ -2145,10 +2144,10 @@ const Index = () => {
                           <Label htmlFor="new-from-file" className="cursor-pointer flex-1 space-y-1">
                             <div className="font-medium text-base flex items-center gap-2">
                               <FileText className="h-4 w-4 text-primary" />
-                              New Micro-Credential based on one or multiple existing files
+                              {lt.newMcFromFilesTitle}
                             </div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              Upload one or more existing course or MC files as a starting point. All accepted files will be merged into <strong>one new Micro-Credential with one associated standalone element</strong>, with a new unique ID and security code — every field can be freely edited afterwards. The original files are not modified. Files marked with <strong>No</strong> under reuse of learning content within the alliance cannot be loaded and will be skipped automatically.
+                              {lt.newMcFromFilesDesc.split('{bold1}')[0]}<strong>{lt.newMcFromFilesBold1}</strong>{lt.newMcFromFilesDesc.split('{bold1}')[1].split('{bold2}')[0]}<strong>{lt.newMcFromFilesBold2}</strong>{lt.newMcFromFilesDesc.split('{bold2}')[1]}
                             </div>
                           </Label>
                         </div>
@@ -2160,10 +2159,10 @@ const Index = () => {
                           <Label htmlFor="composite-mc" className="cursor-pointer flex-1 space-y-1">
                             <div className="font-medium text-base flex items-center gap-2">
                               <Layers className="h-4 w-4 text-primary" />
-                              Composite Micro-Credential (combine 2+ standalone courses)
+                              {lt.compositeMcTitle}
                             </div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              Combine at least two existing standalone courses into a brand-new micro-credential. A new unique ID and security code are generated.
+                              {lt.compositeMcDesc}
                             </div>
                           </Label>
                         </div>
@@ -2174,38 +2173,38 @@ const Index = () => {
 
                 {selectedCourseType && selectedCourseType !== 'composite-micro-credential' && (selectedCourseType as string) !== '__import__' && (selectedCourseType as string) !== '__new_from_file__' && (
                   <Button onClick={createNewDocument} className="w-full" size="lg">
-                    Continue
+                    {lt.continueButton}
                   </Button>
                 )}
 
                 {selectedCourseType === 'composite-micro-credential' && (
                   <Button onClick={() => setWelcomeStep('compositeUpload')} className="w-full" size="lg">
-                    Continue to multiple file uploads
+                    {lt.continueToMultiUpload}
                   </Button>
                 )}
 
                 {(selectedCourseType as string) === '__import__' && (
                   <Button onClick={() => handleImport('continue')} className="w-full" size="lg">
                     <Upload className="mr-2 h-5 w-5" />
-                    Choose JSON File to Continue
+                    {lt.chooseJsonToContinue}
                   </Button>
                 )}
 
                 {(selectedCourseType as string) === '__new_from_file__' && (
                   <Button onClick={() => setWelcomeStep('newFromFileUpload')} className="w-full" size="lg">
                     <Upload className="mr-2 h-5 w-5" />
-                    Continue to file uploads
+                    {lt.continueToFileUploads}
                   </Button>
                 )}
 
                 {/* Footer — pointer back to landing page for continuing existing work */}
                 <div className="pt-6 mt-2 border-t border-border space-y-3">
                   <div className="text-sm font-medium text-muted-foreground">
-                    Continue existing work?
+                    {lt.continueExistingWork}
                   </div>
                   <div className="p-4 rounded-lg bg-muted/40 text-sm text-muted-foreground">
                     <p className="mb-3 leading-relaxed">
-                      This screen is for starting something new. To continue working on an existing document, go back to the welcome screen and use <span className="text-foreground">Load Existing Document</span>.
+                      {lt.continueExistingWorkDesc.split('{loadExisting}')[0]}<span className="text-foreground">{lt.loadExistingDocumentLabel}</span>{lt.continueExistingWorkDesc.split('{loadExisting}')[1]}
                     </p>
                     <Button
                       variant="outline"
@@ -2213,7 +2212,7 @@ const Index = () => {
                       onClick={() => { setSelectedCourseType(null); setWelcomeStep('initial'); }}
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
-                      Back to welcome screen
+                      {lt.backToWelcomeScreen}
                     </Button>
                   </div>
                 </div>
@@ -2251,18 +2250,18 @@ const Index = () => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Document Locked</h2>
+            <h2 className="text-2xl font-bold mb-2">{lt.documentLocked}</h2>
             <p className="text-muted-foreground text-sm">
-              Enter your 12-character security code to unlock
+              {lt.enterCodeToUnlock}
             </p>
             <p className="text-xs text-muted-foreground mt-2">
-              Document ID: {courseData.documentId.slice(0, 8)}...
+              {lt.documentIdLabel} {courseData.documentId.slice(0, 8)}...
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="code">Security Code</Label>
+              <Label htmlFor="code">{lt.securityCodeLabel}</Label>
               <Input
                 id="code"
                 type="text"
@@ -2276,7 +2275,7 @@ const Index = () => {
                 disabled={isUnlocking}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Find your code on your PDF or JSON export
+                {lt.findCodeHint}
               </p>
             </div>
 
@@ -2284,7 +2283,7 @@ const Index = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Verifying code and loading document…</span>
+                  <span>{lt.verifyingCode}</span>
                 </div>
                 <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-primary/20">
                   <div className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-primary animate-[indeterminate_1.2s_ease-in-out_infinite]" />
@@ -2296,18 +2295,18 @@ const Index = () => {
               {isUnlocking ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Unlocking…
+                  {lt.unlocking}
                 </>
               ) : (
                 <>
                   <Unlock className="mr-2 h-5 w-5" />
-                  Unlock
+                  {lt.unlockButton}
                 </>
               )}
             </Button>
 
             <Button onClick={() => { sessionStorage.removeItem(SESSION_KEY); setCourseData(null); setIsLocked(true); setWelcomeStep('initial'); }} variant="outline" className="w-full" disabled={isUnlocking}>
-              Cancel
+              {lt.cancelButton}
             </Button>
           </div>
         </Card>
@@ -2321,7 +2320,7 @@ const Index = () => {
               <div className="flex items-center gap-3">
                 <Lock className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Security Code (save this)</p>
+                  <p className="text-xs text-muted-foreground mb-1">{lt.securityCodeSaveThis}</p>
                   <p className="font-mono font-semibold text-sm">{securityCode}</p>
                 </div>
               </div>
@@ -2498,18 +2497,18 @@ const Index = () => {
         {courseData.currentPhaseId === 'phase4' && currentItem?.id === '4.1' && (
           <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-semibold text-primary mb-1.5">Topics and skills</h3>
+              <h3 className="text-sm font-semibold text-primary mb-1.5">{lt.topicsAndSkillsTitle}</h3>
               <div className="text-sm text-muted-foreground space-y-2">
-                <p>Topics and skills define the core subject areas learners must engage with to achieve the learning outcomes.</p>
-                <p>In this step, you identify what must be taught in order for learners to do what the learning outcomes require.</p>
-                <p>This prevents gaps in content design and ensures transparency, coherence and constructive alignment across the micro-credential.</p>
+                <p>{lt.topicsAndSkillsP1}</p>
+                <p>{lt.topicsAndSkillsP2}</p>
+                <p>{lt.topicsAndSkillsP3}</p>
               </div>
             </div>
             <hr className="border-primary/20" />
             <div>
-              <h3 className="text-sm font-semibold text-primary mb-1.5">📌 Forward reference – Meeting learner needs</h3>
+              <h3 className="text-sm font-semibold text-primary mb-1.5">{lt.forwardRefTitle}</h3>
               <p className="text-sm text-muted-foreground">
-                As you design content and learning activities in this phase, keep in mind that in Phase 6 you will be asked to describe how learners are expected to engage with the course — including flexibility, pacing, and self-organisation. The decisions you make here will directly inform that section.
+                {lt.forwardRefDesc}
               </p>
             </div>
           </div>
@@ -2562,7 +2561,7 @@ const Index = () => {
               })()}
             >
               <ChevronLeft className="mr-2 h-5 w-5" />
-              Previous Item
+              {lt.previousItem}
             </Button>
 
             <div className="flex items-center gap-3">
@@ -2573,7 +2572,7 @@ const Index = () => {
                   variant="outline"
                   size="lg"
                 >
-                  Come back later
+                  {lt.comeBackLater}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               )}
@@ -2585,7 +2584,7 @@ const Index = () => {
                   size="lg"
                   disabled={!isCurrentItemValid()}
                 >
-                  Complete Design
+                  {lt.completeDesign}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               ) : (
@@ -2595,7 +2594,7 @@ const Index = () => {
                   size="lg"
                   disabled={!isCurrentItemValid()}
                 >
-                  Next Item
+                  {lt.nextItem}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               )}
@@ -2608,15 +2607,15 @@ const Index = () => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Local Copy?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.deleteLocalCopyTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the local copy of this document. Make sure you have exported it as JSON if you want to keep a backup.
+              {lt.deleteLocalCopyDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{lt.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              {lt.deleteButton}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -2626,41 +2625,41 @@ const Index = () => {
       <AlertDialog open={showSecurityCodeDialog} onOpenChange={setShowSecurityCodeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Document Created</AlertDialogTitle>
+            <AlertDialogTitle>{lt.documentCreatedTitle}</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="space-y-4">
                 <p>
-                  You are now starting the development of a{' '}
+                  {lt.startingDevelopmentPrefix}{' '}
                   <span className="font-semibold">
-                    {courseData?.courseType === 'micro-credential' ? 'Micro-Credential' : 'Standalone Course'}
+                    {courseData?.courseType === 'micro-credential' ? lt.microCredentialLabel : lt.standaloneCourseLabel}
                   </span>.
                 </p>
                 <div className="bg-muted/50 border border-border rounded-lg p-4">
-                  <p className="font-semibold mb-2">Your security code is:</p>
+                  <p className="font-semibold mb-2">{lt.yourSecurityCodeIs}</p>
                   <p className="text-3xl font-mono text-center bg-background px-4 py-3 rounded border-2 border-primary">
                     {securityCode}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Save this code securely. You'll need it to reopen the document.
+                    {lt.saveCodeSecurely}
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
                   <p className="font-semibold text-amber-800 flex items-center gap-2">
-                    ⚠️ Important: Save your work regularly!
+                    {lt.importantSaveWork}
                   </p>
                   <ul className="text-sm text-amber-700 list-disc list-inside space-y-1">
                     <li>
-                      <strong>Export your JSON file regularly</strong> — this is the safest way to backup your work.
+                      <strong>{lt.exportJsonRegularly}</strong> {lt.exportJsonRegularlyRest}
                     </li>
                     <li>
-                      The JSON file contains all information needed to restore your document.
+                      {lt.jsonContainsAllInfo}
                     </li>
                     <li>
-                      You can also generate a PDF at any time — it includes all recovery details.
+                      {lt.canGeneratePdfAnytime}
                     </li>
                     <li>
-                      <strong>Incomplete documents are automatically deleted after 6 months</strong> of inactivity.
+                      <strong>{lt.incompleteDocsDeleted}</strong> {lt.incompleteDocsDeletedRest}
                     </li>
                   </ul>
                 </div>
@@ -2674,10 +2673,10 @@ const Index = () => {
               className="flex items-center gap-2"
             >
               <FileDown className="h-4 w-4" />
-              Download PDF
+              {lt.downloadPdfButton}
             </Button>
             <AlertDialogAction onClick={() => setShowSecurityCodeDialog(false)}>
-              Continue
+              {lt.continueAction}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -2688,13 +2687,13 @@ const Index = () => {
         <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {getIncompleteItems().length > 0 ? 'Incomplete Items' : 'Design Complete'}
+              {getIncompleteItems().length > 0 ? lt.incompleteItemsTitle : lt.designCompleteTitle}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-4">
                 {getIncompleteItems().length > 0 ? (
                   <>
-                    <p>The following items still need to be completed:</p>
+                    <p>{lt.incompleteItemsIntro}</p>
                     <div className="max-h-60 overflow-y-auto space-y-2">
                       {getIncompleteItems().map((item, idx) => (
                         <div 
@@ -2716,30 +2715,30 @@ const Index = () => {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Click on an item to navigate to it.
+                      {lt.clickItemToNavigate}
                     </p>
                   </>
                 ) : (
                   <>
                     <p className="text-foreground">
-                      🎉 Congratulations! Your course design is complete.
+                      {lt.congratsComplete}
                     </p>
                     
                     {/* JSON Export - Primary backup */}
                     <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 space-y-3">
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         <Download className="h-5 w-5 text-primary" />
-                        Step 1: Download Your Backup File
+                        {lt.step1Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <strong>This is essential!</strong> The JSON file is your complete backup. Use it to restore and continue editing your design on any device.
+                        <strong>{lt.step1Desc.split('!')[0]}!</strong>{lt.step1Desc.split('!')[1]}
                       </p>
                       <Button onClick={() => {
                         handleExport();
                         setCompletionJsonDownloaded(true);
                       }} className={`w-full ${!completionJsonDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`} size="lg">
                         <Download className="mr-2 h-5 w-5" />
-                        Download JSON Backup
+                        {lt.downloadJsonBackup}
                       </Button>
                     </div>
 
@@ -2747,17 +2746,17 @@ const Index = () => {
                     <div className={`rounded-lg p-4 space-y-3 border ${completionPdfDownloaded ? 'bg-emerald-50 border-emerald-300' : completionJsonDownloaded ? 'bg-muted/50 border-border' : 'bg-muted/30 border-border opacity-60'}`}>
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         {completionPdfDownloaded ? <Check className="h-5 w-5 text-emerald-600" /> : <FileText className="h-5 w-5 text-muted-foreground" />}
-                        Step 2: Generate PDF Documentation
+                        {lt.step2Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        The PDF is a formatted document with all your design decisions. It includes a QR code and security code for quick access.
+                        {lt.step2Desc}
                       </p>
                       <Button onClick={async () => {
                         await handleGeneratePDF();
                         setCompletionPdfDownloaded(true);
                       }} variant="outline" className={`w-full ${completionJsonDownloaded && !completionPdfDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`} disabled={!completionJsonDownloaded || completionPdfDownloaded}>
                         <FileText className="mr-2 h-4 w-4" />
-                        {completionPdfDownloaded ? 'PDF Generated ✓' : 'Generate PDF'}
+                        {completionPdfDownloaded ? lt.pdfGeneratedCheck : lt.generatePdfButton}
                       </Button>
                     </div>
 
@@ -2765,15 +2764,15 @@ const Index = () => {
                     <div className={`rounded-lg p-4 space-y-3 ${completionJsonDownloaded && completionPdfDownloaded ? 'bg-primary/10 border border-primary/30' : 'bg-muted/30 border border-border opacity-60'}`}>
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         <FileDown className="h-5 w-5 text-primary" />
-                        Step 3: Review your PDF
+                        {lt.step3Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Open the downloaded PDF and review your design decisions. If you are satisfied, close the designer. If changes are needed, continue editing.
+                        {lt.step3Desc}
                       </p>
                     </div>
 
                     <p className="text-xs text-muted-foreground text-center">
-                      ⚠️ Your work is only saved in this browser. Download the JSON file to keep your data safe!
+                      {lt.onlySavedInBrowser}
                     </p>
                   </>
                 )}
@@ -2782,7 +2781,7 @@ const Index = () => {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
             {getIncompleteItems().length > 0 ? (
-              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogCancel>{lt.closeButton}</AlertDialogCancel>
             ) : (
               <>
                 <Button
@@ -2792,7 +2791,7 @@ const Index = () => {
                   variant="outline"
                   className="w-full"
                 >
-                  Continue editing
+                  {lt.continueEditing}
                 </Button>
                 <Button
                   onClick={() => {
@@ -2812,7 +2811,7 @@ const Index = () => {
                   className={`w-full transition-colors ${completionJsonDownloaded && completionPdfDownloaded ? 'bg-primary hover:bg-primary/90' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                   disabled={!(completionJsonDownloaded && completionPdfDownloaded)}
                 >
-                  Close template designer
+                  {lt.closeTemplateDesigner}
                 </Button>
               </>
             )}
@@ -2829,17 +2828,17 @@ const Index = () => {
       <Dialog open={showPhaseTransitionModal} onOpenChange={() => {}}>
         <DialogContent className="max-w-lg [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle className="text-xl">You are now entering the development phase</DialogTitle>
+            <DialogTitle className="text-xl">{lt.enteringDevelopmentPhase}</DialogTitle>
             <DialogDescription asChild>
               <div className="space-y-4 pt-2">
                 <p className="text-sm text-foreground">
-                  You are now moving from designing your micro-credential to developing concrete learning activities and assessment.
+                  {lt.movingToDevelopment}
                 </p>
                 <p className="text-sm text-foreground">
-                  At this stage, many course developers choose to pause, as the next phase requires focused work on teaching content, learning activities, and assessment design based on the framework you have defined.
+                  {lt.manyDevelopersPause}
                 </p>
                 <p className="text-sm font-semibold text-foreground">
-                  Regardless of whether you continue now or later, it is recommended to save your current progress as a checkpoint before proceeding by downloading the JSON and PDF summary.
+                  {lt.recommendSaveCheckpoint}
                 </p>
               </div>
             </DialogDescription>
@@ -2850,39 +2849,39 @@ const Index = () => {
               size="lg"
               className={`w-full transition-colors ${jsonDownloaded && pdfDownloaded ? 'bg-primary hover:bg-primary/90' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
             >
-              Continue to development phase
+              {lt.continueToDevelopmentPhase}
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
             <div className="flex flex-col sm:flex-row gap-2 w-full">
               <Button onClick={() => { handleExport(); setJsonDownloaded(true); }} variant="outline" className={`flex-1 ${!jsonDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`}>
                 <Download className="mr-2 h-4 w-4" />
-                Download JSON
+                {lt.downloadJson}
               </Button>
               <Button onClick={() => { handleGeneratePDF(); setPdfDownloaded(true); }} variant="outline" className={`flex-1 ${!pdfDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`}>
                 <FileText className="mr-2 h-4 w-4" />
-                Download PDF summary
+                {lt.downloadPdfSummary}
               </Button>
             </div>
             {courseData?.courseType !== 'composite-micro-credential' && (
               <>
                 <p className="text-xs text-muted-foreground text-center">
-                  This auto-generated checklist summarises your design choices from Phases 3–4 and provides actionable reminders for Phase 5 development.
+                  {lt.didacticalGuideNote}
                 </p>
                 <Button
                   onClick={async () => {
                     if (!courseData) return;
                     try {
                       await generateDidacticalGuidePDF(courseData);
-                      toast({ title: 'Didactical Guide Generated', description: 'Your didactical guide checklist has been exported as PDF' });
+                      toast({ title: lt.didacticalGeneratedTitle, description: lt.didacticalGeneratedDesc });
                     } catch (error) {
-                      toast({ title: 'Generation Failed', description: 'Failed to generate didactical guide PDF', variant: 'destructive' });
+                      toast({ title: lt.didacticalFailedTitle, description: lt.didacticalFailedDesc, variant: 'destructive' });
                     }
                   }}
                   variant="outline"
                   className="w-full"
                 >
                   <FileDown className="mr-2 h-4 w-4" />
-                  Download Didactical Guide Checklist
+                  {lt.downloadDidacticalGuide}
                 </Button>
               </>
             )}
@@ -2894,7 +2893,7 @@ const Index = () => {
         <footer className="bg-muted/30 border-t border-border py-2 px-4">
           <div className="container mx-auto flex items-center justify-center gap-2">
             <Lock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Security Code:</span>
+            <span className="text-xs text-muted-foreground">{lt.securityCodeFooter}</span>
             <span className="font-mono text-xs font-semibold">{securityCode}</span>
           </div>
         </footer>

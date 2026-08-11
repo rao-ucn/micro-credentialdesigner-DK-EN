@@ -25,6 +25,8 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { CourseType } from '@/types/course';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 interface ESCOSkill {
   uri: string;
@@ -38,7 +40,9 @@ interface MarketNeedsFormProps {
 }
 
 export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-credential' }: MarketNeedsFormProps) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
   
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -84,7 +88,7 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
       setEscoResults(skills);
     } catch (error) {
       console.error('ESCO search error:', error);
-      setSearchError('Unable to search ESCO. Please try again.');
+      setSearchError(lt.mnEscoError);
       setEscoResults([]);
     } finally {
       setIsSearching(false);
@@ -126,9 +130,9 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">Market needs</h3>
+        <h3 className="text-lg font-semibold">{lt.mnTitle}</h3>
         <p className="text-sm text-muted-foreground">
-          Market needs is the first analytical step in developing a {courseLabel}. In this phase, you document whether a real and well-defined labour-market need exists. The analysis covers three connected dimensions: the short-term need organisations experience now, the long-term labour-market and career relevance of that need, and how these needs translate into concrete competences that learners must acquire.
+          {lt.mnIntro.replace(/{course}/g, courseLabel)}
         </p>
       </div>
 
@@ -137,7 +141,7 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Label className="text-base font-medium">
-              What is the labour-market need you are addressing? <span className="text-destructive">*</span>
+              {lt.mnQ1Label} <span className="text-destructive">*</span>
             </Label>
             <Dialog>
               <DialogTrigger asChild>
@@ -147,11 +151,11 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Why?</DialogTitle>
+                  <DialogTitle>{lt.mnWhy}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <p>
-                    This step uncovers what is being demanded right now. The purpose is to identify current and emerging labour-market needs and understand which problems or competence gaps organisations experience. It is a short-term, need-oriented analysis that ensures the {courseLabel} is grounded in actual, documented labour-market demand.
+                    {lt.mnQ1Why.replace(/{course}/g, courseLabel)}
                   </p>
                 </div>
               </DialogContent>
@@ -164,38 +168,38 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Inspiration</DialogTitle>
+                  <DialogTitle>{lt.mnInspiration}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Use job postings, employer surveys and competence-gap analyses</li>
-                    <li>Identify concrete problems organisations are trying to solve</li>
-                    <li>Include early signals and short-term trends</li>
-                    <li>Explain how you know the need exists (dialogue, data, systematic analysis)</li>
+                    <li>{lt.mnQ1InspireItem1}</li>
+                    <li>{lt.mnQ1InspireItem2}</li>
+                    <li>{lt.mnQ1InspireItem3}</li>
+                    <li>{lt.mnQ1InspireItem4}</li>
                   </ul>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
           <p className="text-sm text-muted-foreground">
-            Describe the immediate or emerging labour-market need and the specific problems or competence gaps organisations currently experience. Also indicate how you know the need exists.
+            {lt.mnQ1Help}
           </p>
         </div>
         <Textarea
           value={data.labourMarketNeed}
           onChange={(e) => onChange({ ...data, labourMarketNeed: e.target.value })}
-          placeholder="Describe the labour-market need clearly and specifically..."
+          placeholder={lt.mnQ1Placeholder}
           rows={5}
           required
         />
         
         {/* Note about appendices */}
         <p className="text-xs text-muted-foreground italic">
-          If you have produced any analyses, studies, or other supporting material, you are encouraged to keep them as appendices to this work.
+          {lt.mnAppendixNote}
         </p>
 
         {!data.labourMarketNeed && (
-          <p className="text-xs text-muted-foreground">The need must be described clearly and supported by evidence.</p>
+          <p className="text-xs text-muted-foreground">{lt.mnQ1Validation}</p>
         )}
       </Card>
 
@@ -204,7 +208,7 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Label className="text-base font-medium">
-              Why is this need relevant in a long-term labour-market and career perspective? <span className="text-destructive">*</span>
+              {lt.mnQ2Label} <span className="text-destructive">*</span>
             </Label>
             <Dialog>
               <DialogTrigger asChild>
@@ -214,11 +218,11 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Why?</DialogTitle>
+                  <DialogTitle>{lt.mnWhy}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <p>
-                    This step evaluates why the need is relevant beyond short-term fluctuations. It requires analysing job profiles, qualification structures, career pathways and labour-market trends to ensure that the need has lasting career and labour-market relevance. This is a long-term, structural analysis.
+                    {lt.mnQ2Why}
                   </p>
                 </div>
               </DialogContent>
@@ -231,32 +235,32 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Inspiration</DialogTitle>
+                  <DialogTitle>{lt.mnInspiration}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Use projections, labour-market reports and sector analyses</li>
-                    <li>Connect the need to evolving job roles and qualifications</li>
-                    <li>Show how the need persists over time</li>
-                    <li>Link short-term signals to longer structural trends</li>
+                    <li>{lt.mnQ2InspireItem1}</li>
+                    <li>{lt.mnQ2InspireItem2}</li>
+                    <li>{lt.mnQ2InspireItem3}</li>
+                    <li>{lt.mnQ2InspireItem4}</li>
                   </ul>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
           <p className="text-sm text-muted-foreground">
-            Explain why this need has long-term relevance by connecting it to job roles, qualification frameworks, career pathways or labour-market structures.
+            {lt.mnQ2Help}
           </p>
         </div>
         <Textarea
           value={data.longTermRelevance}
           onChange={(e) => onChange({ ...data, longTermRelevance: e.target.value })}
-          placeholder="Explain the long-term relevance using labour-market evidence..."
+          placeholder={lt.mnQ2Placeholder}
           rows={5}
           required
         />
         {!data.longTermRelevance && (
-          <p className="text-xs text-muted-foreground">Must reference long-term labour-market evidence.</p>
+          <p className="text-xs text-muted-foreground">{lt.mnQ2Validation}</p>
         )}
       </Card>
 
@@ -265,7 +269,7 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Label className="text-base font-medium">
-              Which competences or skills are required to meet this need? <span className="text-destructive">*</span>
+              {lt.mnQ3Label} <span className="text-destructive">*</span>
             </Label>
             <Dialog>
               <DialogTrigger asChild>
@@ -275,11 +279,11 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Why?</DialogTitle>
+                  <DialogTitle>{lt.mnWhy}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <p>
-                    This step addresses how the identified need is transformed into measurable competences. The goal is to ensure traceability from documented need to specific learning outcomes.
+                    {lt.mnQ3Why}
                   </p>
                 </div>
               </DialogContent>
@@ -292,14 +296,14 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Inspiration</DialogTitle>
+                  <DialogTitle>{lt.mnInspiration}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Map competences using ESCO</li>
-                    <li>Validate with sector representatives</li>
-                    <li>Add emerging competences not yet represented in frameworks</li>
-                    <li>Ensure direct alignment with identified need</li>
+                    <li>{lt.mnQ3InspireItem1}</li>
+                    <li>{lt.mnQ3InspireItem2}</li>
+                    <li>{lt.mnQ3InspireItem3}</li>
+                    <li>{lt.mnQ3InspireItem4}</li>
                   </ul>
                 </div>
               </DialogContent>
@@ -308,12 +312,12 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
               <ReadMorePopoverTrigger asChild>
                 <button className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                   <BookOpen className="h-4 w-4" />
-                  <span className="text-xs font-medium">Read more</span>
+                  <span className="text-xs font-medium">{lt.mnReadMore}</span>
                 </button>
               </ReadMorePopoverTrigger>
               <ReadMorePopoverContent className="w-80 text-sm space-y-2">
-                <p>You can explore the full ESCO classification of skills, competences, and occupations to better understand how to select relevant entries.</p>
-                <p>Visit the official ESCO database here:</p>
+                <p>{lt.mnReadMoreText1}</p>
+                <p>{lt.mnReadMoreText2}</p>
                 <a
                   href="https://esco.ec.europa.eu/en/classification/skill_main"
                   target="_blank"
@@ -326,27 +330,27 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
             </ReadMorePopover>
           </div>
           <p className="text-sm text-muted-foreground">
-            Translate the identified need into concrete competences that learners must acquire.
+            {lt.mnQ3Help}
           </p>
         </div>
 
         {/* ESCO Search */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium">ESCO competences</Label>
+          <Label className="text-sm font-medium">{lt.mnEscoLabel}</Label>
           <p className="text-sm text-muted-foreground">
-            Use the search field below to find and select competences from the European Skills, Competences, Qualifications and Occupations (ESCO) classification. ESCO provides a standardised terminology across the EU, making it easier to align your micro-credential with recognised labour-market competences.
+            {lt.mnEscoHelp}
           </p>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full justify-start gap-2">
                 <Search className="h-4 w-4" />
-                Search ESCO skills and competences...
+                {lt.mnEscoSearchButton}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[400px] p-0" align="start">
               <Command shouldFilter={false}>
                 <CommandInput
-                  placeholder="Type to search ESCO..."
+                  placeholder={lt.mnEscoSearchPlaceholder}
                   value={searchValue}
                   onValueChange={setSearchValue}
                 />
@@ -354,22 +358,22 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
                   {isSearching && (
                     <div className="flex items-center justify-center py-6">
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      <span className="text-sm text-muted-foreground">Searching ESCO...</span>
+                      <span className="text-sm text-muted-foreground">{lt.mnEscoSearching}</span>
                     </div>
                   )}
                   {searchError && (
                     <div className="py-6 text-center text-sm text-destructive">{searchError}</div>
                   )}
                   {!isSearching && !searchError && escoResults.length === 0 && searchValue.length >= 2 && (
-                    <CommandEmpty>No competences found. Try a different search term.</CommandEmpty>
+                    <CommandEmpty>{lt.mnEscoNoResults}</CommandEmpty>
                   )}
                   {!isSearching && !searchError && searchValue.length < 2 && (
                     <div className="py-6 text-center text-sm text-muted-foreground">
-                      Enter at least 2 characters to search
+                      {lt.mnEscoMinChars}
                     </div>
                   )}
                   {!isSearching && escoResults.length > 0 && (
-                    <CommandGroup heading="ESCO Skills & Competences">
+                    <CommandGroup heading={lt.mnEscoGroupHeading}>
                       {escoResults.map((skill) => (
                         <CommandItem
                           key={skill.uri}
@@ -406,17 +410,17 @@ export const MarketNeedsForm = ({ value = {}, onChange, courseType = 'micro-cred
 
         {/* Additional Competences */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Additional competences not covered by ESCO (optional)</Label>
+          <Label className="text-sm font-medium">{lt.mnAdditionalLabel}</Label>
           <Textarea
             value={data.additionalCompetences}
             onChange={(e) => onChange({ ...data, additionalCompetences: e.target.value })}
-            placeholder="Describe any additional competences or skills not found in ESCO..."
+            placeholder={lt.mnAdditionalPlaceholder}
             rows={3}
           />
         </div>
 
         {!hasAtLeastOneCompetence && (
-          <p className="text-xs text-muted-foreground">At least one competence must be provided.</p>
+          <p className="text-xs text-muted-foreground">{lt.mnCompetenceValidation}</p>
         )}
       </Card>
     </div>

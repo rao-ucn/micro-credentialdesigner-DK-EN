@@ -1,4 +1,6 @@
 import { Phase } from '@/types/course';
+import type { Language } from '@/lib/i18n';
+import { phasesDa } from './phases.da';
 
 export const phases: Phase[] = [
   {
@@ -376,3 +378,7 @@ export const phases: Phase[] = [
     ],
   },
 ];
+
+export function getPhases(lang: Language): Phase[] {
+  return lang === 'da' ? phasesDa : phases;
+}

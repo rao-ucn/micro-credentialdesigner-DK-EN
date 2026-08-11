@@ -7,6 +7,8 @@ import { importFromJSON } from '@/lib/storage';
 import { Upload, X, FileText, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 interface NewMcUploadFormProps {
   onComplete: (sources: StandaloneSource[]) => void;
@@ -22,6 +24,8 @@ interface NewMcUploadFormProps {
  */
 export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const lt = coreuiTranslations[language];
   const [sources, setSources] = useState<StandaloneSource[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, fileName: '' });
@@ -54,8 +58,8 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
           // Composite MCs cannot be used as a starting point — they're a composition of other sources.
           if (imported.courseType === 'composite-micro-credential') {
             toast({
-              title: 'Composite files cannot be used here',
-              description: `"${file.name}" is a composite micro-credential and cannot be used as a starting point for a new MC. Please upload its original standalone (or MC) source files instead.`,
+              title: lt.compositeCannotBeUsedTitle,
+              description: lt.compositeCannotBeUsedDescription.replace('{fileName}', file.name),
               variant: 'destructive',
             });
             continue;
@@ -67,8 +71,8 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
             imported.courseType !== 'micro-credential'
           ) {
             toast({
-              title: 'Skipped: Unsupported File',
-              description: `"${file.name}" is not a recognised course file.`,
+              title: lt.unsupportedFileTitle,
+              description: lt.unsupportedFileDescription.replace('{fileName}', file.name),
               variant: 'destructive',
             });
             continue;
@@ -76,8 +80,8 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
 
           if (reuseCondition === 'no') {
             toast({
-              title: 'Skipped: Reuse Restricted',
-              description: `"${file.name}" cannot be loaded because reuse of learning content within the alliance is marked as No.`,
+              title: lt.reuseRestrictedTitle,
+              description: lt.reuseRestrictedNewMcDescription.replace('{fileName}', file.name),
               variant: 'destructive',
             });
             continue;
@@ -89,8 +93,8 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
             newSources.some((s) => s.documentId === imported.documentId);
           if (isDuplicate) {
             toast({
-              title: 'Duplicate Skipped',
-              description: `"${file.name}" has already been added (Document ID: ${imported.documentId}).`,
+              title: lt.duplicateSkippedTitle,
+              description: lt.duplicateSkippedDescription.replace('{fileName}', file.name).replace('{id}', imported.documentId),
               variant: 'destructive',
             });
             continue;
@@ -110,8 +114,8 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
           });
         } catch (error) {
           toast({
-            title: 'Invalid File',
-            description: `"${file.name}" is not a valid export file.`,
+            title: lt.invalidFileTitle,
+            description: lt.invalidFileDescription.replace('{fileName}', file.name),
             variant: 'destructive',
           });
         }
@@ -123,17 +127,17 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
       if (newSources.length > 0) {
         setSources((prev) => [...prev, ...newSources]);
         toast({
-          title: 'Files Added',
-          description: `${newSources.length} file(s) imported successfully.`,
+          title: lt.filesAddedTitle,
+          description: lt.filesAddedDescriptionGeneric.replace('{count}', String(newSources.length)),
         });
       }
     };
 
     input.click();
-  }, [sources, toast]);
+  }, [sources, toast, lt]);
 
   const removeSource = (index: number) => {
-    const shouldContinue = window.confirm('Remove this file from the merge?');
+    const shouldContinue = window.confirm(lt.removeFileConfirm);
     if (!shouldContinue) return;
     setSources((prev) => prev.filter((_, i) => i !== index));
   };
@@ -144,14 +148,10 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
     <div className="space-y-6">
       <div>
         <Label className="text-lg font-semibold mb-2 block text-primary">
-          Upload one or more existing files
+          {lt.uploadExistingFilesLabel}
         </Label>
         <p className="text-sm text-muted-foreground mb-4">
-          Upload one or more existing course or MC JSON files as a starting point.
-          All accepted files will be merged into <strong>one new Micro-Credential</strong> with
-          one associated standalone element — every field can be freely edited afterwards.
-          A new unique document ID and security code will be generated, and the original files are not modified.
-          Files marked with <strong>No</strong> under reuse of learning content within the alliance cannot be loaded and will be skipped automatically.
+          {lt.newMcUploadDescription}
         </p>
       </div>
 
@@ -164,12 +164,12 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
         {isProcessing ? (
           <>
             <Loader2 className="h-6 w-6 text-primary animate-spin" />
-            <span className="text-muted-foreground">Processing files…</span>
+            <span className="text-muted-foreground">{lt.processingFiles}</span>
           </>
         ) : (
           <>
             <Upload className="h-6 w-6 text-muted-foreground" />
-            <span className="text-muted-foreground">Click to upload one or more course/MC JSON files</span>
+            <span className="text-muted-foreground">{lt.clickToUploadNewMc}</span>
           </>
         )}
       </Button>
@@ -178,7 +178,7 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground truncate flex-1 min-w-0 mr-2">
-              {progress.fileName ? `Reading: ${progress.fileName}` : 'Finalizing…'}
+              {progress.fileName ? lt.readingFile.replace('{fileName}', progress.fileName) : lt.finalizing}
             </span>
             <span className="text-muted-foreground flex-shrink-0">
               {progress.current} / {progress.total}
@@ -191,7 +191,7 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
       {sources.length > 0 && (
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            Uploaded Files ({sources.length})
+            {lt.uploadedFilesLabel.replace('{count}', String(sources.length))}
           </Label>
           {sources.map((source, index) => (
             <Card key={source.documentId} className="p-4 flex items-start justify-between gap-3">
@@ -202,10 +202,10 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm truncate">{source.workingTitle}</p>
                   <p className="text-xs text-muted-foreground">
-                    Source Document ID: {source.documentId}
+                    {lt.sourceDocumentIdLabel.replace('{id}', source.documentId)}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    File: {source.fileName}
+                    {lt.fileLabel.replace('{name}', source.fileName)}
                     {source.originalCourseType && source.originalCourseType !== 'standalone' && (
                       <span className="ml-2 text-muted-foreground">({source.originalCourseType})</span>
                     )}
@@ -229,20 +229,23 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
         <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-md">
           <Check className="h-4 w-4 flex-shrink-0" />
           <span>
-            Ready! {sources.length} file{sources.length === 1 ? '' : 's'} will be merged into a new Micro-Credential
-            (with one associated standalone element). All fields will be fully editable.
+            {lt.readyMergeSummary
+              .replace('{count}', String(sources.length))
+              .replace('{plural}', sources.length === 1 ? '' : 's')}
           </span>
         </div>
       )}
 
       {canProceed && (
         <Button onClick={() => onComplete(sources)} className="w-full" size="lg">
-          Create new MC from {sources.length} file{sources.length === 1 ? '' : 's'}
+          {lt.createNewMcFromFiles
+            .replace('{count}', String(sources.length))
+            .replace('{plural}', sources.length === 1 ? '' : 's')}
         </Button>
       )}
 
       <Button onClick={onBack} variant="outline" className="w-full">
-        Back
+        {lt.backButton}
       </Button>
     </div>
   );

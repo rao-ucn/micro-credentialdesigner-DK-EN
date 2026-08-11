@@ -13,6 +13,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56Translations } from '@/lib/translations/forms56';
 
 type CognitiveDomain = 'knowledge' | 'comprehension' | 'application' | 'analysis' | 'synthesis' | 'evaluation';
 type CompetenceDimension = 'knowledge' | 'skills' | 'responsibility_autonomy';
@@ -103,50 +105,43 @@ interface DesignAssessmentFormProps {
   standaloneSources?: Array<{ workingTitle?: string; documentId?: string; fileName?: string; data?: Record<string, any> }>;
 }
 
-const ASSESSOR_TYPE_OPTIONS = [
-  { value: 'internal', label: 'Internal assessor (from the institution)' },
-  { value: 'external', label: 'External assessor (outside the institution)' },
-  { value: 'other', label: 'Other' },
+const getAssessorTypeOptions = (lt: typeof forms56Translations['en']) => [
+  { value: 'internal', label: lt.dafAssessorInternal },
+  { value: 'external', label: lt.dafAssessorExternal },
+  { value: 'other', label: lt.dafOther },
 ];
 
-const QUALITY_FRAMEWORK_OPTIONS = [
-  { value: 'institutional', label: 'Institutional QA framework' },
-  { value: 'national', label: 'National framework' },
-  { value: 'european', label: 'European framework' },
-  { value: 'other', label: 'Other' },
+const getQualityFrameworkOptions = (lt: typeof forms56Translations['en']) => [
+  { value: 'institutional', label: lt.dafQfInstitutional },
+  { value: 'national', label: lt.dafQfNational },
+  { value: 'european', label: lt.dafQfEuropean },
+  { value: 'other', label: lt.dafOther },
 ];
 
-const ASSESSING_INSTITUTION_OPTIONS = [
-  { value: 'hosting', label: 'Hosting institution' },
-  { value: 'partner', label: 'Partner institution' },
-  { value: 'external', label: 'External assessor' },
-  { value: 'joint', label: 'Joint responsibility' },
+const getCalibrationMethods = (lt: typeof forms56Translations['en']) => [
+  { value: 'shared-criteria', label: lt.dafCalibShared },
+  { value: 'example-submissions', label: lt.dafCalibExamples },
+  { value: 'calibration-meetings', label: lt.dafCalibMeetings },
+  { value: 'rubrics', label: lt.dafCalibRubrics },
 ];
 
-const CALIBRATION_METHODS = [
-  { value: 'shared-criteria', label: 'Shared criteria among assessors' },
-  { value: 'example-submissions', label: 'Use of example submissions' },
-  { value: 'calibration-meetings', label: 'Calibration meetings' },
-  { value: 'rubrics', label: 'Rubrics or scoring guides' },
-];
+const getAssessmentTypeLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'written': lt.dafAssessmentTypeWritten,
+  'oral': lt.dafAssessmentTypeOral,
+  'combination': lt.dafAssessmentTypeCombination,
+});
 
-const ASSESSMENT_TYPE_LABELS: Record<string, string> = {
-  'written': 'Written',
-  'oral': 'Oral',
-  'combination': 'Combination of written and oral',
-};
+const getIndividualGroupLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'individual': lt.dafIndividual,
+  'group': lt.dafGroup,
+  'combination': lt.dafCombination,
+});
 
-const INDIVIDUAL_GROUP_LABELS: Record<string, string> = {
-  'individual': 'Individual assessment',
-  'group': 'Group assessment',
-  'combination': 'Combination',
-};
-
-const DELIVERY_MODE_LABELS: Record<string, string> = {
-  'physical': 'Physical attendance required',
-  'online-possible': 'Online possible',
-  'fully-online': 'Fully online',
-};
+const getDeliveryModeLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'physical': lt.dafDeliveryPhysical,
+  'online-possible': lt.dafDeliveryOnlinePossible,
+  'fully-online': lt.dafDeliveryFullyOnline,
+});
 
 const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   data,
@@ -158,6 +153,14 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   currentItemId,
   standaloneSources = [],
 }) => {
+  const { language } = useLanguage();
+  const lt = forms56Translations[language];
+  const ASSESSOR_TYPE_OPTIONS = getAssessorTypeOptions(lt);
+  const QUALITY_FRAMEWORK_OPTIONS = getQualityFrameworkOptions(lt);
+  const CALIBRATION_METHODS = getCalibrationMethods(lt);
+  const ASSESSMENT_TYPE_LABELS = getAssessmentTypeLabels(lt);
+  const INDIVIDUAL_GROUP_LABELS = getIndividualGroupLabels(lt);
+  const DELIVERY_MODE_LABELS = getDeliveryModeLabels(lt);
   const [formData, setFormData] = useState(data);
   const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -254,7 +257,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       {/* Learning Outcomes Summary */}
       {hasLearningOutcomes && (
         <Card className="p-4 bg-secondary/50 border-secondary">
-          <h4 className="text-sm font-semibold text-foreground mb-2">Learning Outcomes</h4>
+          <h4 className="text-sm font-semibold text-foreground mb-2">{lt.dafLearningOutcomesTitle}</h4>
           <Table>
             <TableBody>
               {completeOutcomes.map((outcome, index) => (
@@ -272,30 +275,30 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       {/* Assessment Framework Summary */}
       <Card className="p-4 bg-accent/50 border-accent">
-        <h4 className="text-sm font-semibold text-foreground mb-3">Assessment Framework (from Phase 3)</h4>
+        <h4 className="text-sm font-semibold text-foreground mb-3">{lt.dafFrameworkTitle}</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
           <div>
-            <span className="text-muted-foreground">Type:</span>
+            <span className="text-muted-foreground">{lt.dafTypeLabel}</span>
             <p className="font-medium">
               {assessmentFramework.assessmentType 
                 ? ASSESSMENT_TYPE_LABELS[assessmentFramework.assessmentType] || assessmentFramework.assessmentType
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
           <div>
-            <span className="text-muted-foreground">Format:</span>
+            <span className="text-muted-foreground">{lt.dafFormatLabel}</span>
             <p className="font-medium">
               {assessmentFramework.individualOrGroup 
                 ? INDIVIDUAL_GROUP_LABELS[assessmentFramework.individualOrGroup] || assessmentFramework.individualOrGroup
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
           <div>
-            <span className="text-muted-foreground">Delivery:</span>
+            <span className="text-muted-foreground">{lt.dafDeliveryLabel}</span>
             <p className="font-medium">
               {assessmentFramework.deliveryMode 
                 ? DELIVERY_MODE_LABELS[assessmentFramework.deliveryMode] || assessmentFramework.deliveryMode
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
         </div>
@@ -317,13 +320,13 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                Action required: Implement authentic case-based assessment
+                {lt.dafActionRequiredTitle}
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                You indicated you would like to reconsider and revise the assessment design to include authentic case-based assessment. Please update your assessment process description below accordingly.
+                {lt.dafActionRequiredText}
               </p>
               <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic">
-                Note: Once implemented, return to the authentic case-based assessment question and select "Yes" to confirm the change.
+                {lt.dafActionRequiredNote}
               </p>
             </div>
           </div>
@@ -332,7 +335,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <Card className="p-6 space-y-6">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">Define the assessment process</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafProcessTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -341,10 +344,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.dafWhy}</DialogTitle>
               </DialogHeader>
               <p className="text-sm">
-                Describe how learner performance is assessed, when assessment takes place, and on what basis judgements are made. A clear process supports transparency and fairness.
+                {lt.dafProcessWhyText}
               </p>
             </DialogContent>
           </Dialog>
@@ -352,20 +355,20 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Assessment process description</Label>
+            <Label className="text-sm font-medium">{lt.dafProcessDescLabel}</Label>
             {assessmentFramework.activityDescription && (
               <Badge variant="secondary" className="text-xs">
-                Pre-filled from Phase 3
+                {lt.dafPrefilledBadge}
               </Badge>
             )}
           </div>
           <p className="text-sm text-muted-foreground">
-            Your initial activity description from Phase 3 is shown below. You can now expand and refine this description with additional details about the assessment process. Any changes made here will automatically update the description in Phase 3.
+            {lt.dafProcessDescHelp}
           </p>
           <Textarea
             value={formData.assessmentProcessDescription || ''}
             onChange={(e) => updateField('assessmentProcessDescription', e.target.value)}
-            placeholder="Briefly describe how learner performance will be assessed..."
+            placeholder={lt.dafProcessDescPlaceholder}
             className="min-h-[100px] bg-background"
           />
         </div>
@@ -373,10 +376,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {/* Authentic Case-Based Assessment Section */}
         <div className="space-y-4 pt-4 border-t">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Authentic case-based assessment can strengthen validity by assessing learners' ability to apply knowledge and skills in realistic or professional contexts.
+            {lt.dafAuthenticIntro1}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            In this step, you are asked to explicitly consider whether such an approach is relevant for this assessment design.
+            {lt.dafAuthenticIntro2}
           </p>
 
           {/* Check if case-based was already selected in Phase 3 */}
@@ -385,7 +388,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="space-y-4 pt-2">
               <Card className="p-4 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800">
                 <p className="text-sm text-foreground mb-4">
-                  You have marked that case-based assessment is part of the assessment in Phase 3. Please confirm that it is implemented in the description.
+                  {lt.dafCaseBasedMarkedText}
                 </p>
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -400,7 +403,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }}
                   />
                   <Label htmlFor="caseBasedConfirmation" className="text-sm font-medium cursor-pointer">
-                    I confirm that authentic case-based assessment is implemented in the assessment description <span className="text-destructive">*</span>
+                    {lt.dafCaseBasedConfirmLabel} <span className="text-destructive">*</span>
                   </Label>
                 </div>
               </Card>
@@ -410,7 +413,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2">
                 <Label className="text-sm font-medium">
-                  Is authentic case-based assessment used in the assessment design? <span className="text-destructive">*</span>
+                  {lt.dafCaseBasedQuestion} <span className="text-destructive">*</span>
                 </Label>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -420,14 +423,14 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                   </DialogTrigger>
                   <DialogContent className="max-w-md">
                     <DialogHeader>
-                      <DialogTitle>Authentic case-based assessment</DialogTitle>
+                      <DialogTitle>{lt.dafCaseBasedDialogTitle}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 text-sm text-muted-foreground">
                       <p>
-                        Authentic case-based assessment evaluates learners through realistic or professional scenarios that reflect how competencies are used in practice.
+                        {lt.dafCaseBasedDialogP1}
                       </p>
                       <p>
-                        It is not mandatory, but should be deliberately considered as part of a robust assessment design.
+                        {lt.dafCaseBasedDialogP2}
                       </p>
                     </div>
                   </DialogContent>
@@ -452,7 +455,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {caseBasedAnswer === 'yes' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">Yes, authentic case-based assessment is used in the assessment description</span>
+                    <span className="text-sm">{lt.dafCaseBasedYes}</span>
                   </div>
                 </div>
 
@@ -473,7 +476,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {caseBasedAnswer === 'no' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">No, authentic case-based assessment is not used</span>
+                    <span className="text-sm">{lt.dafCaseBasedNo}</span>
                   </div>
                 </div>
               </div>
@@ -484,10 +487,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           {!assessmentFramework.activityTypes?.includes('case-based') && caseBasedAnswer === 'no' && (
             <div className="space-y-4 p-4 bg-muted/50 border rounded-lg">
               <p className="text-sm text-foreground leading-relaxed">
-                Many learning outcomes involving application, judgement, or problem-solving are often well supported by authentic cases or scenarios.
+                {lt.dafReflectionText1}
               </p>
               <p className="text-sm text-foreground leading-relaxed font-medium">
-                Are you sure you want to proceed without authentic case-based assessment?
+                {lt.dafReflectionQuestion}
               </p>
 
               <div className="space-y-3">
@@ -508,7 +511,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {reconsiderAnswer === 'reconsider' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">Yes, I would like to reconsider and revise the assessment design</span>
+                    <span className="text-sm">{lt.dafReconsiderYes}</span>
                   </div>
                 </div>
 
@@ -529,7 +532,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {reconsiderAnswer === 'proceed' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">No, I want to proceed without authentic case-based assessment</span>
+                    <span className="text-sm">{lt.dafReconsiderNo}</span>
                   </div>
                 </div>
               </div>
@@ -540,7 +543,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <Card className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">Number of assessors</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafAssessorsTitle}</h3>
           <button
             type="button"
             onClick={() => {
@@ -550,13 +553,13 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             }}
             className="text-sm text-primary hover:text-primary/80 font-medium"
           >
-            + Add assessor
+            {lt.dafAddAssessor}
           </button>
         </div>
         
         {(!formData.assessors || formData.assessors.length === 0) && (
           <p className="text-sm text-muted-foreground italic">
-            No assessors added yet. Click "Add assessor" to specify who will assess.
+            {lt.dafNoAssessors}
           </p>
         )}
         
@@ -578,7 +581,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }}
                   >
                     <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select assessor type" />
+                      <SelectValue placeholder={lt.dafSelectAssessorType} />
                     </SelectTrigger>
                     <SelectContent>
                       {ASSESSOR_TYPE_OPTIONS.map((option) => (
@@ -598,7 +601,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                         );
                         updateField('assessors', updated);
                       }}
-                      placeholder="Describe the assessor type..."
+                      placeholder={lt.dafAssessorOtherPlaceholder}
                       className="bg-background"
                     />
                   )}
@@ -629,10 +632,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                  Recommendation: Four-eye principle
+                  {lt.dafFourEyeRecTitle}
                 </p>
                 <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
-                  Where feasible, involving more than one assessor is recommended. Using two assessors can strengthen fairness, consistency, and reliability of assessment decisions by reducing individual bias and supporting shared judgement.
+                  {lt.dafFourEyeRecText}
                 </p>
               </div>
             </div>
@@ -650,11 +653,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                   htmlFor="keepOneAssessor" 
                   className="text-sm text-blue-700 dark:text-blue-300 cursor-pointer"
                 >
-                  Keep one assessor
+                  {lt.dafKeepOneAssessor}
                 </Label>
               </div>
               <p className="text-xs text-blue-600/80 dark:text-blue-400/80">
-                This confirms that a single-assessor setup is an intentional design choice.
+                {lt.dafKeepOneAssessorHelp}
               </p>
             </div>
           </div>
@@ -678,10 +681,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   };
 
   const TRANSPARENCY_MEASURES = [
-    { value: 'informed-performance', label: 'Learners are informed about what constitutes satisfactory performance' },
-    { value: 'grading-basis', label: 'The basis for grading or pass/fail decisions is clearly described' },
-    { value: 'shared-criteria', label: 'Assessors use shared criteria or rubrics to ensure consistent judgement' },
-    { value: 'other', label: 'Other (please specify)' },
+    { value: 'informed-performance', label: lt.dafTransparencyInformedPerformance },
+    { value: 'grading-basis', label: lt.dafTransparencyGradingBasis },
+    { value: 'shared-criteria', label: lt.dafTransparencySharedCriteria },
+    { value: 'other', label: lt.dafOtherSpecify },
   ];
 
   const hasAtLeastOneTransparencyMeasure = (formData.transparencyMeasures || []).length > 0;
@@ -691,7 +694,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     <Card className="p-6 space-y-6">
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-semibold text-foreground">Transparent evaluation design</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafTransparencyTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -700,10 +703,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.dafWhy}</DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">
-                Transparent evaluation helps learners understand expectations, supports fairness, and strengthens trust in assessment decisions.
+                {lt.dafTransparencyWhyText}
               </p>
             </DialogContent>
           </Dialog>
@@ -711,51 +714,51 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <DialogTrigger asChild>
               <button className="text-warning hover:text-warning/80 flex items-center gap-1">
                 <Lightbulb className="h-4 w-4" />
-                <span className="text-sm">Inspiration</span>
+                <span className="text-sm">{lt.dafInspiration}</span>
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Assessment quality inspiration</DialogTitle>
+                <DialogTitle>{lt.dafInspirationDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <p className="text-muted-foreground">
-                  International quality frameworks emphasise transparency, shared criteria, and clear communication:
+                  {lt.dafInspirationIntro}
                 </p>
                 
                 <div className="space-y-3">
                   <div className="p-4 bg-secondary/50 rounded-lg">
-                    <h4 className="font-semibold text-foreground mb-1">Australian Qualifications Framework (AQF)</h4>
+                    <h4 className="font-semibold text-foreground mb-1">{lt.dafAqfTitle}</h4>
                     <p className="text-muted-foreground">
-                      Emphasises clarity of standards, explicit performance expectations, and consistent judgement.
+                      {lt.dafAqfText}
                     </p>
                   </div>
                   
                   <div className="p-4 bg-secondary/50 rounded-lg">
-                    <h4 className="font-semibold text-foreground mb-1">EADTU Excellence Framework (Assessment chapter)</h4>
+                    <h4 className="font-semibold text-foreground mb-1">{lt.dafEadtuTitle}</h4>
                     <p className="text-muted-foreground">
-                      Highlights transparent criteria, learner-facing explanations, and consistency across assessors in online and blended assessment.
+                      {lt.dafEadtuText}
                     </p>
                   </div>
                 </div>
                 
                 <p className="text-xs text-muted-foreground italic border-t pt-3">
-                  These frameworks are provided as inspiration. You are not required to adopt a specific framework.
+                  {lt.dafFrameworksNote}
                 </p>
               </div>
             </DialogContent>
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          This step focuses on transparency in evaluation. You are asked to confirm how learners will understand what counts as satisfactory performance and how assessment decisions are made consistently.
+          {lt.dafTransparencyIntro}
         </p>
       </div>
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">
-          How is transparency ensured in the evaluation process? <span className="text-destructive">*</span>
+          {lt.dafTransparencyQuestion} <span className="text-destructive">*</span>
         </Label>
-        <p className="text-xs text-muted-foreground">Select at least one option</p>
+        <p className="text-xs text-muted-foreground">{lt.dafSelectAtLeastOne}</p>
         
         <div className="space-y-3">
           {TRANSPARENCY_MEASURES.map((measure) => (
@@ -778,12 +781,12 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {(formData.transparencyMeasures || []).includes('other') && (
           <div className="ml-6 space-y-2">
             <Label className="text-sm font-medium">
-              Describe the additional transparency measure <span className="text-destructive">*</span>
+              {lt.dafDescribeOtherMeasure} <span className="text-destructive">*</span>
             </Label>
             <Textarea
               value={formData.transparencyOther || ''}
               onChange={(e) => updateField('transparencyOther', e.target.value)}
-              placeholder="Briefly describe how transparency is ensured."
+              placeholder={lt.dafTransparencyOtherPlaceholder}
               className="bg-background"
               rows={3}
             />
@@ -791,7 +794,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         )}
         
         {!hasAtLeastOneTransparencyMeasure && (
-          <p className="text-xs text-destructive">Please select at least one transparency measure.</p>
+          <p className="text-xs text-destructive">{lt.dafTransparencyRequired}</p>
         )}
       </div>
     </Card>
@@ -802,7 +805,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     const isComposite = courseType === 'composite-micro-credential';
     const sourcesList = (standaloneSources || []).map((s, i) => {
       const id = s.documentId || s.fileName || `source-${i}`;
-      const label = s.workingTitle || s.fileName || s.documentId || `Standalone source ${i + 1}`;
+      const label = s.workingTitle || s.fileName || s.documentId || lt.dafStandaloneSourceFallback.replace('{n}', String(i + 1));
       return { id, label };
     });
     const required = formData.partiallyFixedRequiredSources || [];
@@ -845,23 +848,23 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     return (
     <Card className="p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">Assessment access model</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">{lt.dafAccessModelTitle}</h3>
         <p className="text-sm text-muted-foreground">
-          This step defines how learners gain access to assessment. It clarifies whether the micro-credential allows direct access to assessment or requires completion of defined learning activities before assessment is permitted.
+          {lt.dafAccessModelIntro}
         </p>
       </div>
 
       <div className="flex items-start gap-2 p-4 rounded-lg border-2 border-destructive/40 bg-destructive/10">
         <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
         <div className="text-sm text-foreground">
-          <span className="font-bold text-destructive">VERY IMPORTANT:</span>{' '}
-          The access model you choose here directly determines learner eligibility for assessment and shapes the entire learning pathway. {isComposite && 'For a Composite Micro-Credential — which combines several standalone courses — this choice also defines whether some or all of those uploaded standalone parts must be completed before the final assessment. '}Be deliberate: this decision affects fairness, validity of recognition, and the learner contract. Once published, changing it later may require a new version of the micro-credential.
+          <span className="font-bold text-destructive">{lt.dafVeryImportant}</span>{' '}
+          {lt.dafAccessModelImportantText1}{isComposite && lt.dafAccessModelCompositeClause}{lt.dafAccessModelImportantText2}
         </div>
       </div>
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">
-          How is access to assessment structured in this micro-credential?
+          {lt.dafAccessModelQuestion}
         </Label>
         
         <RadioGroup
@@ -873,10 +876,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <RadioGroupItem value="open" id="access-open" className="mt-1" />
             <div className="space-y-1">
               <Label htmlFor="access-open" className="font-medium cursor-pointer">
-                Open assessment pathway
+                {lt.dafOpenPathway}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Learners may attempt the assessment directly, without completing the learning activities.
+                {lt.dafOpenPathwayDesc}
               </p>
             </div>
           </div>
@@ -885,10 +888,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <RadioGroupItem value="fixed" id="access-fixed" className="mt-1" />
             <div className="space-y-1">
               <Label htmlFor="access-fixed" className="font-medium cursor-pointer">
-                Fixed learning pathway
+                {lt.dafFixedPathway}
               </Label>
                 <p className="text-sm text-muted-foreground">
-                  Learners must complete <span className="font-medium">all</span> the defined learning activities — and therefore all uploaded standalone elements — before being eligible for assessment.
+                  {lt.dafFixedPathwayDescPre} <span className="font-medium">{lt.dafAllBold}</span> {lt.dafFixedPathwayDescPost}
                 </p>
             </div>
           </div>
@@ -898,10 +901,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               <RadioGroupItem value="partially-fixed" id="access-partial" className="mt-1" />
               <div className="space-y-1 flex-1">
                 <Label htmlFor="access-partial" className="font-medium cursor-pointer">
-                  Partially Fixed learning pathway
+                  {lt.dafPartialPathway}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Only some of the uploaded standalone courses / learning activities must be completed before the assessment. Select below which uploaded parts are mandatory prerequisites — the remaining parts stay optional for the learner.
+                  {lt.dafPartialPathwayDesc}
                 </p>
               </div>
             </div>
@@ -912,7 +915,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       {formData.assessmentAccessModel === 'open' && (
         <div className="space-y-4 p-4 bg-accent/50 border border-accent rounded-lg">
           <p className="text-sm text-foreground">
-            This model assumes that learners may already possess the required competencies and choose to demonstrate them directly through assessment.
+            {lt.dafOpenModelText}
           </p>
           
           <div className="flex items-start space-x-3">
@@ -922,7 +925,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               onCheckedChange={(checked) => updateField('assessmentAccessConfirmed', checked === true)}
             />
             <Label htmlFor="access-confirmed" className="text-sm font-normal cursor-pointer">
-              I confirm that the assessment alone is sufficient to validly demonstrate all learning outcomes
+              {lt.dafOpenConfirmLabel}
             </Label>
           </div>
         </div>
@@ -934,18 +937,18 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
           <div>
             <Label className="text-sm font-medium">
-              Which uploaded standalone parts must be completed before the assessment?
+              {lt.dafPartialQuestion}
             </Label>
             <p className="text-xs text-muted-foreground mt-1">
-              For each standalone part, choose:
-              <span className="font-medium"> Required</span> = must be completed before assessment;
-              <span className="font-medium"> Optional</span> = not required for assessment.
+              {lt.dafPartialHelpIntro}
+              <span className="font-medium"> {lt.dafRequiredLabel}</span> {lt.dafRequiredMeaning}
+              <span className="font-medium"> {lt.dafOptionalLabel}</span> {lt.dafOptionalMeaning}
             </p>
           </div>
 
           {sourcesList.length === 0 ? (
             <p className="text-sm text-muted-foreground italic">
-              No uploaded standalone sources were detected for this composite micro-credential.
+              {lt.dafNoSources}
             </p>
           ) : (
             <div className="space-y-2">
@@ -968,7 +971,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                               : 'bg-background hover:bg-secondary/50 border-border'
                           }`}
                         >
-                          {m === 'required' ? 'Required' : 'Optional'}
+                          {m === 'required' ? lt.dafRequiredLabel : lt.dafOptionalLabel}
                         </button>
                       ))}
                     </div>
@@ -980,7 +983,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
           {sourcesList.length > 0 && required.length === 0 && (
             <p className="text-xs text-destructive">
-              Select at least one mandatory standalone part — otherwise consider choosing the Open assessment pathway instead.
+              {lt.dafSelectMandatoryWarning}
             </p>
           )}
 
@@ -988,11 +991,9 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="rounded-md border border-warning/40 bg-warning/10 p-3 flex gap-2">
               <AlertTriangle className="h-4 w-4 text-warning-foreground flex-shrink-0 mt-0.5" />
               <div className="text-xs text-foreground space-y-1">
-                <p className="font-semibold">All standalone parts are marked as Required.</p>
+                <p className="font-semibold">{lt.dafAllRequiredTitle}</p>
                 <p className="text-muted-foreground">
-                  If every uploaded standalone part must be completed before assessment, you should
-                  choose the <span className="font-medium text-foreground">Fixed learning pathway</span> instead
-                  of Partially fixed — it more accurately describes this design.
+                  {lt.dafAllRequiredText.replace('{fixedPathway}', lt.dafFixedPathway)}
                 </p>
               </div>
             </div>
@@ -1008,7 +1009,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderQualityFramework = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Use an assessment quality framework</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafQualityFrameworkTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1017,23 +1018,23 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              An assessment quality framework ensures that evaluation is valid, reliable, and aligned with recognised standards.
+              {lt.dafQualityFrameworkWhyText}
             </p>
           </DialogContent>
         </Dialog>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Select quality framework</Label>
+        <Label className="text-sm font-medium">{lt.dafSelectQualityFramework}</Label>
         <Select
           value={formData.qualityFrameworkType || ''}
           onValueChange={(value) => updateField('qualityFrameworkType', value)}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select framework type" />
+            <SelectValue placeholder={lt.dafSelectFrameworkTypePlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {QUALITY_FRAMEWORK_OPTIONS.map((option) => (
@@ -1047,11 +1048,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       {formData.qualityFrameworkType === 'other' && (
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Specify framework</Label>
+          <Label className="text-sm font-medium">{lt.dafSpecifyFramework}</Label>
           <Input
             value={formData.qualityFrameworkOther || ''}
             onChange={(e) => updateField('qualityFrameworkOther', e.target.value)}
-            placeholder="Enter the name of the framework..."
+            placeholder={lt.dafFrameworkNamePlaceholder}
             className="bg-background"
           />
         </div>
@@ -1107,7 +1108,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     <Card className="p-6 space-y-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">How is the assessment graded?</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafGradingTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -1116,42 +1117,42 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Grading systems and comparability</DialogTitle>
+                <DialogTitle>{lt.dafGradingDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-3 text-sm">
                 <p>
-                  The selected grading system defines how learner performance is formally evaluated.
+                  {lt.dafGradingWhyP1}
                 </p>
                 <p>
-                  Grades can always be converted or interpreted in connection with recognition, credit transfer, or stackability within an institution or across institutions.
+                  {lt.dafGradingWhyP2}
                 </p>
               </div>
             </DialogContent>
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          Specify the grading system used for this micro-credential.
+          {lt.dafGradingIntro1}
         </p>
         <p className="text-sm text-muted-foreground">
-          This information supports transparency, recognition, and potential credit transfer across institutions.
+          {lt.dafGradingIntro2}
         </p>
       </div>
 
       {/* Grading system selection */}
       <div className="space-y-4">
         <Label htmlFor="grading-select" className="text-sm font-medium">
-          Select the grading system applied to this micro-credential <span className="text-destructive">*</span>
+          {lt.dafGradingSelectLabel} <span className="text-destructive">*</span>
         </Label>
         
         <Select value={selectedGrading} onValueChange={handleGradingChange}>
           <SelectTrigger id="grading-select">
-            <SelectValue placeholder="Select a grading system..." />
+            <SelectValue placeholder={lt.dafGradingSelectPlaceholder} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pass-fail">Pass / Fail</SelectItem>
-            <SelectItem value="eu-scale">EU grading scale (A–F)</SelectItem>
-            <SelectItem value="national">National grading framework</SelectItem>
-            <SelectItem value="dual">Dual grading system (EU grading + National framework)</SelectItem>
+            <SelectItem value="pass-fail">{lt.dafGradingPassFail}</SelectItem>
+            <SelectItem value="eu-scale">{lt.dafGradingEuScale}</SelectItem>
+            <SelectItem value="national">{lt.dafGradingNational}</SelectItem>
+            <SelectItem value="dual">{lt.dafGradingDual}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -1159,12 +1160,12 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {(selectedGrading === 'national' || selectedGrading === 'dual') && (
           <div className="space-y-2">
             <Label className="text-sm font-medium">
-              Country / national framework <span className="text-destructive">*</span>
+              {lt.dafCountryLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               value={gradingCountry}
               onChange={handleCountryChange}
-              placeholder="e.g. Denmark, Germany, Finland"
+              placeholder={lt.dafCountryPlaceholder}
               className="bg-background"
             />
           </div>
@@ -1175,9 +1176,9 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       <div className="flex gap-3 p-4 bg-muted/50 border rounded-lg">
         <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="text-sm font-medium">Note</p>
+          <p className="text-sm font-medium">{lt.dafNote}</p>
           <p className="text-sm text-muted-foreground">
-            Regardless of the grading system selected, results can be converted or interpreted for purposes such as recognition of prior learning, credit transfer, or stackability within institutional frameworks.
+            {lt.dafGradingNoteText}
           </p>
         </div>
       </div>
@@ -1188,7 +1189,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     <Card className="p-6 space-y-6">
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-semibold text-foreground">Establish resit opportunities for learners</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafResitTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -1197,10 +1198,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.dafWhy}</DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">
-                A resit does not mean an easier assessment or a guaranteed second chance. It means that a clear and fair process exists, aligned with the teaching and assessment design, in case a learner does not meet the requirements.
+                {lt.dafResitWhyText}
               </p>
             </DialogContent>
           </Dialog>
@@ -1213,29 +1214,29 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Good practice principles</DialogTitle>
+                <DialogTitle>{lt.dafResitInspirationTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
-                    <span>Resits assess the same learning outcomes and standards</span>
+                    <span>{lt.dafResitPrinciple1}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
-                    <span>Criteria and expectations remain unchanged</span>
+                    <span>{lt.dafResitPrinciple2}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
-                    <span>The resit process is communicated clearly in advance</span>
+                    <span>{lt.dafResitPrinciple3}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
-                    <span>The resit format matches the teaching and assessment design</span>
+                    <span>{lt.dafResitPrinciple4}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
-                    <span>Institutions avoid resits becoming automatic or routine</span>
+                    <span>{lt.dafResitPrinciple5}</span>
                   </li>
                 </ul>
               </div>
@@ -1243,23 +1244,23 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          This step defines how the programme handles cases where a learner does not pass the assessment. The purpose is not to lower standards, but to ensure transparency, fairness, and a clear process if resit becomes necessary.
+          {lt.dafResitIntro}
         </p>
       </div>
 
       {/* Resit description */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">
-          Describe the learner's opportunity for resit <span className="text-destructive">*</span>
+          {lt.dafResitDescLabel} <span className="text-destructive">*</span>
         </Label>
         <p className="text-xs text-muted-foreground">
-          Clearly state if a resit is possible and under which conditions.
-          <span className="font-semibold text-foreground"> Be aware that this description will be directly visible to learners as part of the course metadata.</span>
+          {lt.dafResitHelp1}
+          <span className="font-semibold text-foreground"> {lt.dafResitHelp2}</span>
         </p>
         <Textarea
           value={formData.resitDescription || ''}
           onChange={(e) => updateField('resitDescription', e.target.value)}
-          placeholder="Describe the resit policy, conditions, and process..."
+          placeholder={lt.dafResitPlaceholder}
           className="bg-background"
           rows={4}
         />
@@ -1271,7 +1272,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderAssessingInstitution = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Institutional responsibility for assessment</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafInstitutionTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1280,11 +1281,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Institutional responsibility for assessment</DialogTitle>
+              <DialogTitle>{lt.dafInstitutionTitle}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              This field identifies the institution that is formally responsible for conducting and quality-assuring the assessment.
-              The responsible institution's existing quality assurance framework applies automatically. No further description of the framework is required here.
+              {lt.dafInstitutionDialogText}
             </p>
           </DialogContent>
         </Dialog>
@@ -1292,17 +1292,17 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <div className="space-y-2">
         <Label className="text-sm font-medium">
-          Which institution is formally responsible for facilitating the assessment and awarding the micro-credential?
+          {lt.dafInstitutionQuestion}
           <span className="text-destructive ml-1">*</span>
         </Label>
         <Input
           value={formData.responsibleInstitution || ''}
           onChange={(e) => updateField('responsibleInstitution', e.target.value)}
-          placeholder="Name of responsible institution (e.g. university, university college, alliance partner)"
+          placeholder={lt.dafInstitutionPlaceholder}
           className="bg-background"
         />
         <p className="text-xs text-muted-foreground">
-          Specify the institution that holds formal responsibility for the assessment process. This institution's quality assurance framework will apply to the micro-credential.
+          {lt.dafInstitutionHelp}
         </p>
       </div>
     </Card>
@@ -1312,7 +1312,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderAuthenticAssessment = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Authentic / case-based assessment</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafAuthenticTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1321,10 +1321,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              Authentic assessment strengthens validity by allowing learners to demonstrate competence in realistic contexts.
+              {lt.dafAuthenticWhyText}
             </p>
           </DialogContent>
         </Dialog>
@@ -1332,7 +1332,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium">
-          Assessment includes authentic or case-based elements
+          {lt.dafAuthenticSwitchLabel}
         </Label>
         <Switch
           checked={formData.hasAuthenticElements || false}
@@ -1342,11 +1342,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       {formData.hasAuthenticElements && (
         <div className="space-y-2 mt-4">
-          <Label className="text-sm font-medium">Describe the case or real-world context</Label>
+          <Label className="text-sm font-medium">{lt.dafAuthenticDescLabel}</Label>
           <Textarea
             value={formData.authenticDescription || ''}
             onChange={(e) => updateField('authenticDescription', e.target.value)}
-            placeholder="Describe how authentic elements are incorporated..."
+            placeholder={lt.dafAuthenticPlaceholder}
             className="min-h-[80px] bg-background"
           />
         </div>
@@ -1358,7 +1358,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderSuccessCriteria = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Define success criteria</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafSuccessTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1367,10 +1367,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              Success criteria clarify what counts as sufficient performance and help ensure consistent judgement.
+              {lt.dafSuccessWhyText}
             </p>
           </DialogContent>
         </Dialog>
@@ -1382,15 +1382,15 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Inspiration</DialogTitle>
+              <DialogTitle>{lt.dafInspiration}</DialogTitle>
             </DialogHeader>
             <div className="text-sm space-y-2">
-              <p>Examples of success criteria:</p>
+              <p>{lt.dafSuccessExamplesIntro}</p>
               <ul className="list-disc ml-4 space-y-1">
-                <li>Demonstrates application of methods</li>
-                <li>Provides justified decisions</li>
-                <li>Communicates professionally</li>
-                <li>Shows critical reflection</li>
+                <li>{lt.dafSuccessExample1}</li>
+                <li>{lt.dafSuccessExample2}</li>
+                <li>{lt.dafSuccessExample3}</li>
+                <li>{lt.dafSuccessExample4}</li>
               </ul>
             </div>
           </DialogContent>
@@ -1398,11 +1398,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Success criteria (one per line)</Label>
+        <Label className="text-sm font-medium">{lt.dafSuccessLabel}</Label>
         <Textarea
           value={formData.successCriteria || ''}
           onChange={(e) => updateField('successCriteria', e.target.value)}
-          placeholder={"• Demonstrates application of methods\n• Provides justified decisions\n• Communicates professionally"}
+          placeholder={lt.dafSuccessPlaceholder}
           className="min-h-[120px] bg-background font-mono text-sm"
         />
       </div>
@@ -1413,7 +1413,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderCalibration = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Calibration of assessment</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafCalibrationTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1422,17 +1422,17 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              Calibration reduces variation and supports fairness across assessors.
+              {lt.dafCalibrationWhyText}
             </p>
           </DialogContent>
         </Dialog>
       </div>
 
       <div className="space-y-3">
-        <Label className="text-sm font-medium">Select calibration methods used</Label>
+        <Label className="text-sm font-medium">{lt.dafCalibrationLabel}</Label>
         <div className="space-y-2">
           {CALIBRATION_METHODS.map((method) => (
             <div key={method.value} className="flex items-center space-x-3">
@@ -1458,7 +1458,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderFourEyePrinciple = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Four-eye principle</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafFourEyeTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1467,10 +1467,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              The four-eye principle strengthens assessment quality by involving an additional qualified reviewer.
+              {lt.dafFourEyeWhyText}
             </p>
           </DialogContent>
         </Dialog>
@@ -1478,7 +1478,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium">
-          Four-eye principle applied
+          {lt.dafFourEyeAppliedLabel}
         </Label>
         <Switch
           checked={formData.fourEyeApplied || false}
@@ -1490,12 +1490,12 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         <div className="space-y-2 mt-4 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
           <div className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-4 w-4" />
-            <Label className="text-sm font-medium">Justification required</Label>
+            <Label className="text-sm font-medium">{lt.dafJustificationRequired}</Label>
           </div>
           <Textarea
             value={formData.fourEyeJustification || ''}
             onChange={(e) => updateField('fourEyeJustification', e.target.value)}
-            placeholder="Explain why the four-eye principle is not applicable..."
+            placeholder={lt.dafFourEyeJustificationPlaceholder}
             className="min-h-[80px] bg-background"
             required
           />
@@ -1507,9 +1507,9 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   // Final Confirmation
   const renderFinalConfirmation = () => (
     <Card className="p-6 space-y-4 border-primary/50 bg-primary/5">
-      <h3 className="text-lg font-semibold text-foreground">Final assessment confirmation</h3>
+      <h3 className="text-lg font-semibold text-foreground">{lt.dafFinalConfirmTitle}</h3>
       <p className="text-sm text-muted-foreground">
-        Before proceeding, confirm that your assessment design is complete and aligned.
+        {lt.dafFinalConfirmText}
       </p>
 
       <div className="flex items-start space-x-3 pt-2">
@@ -1522,7 +1522,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           htmlFor="assessment-confirmed"
           className="font-normal cursor-pointer leading-relaxed"
         >
-          I confirm that the assessment design is aligned with the learning outcomes, assessment framework, and learning activities defined earlier.
+          {lt.dafFinalConfirmLabel}
         </Label>
       </div>
     </Card>
@@ -1537,7 +1537,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             {renderAssessmentOverview()}
             <Card className="p-4 bg-muted/50">
               <p className="text-sm text-muted-foreground">
-                The assessment design builds on the learning outcomes and assessment framework defined earlier. In this section, you specify how learner performance will be evaluated in a valid, transparent, and consistent way.
+                {lt.dafIntroText}
               </p>
             </Card>
             {renderAssessmentProcess()}
@@ -1605,7 +1605,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             {renderAssessmentOverview()}
             <Card className="p-4 bg-muted/50">
               <p className="text-sm text-muted-foreground">
-                The assessment design builds on the learning outcomes and assessment framework defined earlier. In this section, you specify how learner performance will be evaluated in a valid, transparent, and consistent way.
+                {lt.dafIntroText}
               </p>
             </Card>
             {renderAssessmentProcess()}
