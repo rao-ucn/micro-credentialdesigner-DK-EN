@@ -1371,19 +1371,10 @@ const Index = () => {
     // Special validation for Phase 2.1
     if (item.id === '2.1') {
       const data = courseData.data[item.id] || {};
-      const classification = data.projectClassification;
       const developers = data.developers || [];
-      
-      if (!classification) return false;
-      if (classification === 'approved' && developers.length < 1) return false;
-      if (classification === 'developed' && developers.length < 2) return false;
-      
-      // Check for different institutions in developed mode
-      if (classification === 'developed') {
-        const institutions = developers.map((d: any) => d.institution?.toLowerCase().trim()).filter((i: string) => i);
-        const uniqueInstitutions = new Set(institutions);
-        if (uniqueInstitutions.size < 2) return false;
-      }
+
+      // Approved-activity structure: at least one developing institution
+      if (developers.length < 1) return false;
 
       // Academic field of study (ISCED-F 2013): broad field is mandatory
       if (!data.iscedBroadField) return false;
