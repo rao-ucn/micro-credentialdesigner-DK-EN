@@ -13,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Info, Plus, Trash2, GripVertical, AlertTriangle, CheckCircle2, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56Translations } from '@/lib/translations/forms56';
 
 interface LearningActivity {
   id: string;
@@ -52,22 +54,9 @@ interface LearningActivitiesFormProps {
   onBreakSingleSourceIntegrity?: () => void;
 }
 
-const TIME_STRUCTURE_OPTIONS = [
-  { value: 'synchronous', label: 'Synchronous' },
-  { value: 'asynchronous', label: 'Asynchronous' },
-];
-
-const DELIVERY_MODE_OPTIONS = [
-  { value: 'online', label: 'Online' },
-  { value: 'physical', label: 'Physical' },
-  { value: 'hybrid', label: 'Hybrid' },
-];
-
-const PARTICIPATION_OPTIONS = [
-  { value: 'individual', label: 'Individual (self-paced)' },
-  { value: 'group', label: 'Group' },
-  { value: 'whole-class', label: 'Whole class' },
-];
+const TIME_STRUCTURE_VALUES = ['synchronous', 'asynchronous'] as const;
+const DELIVERY_MODE_VALUES = ['online', 'physical', 'hybrid'] as const;
+const PARTICIPATION_VALUES = ['individual', 'group', 'whole-class'] as const;
 
 export default function LearningActivitiesForm({
   data,
