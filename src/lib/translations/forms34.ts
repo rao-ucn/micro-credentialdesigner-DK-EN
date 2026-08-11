@@ -803,7 +803,7 @@ export const forms34Translations = {
     mlBlock1Title: 'Indholdsrepræsentation',
     mlBlock1Question: 'Hvordan vil centrale begreber og temaer blive præsenteret for de lærende?',
     mlBlock1MinNote: 'Vælg mindst 2 formater ({count}/2 valgt)',
-    mlContentWritten: 'Skriftligt materiale (tekster, PDF'er, artikler)',
+    mlContentWritten: "Skriftligt materiale (tekster, PDF'er, artikler)",
     mlContentVisual: 'Visuelt materiale (slides, diagrammer, infografikker)',
     mlContentVideo: 'Videomateriale (præsentationsvideoer)',
     mlContentAudio: 'Lydforklaringer (podcasts)',

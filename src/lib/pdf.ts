@@ -1028,34 +1028,9 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         const itemData = data.data[item.id] || {};
         const assessmentData = itemData.defineAssessmentData || {};
         
-        const assessmentTypeLabels: Record<string, string> = {
-          'written': 'Written',
-          'oral': 'Oral',
-          'combination': 'Combination of written and oral',
-        };
         
-        const individualGroupLabels: Record<string, string> = {
-          'individual': 'Individual assessment',
-          'group': 'Group assessment',
-          'combination': 'Combination',
-        };
         
-        const deliveryModeLabels: Record<string, string> = {
-          'physical': 'Physical attendance required',
-          'online-possible': 'Online possible',
-          'fully-online': 'Fully online',
-        };
         
-        const activityTypeLabels: Record<string, string> = {
-          'simulation': 'Simulation',
-          'portfolio': 'Portfolio with oral defence',
-          'case-based': 'Case-based assessment',
-          'project-based': 'Project-based assessment',
-          'practical-performance': 'Practical performance task',
-          'presentation': 'Presentation',
-          'observation-checklist': 'Observation checklist',
-          'other': pl.other,
-        };
         
         checkNewPage(20);
         
@@ -1064,7 +1039,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         doc.text('Overall assessment type', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(assessmentTypeLabels[assessmentData.assessmentType] || assessmentData.assessmentType || pl.toBeDetermined, margin + 3, yPos);
+        doc.text(pl.assessmentTypeLabels[assessmentData.assessmentType] || assessmentData.assessmentType || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Individual or Group
@@ -1073,7 +1048,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         doc.text('Assessment format', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(individualGroupLabels[assessmentData.individualOrGroup] || assessmentData.individualOrGroup || pl.toBeDetermined, margin + 3, yPos);
+        doc.text(pl.individualGroupLabels[assessmentData.individualOrGroup] || assessmentData.individualOrGroup || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Delivery Mode
@@ -1082,7 +1057,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         doc.text('Delivery mode', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(deliveryModeLabels[assessmentData.deliveryMode] || assessmentData.deliveryMode || pl.toBeDetermined, margin + 3, yPos);
+        doc.text(pl.deliveryModeLabels[assessmentData.deliveryMode] || assessmentData.deliveryMode || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Activity Types
@@ -1094,7 +1069,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.setFont('helvetica', 'normal');
           for (const type of assessmentData.activityTypes) {
             checkNewPage(8);
-            const typeLabel = activityTypeLabels[type] || type;
+            const typeLabel = pl.activityTypeLabels[type] || type;
             doc.text(`• ${typeLabel}`, margin + 6, yPos);
             yPos += 5;
           }
@@ -1197,33 +1172,8 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         const itemData = data.data[item.id] || {};
         const multimodalData = itemData.multimodalLearningData || {};
         
-        const contentRepLabels: Record<string, string> = {
-          'written': 'Written materials (texts, PDFs, articles)',
-          'visual': 'Visual materials (slides, diagrams, infographics)',
-          'video': 'Video materials (presentation videos)',
-          'audio': 'Audio explanations (podcasts)',
-          'interactive': 'Interactive digital content',
-          'demonstrations': 'Demonstrations or walkthroughs',
-          'other': 'Other format',
-        };
         
-        const activeEngagementLabels: Record<string, string> = {
-          'plenary': 'Discussions in plenary',
-          'peer-learning': 'Peer-learning interaction',
-          'exercises': 'Practical exercises or applied tasks',
-          'exploration': 'Exploration and experiencing together',
-          'reflection': 'Reflection activities',
-          'challenge-based': 'Challenge-based learning',
-          'other': pl.other,
-        };
         
-        const applicationLabels: Record<string, string> = {
-          'practice-tasks': 'Practice-oriented tasks',
-          'simulations': 'Simulations or scenarios',
-          'project-portfolio': 'Project or portfolio elements',
-          'real-world': 'Real-world or workplace-related activities',
-          'other': pl.other,
-        };
         
         checkNewPage(20);
         
@@ -1235,7 +1185,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.setFont('helvetica', 'normal');
           for (const contentItem of multimodalData.contentRepresentation) {
             checkNewPage(8);
-            const label = contentRepLabels[contentItem] || contentItem;
+            const label = pl.contentRepLabels[contentItem] || contentItem;
             doc.text(`• ${label}`, margin + 6, yPos);
             yPos += 5;
           }
@@ -1255,7 +1205,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.setFont('helvetica', 'normal');
           for (const engagementItem of multimodalData.activeEngagement) {
             checkNewPage(8);
-            const label = activeEngagementLabels[engagementItem] || engagementItem;
+            const label = pl.activeEngagementLabels[engagementItem] || engagementItem;
             doc.text(`• ${label}`, margin + 6, yPos);
             yPos += 5;
           }
@@ -1275,7 +1225,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.setFont('helvetica', 'normal');
           for (const transferItem of multimodalData.applicationTransfer) {
             checkNewPage(8);
-            const label = applicationLabels[transferItem] || transferItem;
+            const label = pl.applicationLabels[transferItem] || transferItem;
             doc.text(`• ${label}`, margin + 6, yPos);
             yPos += 5;
           }
@@ -1293,12 +1243,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.resourcesSupportOutcomesQuestion, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          const confirmLabels: Record<string, string> = {
-            'yes': pl.yes,
-            'partly': 'Partly',
-            'no': pl.no,
-          };
-          doc.text(confirmLabels[multimodalData.finalConfirmation] || multimodalData.finalConfirmation, margin + 3, yPos);
+          doc.text(pl.confirmLabels[multimodalData.finalConfirmation] || multimodalData.finalConfirmation, margin + 3, yPos);
           yPos += 6;
           
           // Add comment if provided
@@ -1447,23 +1392,8 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.learningActivitiesLabel, margin + 3, yPos);
           yPos += 8;
           
-          const deliveryLabels: Record<string, string> = {
-            'physical': 'Physical',
-            'hybrid': 'Hybrid',
-            'synchronous': 'Synchronous online',
-            'asynchronous': 'Asynchronous',
-          };
           
-          const timeLabels: Record<string, string> = {
-            'scheduled': 'Scheduled',
-            'flexible': 'Flexible',
-          };
           
-          const participationLabels: Record<string, string> = {
-            'individual': 'Individual',
-            'collaborative': 'Collaborative',
-            'mixed': 'Mixed',
-          };
           
           doc.setFont('helvetica', 'normal');
           for (const activity of filledActivities) {
@@ -1475,9 +1405,9 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             doc.setFontSize(8);
             doc.setFont('helvetica', 'normal');
             const details: string[] = [];
-            if (activity.deliveryMode) details.push(deliveryLabels[activity.deliveryMode] || activity.deliveryMode);
-            if (activity.timeStructure) details.push(timeLabels[activity.timeStructure] || activity.timeStructure);
-            if (activity.participationForm) details.push(participationLabels[activity.participationForm] || activity.participationForm);
+            if (activity.deliveryMode) details.push(pl.deliveryLabels[activity.deliveryMode] || activity.deliveryMode);
+            if (activity.timeStructure) details.push(pl.timeLabels[activity.timeStructure] || activity.timeStructure);
+            if (activity.participationForm) details.push(pl.participationLabels[activity.participationForm] || activity.participationForm);
             
             if (details.length > 0) {
               doc.text(`  ${details.join(' | ')}`, margin + 6, yPos);
@@ -1513,12 +1443,6 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         const itemData = data.data[item.id] || {};
         const assessmentData = itemData.designAssessmentData || {};
         
-        const gradingLabels: Record<string, string> = {
-          'pass-fail': 'Pass/Fail',
-          'eu-scale': 'EU grading scale',
-          'national': 'National scale',
-          'dual': 'Dual grading',
-        };
         
         // Assessment Process Description
         if (assessmentData.assessmentProcessDescription) {
@@ -1541,14 +1465,9 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.assessorsLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          const assessorTypeLabels: Record<string, string> = {
-            'internal': 'Internal assessor',
-            'external': 'External assessor',
-            'other': pl.other,
-          };
           for (const assessor of filledAssessors) {
             checkNewPage(8);
-            let assessorText = `• ${assessorTypeLabels[assessor.type] || assessor.type}`;
+            let assessorText = `• ${pl.assessorTypeLabels[assessor.type] || assessor.type}`;
             if (assessor.type === 'other' && assessor.otherDescription) {
               assessorText += `: ${assessor.otherDescription}`;
             }
@@ -1566,14 +1485,8 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.transparencyMeasuresLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          const measureLabels: Record<string, string> = {
-            'informed-performance': 'Learners are informed about what constitutes satisfactory performance',
-            'grading-basis': 'The basis for grading or pass/fail decisions is clearly described',
-            'shared-criteria': 'Assessors use shared criteria or rubrics to ensure consistent judgement',
-            'other': 'Other (please specify)',
-          };
           for (const measure of transparencyMeasures) {
-            const label = measureLabels[measure] || measure;
+            const label = pl.transparencyMeasureLabels[measure] || measure;
             const wrapped = doc.splitTextToSize(`• ${label}`, pageWidth - 2 * margin - 6);
             checkNewPage(wrapped.length * 5 + 2);
             doc.text(wrapped, margin + 6, yPos);
@@ -1595,12 +1508,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.assessmentAccessModelLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          const accessLabels: Record<string, string> = {
-            'open': 'Open assessment pathway',
-            'fixed': 'Fixed learning pathway (all defined learning activities / standalone elements must be completed)',
-            'partially-fixed': 'Partially Fixed learning pathway (only specified standalone parts must be completed)',
-          };
-          const accessLabel = accessLabels[assessmentData.assessmentAccessModel] || assessmentData.assessmentAccessModel;
+          const accessLabel = pl.accessModelLabels[assessmentData.assessmentAccessModel] || assessmentData.assessmentAccessModel;
           const accessLines = doc.splitTextToSize(accessLabel, pageWidth - 2 * margin - 6);
           checkNewPage(accessLines.length * 5 + 4);
           doc.text(accessLines, margin + 3, yPos);
@@ -1681,7 +1589,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.gradingSystemLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          let gradingText = gradingLabels[assessmentData.gradingSystem] || assessmentData.gradingSystem;
+          let gradingText = pl.gradingLabels[assessmentData.gradingSystem] || assessmentData.gradingSystem;
           if (assessmentData.gradingSystem === 'national' && assessmentData.gradingSystemCountry) {
             gradingText += ` (${assessmentData.gradingSystemCountry})`;
           }
@@ -1904,15 +1812,6 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
 
         // Accessibility checklist
         const accChecklist = techData.accessibilityChecklist || {};
-        const accLabels: Record<string, string> = {
-          multipleEngagement: 'Multiple means of engagement',
-          multipleRepresentation: 'Multiple means of representation',
-          multipleAction: 'Multiple means of action and expression',
-          perceivable: 'All information perceivable',
-          operable: 'User interface fully operable',
-          understandable: 'Content understandable',
-          robust: 'Robust and compatible with assistive technologies',
-        };
         const accEntries = Object.entries(accChecklist).filter(([, v]) => v);
         if (accEntries.length > 0) {
           checkNewPage(15);
@@ -1921,7 +1820,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const [key, val] of accEntries) {
-            const line = `• ${accLabels[key] || key}: ${val}`;
+            const line = `• ${pl.accessibilityLabels[key] || key}: ${val}`;
             const wrapped = doc.splitTextToSize(line, pageWidth - 2 * margin - 6);
             checkNewPage(wrapped.length * 5 + 2);
             doc.text(wrapped, margin + 6, yPos);
@@ -1936,11 +1835,6 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         const itemData = data.data[item.id] || {};
         const reuseData = itemData.contentReuseData || {};
         
-        const reuseLabels: Record<string, string> = {
-          'open-access': 'Open access',
-          'by-request': 'Available by request',
-          'no': 'Not available for reuse',
-        };
         
         checkNewPage(20);
         
@@ -1949,7 +1843,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         doc.text(pl.contentReuseWithinAlliance, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(reuseLabels[reuseData.reuseCondition] || reuseData.reuseCondition || pl.toBeDetermined, margin + 3, yPos);
+        doc.text(pl.reuseConditionLabels[reuseData.reuseCondition] || reuseData.reuseCondition || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Physical Presence
