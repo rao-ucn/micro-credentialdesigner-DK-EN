@@ -929,7 +929,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         // Interdisciplinary Perspectives
         checkNewPage(20);
         doc.setFont('helvetica', 'bold');
-        doc.text('Interdisciplinary or cross-sector perspectives', margin + 3, yPos);
+        doc.text(pl.interdisciplinaryPerspectivesQuestion, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -946,7 +946,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           }
         } else if (interdisciplinaryData.hasPerspectives === 'none') {
           doc.setFont('helvetica', 'italic');
-          doc.text('None appeared feasible at this time', margin + 3, yPos);
+          doc.text(pl.noneAppearedFeasible, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
         } else {
@@ -962,7 +962,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         // Overall Aim
         checkNewPage(20);
         doc.setFont('helvetica', 'bold');
-        doc.text('Overall aim', margin + 3, yPos);
+        doc.text(pl.overallAim, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -983,7 +983,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         // Learning Outcomes
         checkNewPage(25);
         doc.setFont('helvetica', 'bold');
-        doc.text('Learning outcomes', margin + 3, yPos);
+        doc.text(pl.learningOutcomesLabel, margin + 3, yPos);
         yPos += 8;
         
         const learningOutcomes = interdisciplinaryData.learningOutcomes || [];
@@ -1036,7 +1036,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         
         // Assessment Type
         doc.setFont('helvetica', 'bold');
-        doc.text('Overall assessment type', margin + 3, yPos);
+        doc.text(pl.overallAssessmentType, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         doc.text(pl.assessmentTypeLabels[assessmentData.assessmentType] || assessmentData.assessmentType || pl.toBeDetermined, margin + 3, yPos);
@@ -1045,7 +1045,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         // Individual or Group
         checkNewPage(15);
         doc.setFont('helvetica', 'bold');
-        doc.text('Assessment format', margin + 3, yPos);
+        doc.text(pl.assessmentFormat, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         doc.text(pl.individualGroupLabels[assessmentData.individualOrGroup] || assessmentData.individualOrGroup || pl.toBeDetermined, margin + 3, yPos);
@@ -1054,7 +1054,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         // Delivery Mode
         checkNewPage(15);
         doc.setFont('helvetica', 'bold');
-        doc.text('Delivery mode', margin + 3, yPos);
+        doc.text(pl.deliveryModeLabel, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         doc.text(pl.deliveryModeLabels[assessmentData.deliveryMode] || assessmentData.deliveryMode || pl.toBeDetermined, margin + 3, yPos);
@@ -1064,7 +1064,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         if (assessmentData.activityTypes?.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Assessment activity types', margin + 3, yPos);
+          doc.text(pl.assessmentActivityTypesLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const type of assessmentData.activityTypes) {
@@ -1264,10 +1264,10 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         const supplementaryData = itemData.supplementaryData || {};
         
         const decisions: { field: string; label: string }[] = [
-          { field: 'explorationDecision', label: 'Exploration and shared experiences' },
-          { field: 'reflectionDecision', label: 'Reflection activities' },
-          { field: 'challengeDecision', label: 'Challenge-based learning' },
-          { field: 'realWorldDecision', label: 'Real-world activities' },
+          { field: 'explorationDecision', label: pl.supplementaryDecisionLabels.explorationDecision },
+          { field: 'reflectionDecision', label: pl.supplementaryDecisionLabels.reflectionDecision },
+          { field: 'challengeDecision', label: pl.supplementaryDecisionLabels.challengeDecision },
+          { field: 'realWorldDecision', label: pl.supplementaryDecisionLabels.realWorldDecision },
         ];
         
         const hasDecisions = decisions.some(d => supplementaryData[d.field]);

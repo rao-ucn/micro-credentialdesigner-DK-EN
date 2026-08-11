@@ -72,6 +72,18 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
     // ---------- Phase 3.4 — Audience ----------
     primaryLearnersQuestion: 'Who are the primary learners?',
 
+    // ---------- Phase 3.5 — Interdisciplinary / overall aim / outcomes ----------
+    interdisciplinaryPerspectivesQuestion: 'Interdisciplinary or cross-sector perspectives',
+    noneAppearedFeasible: 'None appeared feasible at this time',
+    overallAim: 'Overall aim',
+    learningOutcomesLabel: 'Learning outcomes',
+
+    // ---------- Phase 3.10 — Define assessment (design PDF) ----------
+    overallAssessmentType: 'Overall assessment type',
+    assessmentFormat: 'Assessment format',
+    deliveryModeLabel: 'Delivery mode',
+    assessmentActivityTypesLabel: 'Assessment activity types',
+
     // ---------- Phase 3.6 — Assessment (design PDF) ----------
     activityDescriptionLabel: 'Activity description',
 
@@ -471,6 +483,18 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
 
     // ---------- Phase 3.4 — Audience ----------
     primaryLearnersQuestion: 'Hvem er de primære lærende?',
+
+    // ---------- Phase 3.5 — Interdisciplinary / overall aim / outcomes ----------
+    interdisciplinaryPerspectivesQuestion: 'Tværfaglige eller tværsektorielle perspektiver',
+    noneAppearedFeasible: 'Ingen perspektiver vurderedes relevante på nuværende tidspunkt',
+    overallAim: 'Overordnet formål',
+    learningOutcomesLabel: 'Læringsmål',
+
+    // ---------- Phase 3.10 — Define assessment (design PDF) ----------
+    overallAssessmentType: 'Overordnet evalueringstype',
+    assessmentFormat: 'Evalueringsformat',
+    deliveryModeLabel: 'Leveringsform',
+    assessmentActivityTypesLabel: 'Typer af evalueringsaktiviteter',
 
     // ---------- Phase 3.6 — Assessment (design PDF) ----------
     activityDescriptionLabel: 'Aktivitetsbeskrivelse',

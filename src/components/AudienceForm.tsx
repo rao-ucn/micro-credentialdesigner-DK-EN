@@ -28,7 +28,7 @@ export const AudienceForm = ({ value = {}, onChange, courseType = 'micro-credent
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">{lt.audTitle}</h3>
         <p className="text-sm text-muted-foreground">
-          {lt.audIntro.replaceAll('{course}', courseLabel)}
+          {lt.audIntro.replace(/{course}/g, courseLabel)}
         </p>
       </div>
 
@@ -37,7 +37,7 @@ export const AudienceForm = ({ value = {}, onChange, courseType = 'micro-credent
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Label className="text-base font-medium">
-              {lt.audQLabel.replaceAll('{course}', courseLabel)} <span className="text-destructive">*</span>
+              {lt.audQLabel.replace(/{course}/g, courseLabel)} <span className="text-destructive">*</span>
             </Label>
             <Dialog>
               <DialogTrigger asChild>
@@ -50,7 +50,7 @@ export const AudienceForm = ({ value = {}, onChange, courseType = 'micro-credent
                   <DialogTitle>{lt.audWhy}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm space-y-3">
-                  <p>{lt.audWhyText1.replaceAll('{course}', courseLabel)}</p>
+                  <p>{lt.audWhyText1.replace(/{course}/g, courseLabel)}</p>
                   <p>{lt.audWhyText2}</p>
                 </div>
               </DialogContent>
@@ -67,20 +67,20 @@ export const AudienceForm = ({ value = {}, onChange, courseType = 'micro-credent
                 </DialogHeader>
                 <div className="text-sm">
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>{lt.audInspireItem1.replaceAll('{course}', courseLabel)}</li>
+                    <li>{lt.audInspireItem1.replace(/{course}/g, courseLabel)}</li>
                     <li>{lt.audInspireItem2}</li>
                     <li>{lt.audInspireItem3}</li>
-                    <li>{lt.audInspireItem4.replaceAll('{course}', courseLabel)}</li>
+                    <li>{lt.audInspireItem4.replace(/{course}/g, courseLabel)}</li>
                     <li>{lt.audInspireItem5}</li>
                     <li>{lt.audInspireItem6}</li>
-                    <li>{lt.audInspireItem7.replaceAll('{course}', courseLabel)}</li>
+                    <li>{lt.audInspireItem7.replace(/{course}/g, courseLabel)}</li>
                   </ul>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
           <p className="text-sm text-muted-foreground">
-            {lt.audHelp.replaceAll('{course}', courseLabel)}
+            {lt.audHelp.replace(/{course}/g, courseLabel)}
           </p>
         </div>
         <Textarea
