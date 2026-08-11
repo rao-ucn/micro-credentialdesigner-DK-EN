@@ -17,40 +17,10 @@ import {
   PopoverContent as ReadMorePopoverContent,
   PopoverTrigger as ReadMorePopoverTrigger,
 } from '@/components/ui/popover';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
-// Bloom's taxonomy data for the info modal
-const BLOOM_TAXONOMY_DATA = [
-  {
-    domain: 'Knowledge',
-    definition: 'Remember previously learned information',
-    verbs: 'Arrange, Define, Describe, Duplicate, Identify, Label, List, Match, Memorize, Name, Order, Outline, Recognize, Relate, Recall, Repeat, Reproduce, Select, State'
-  },
-  {
-    domain: 'Comprehension',
-    definition: 'Demonstrate an understanding of the facts',
-    verbs: 'Classify, Convert, Defend, Describe, Discuss, Distinguish, Estimate, Explain, Express, Extend, Generalize, Give examples, Identify, Indicate, Infer, Locate, Paraphrase, Predict, Recognize, Rewrite, Review, Select, Summarize, Translate'
-  },
-  {
-    domain: 'Application',
-    definition: 'Apply knowledge to actual situations',
-    verbs: 'Apply, Change, Choose, Compute, Demonstrate, Discover, Dramatize, Employ, Illustrate, Interpret, Manipulate, Modify, Operate, Practice, Predict, Prepare, Produce, Relate, Schedule, Show, Sketch, Solve, Use, Write'
-  },
-  {
-    domain: 'Analysis',
-    definition: 'Break down objects or ideas into simpler parts and find evidence to support generalizations',
-    verbs: 'Analyze, Appraise, Break down, Calculate, Categorize, Compare, Contrast, Criticize, Diagram, Differentiate, Discriminate, Distinguish, Examine, Experiment, Identify, Illustrate, Infer, Model, Outline, Question, Relate, Select, Separate, Subdivide, Test'
-  },
-  {
-    domain: 'Synthesis',
-    definition: 'Compile component ideas into a new whole or propose alternative solutions',
-    verbs: 'Arrange, Assemble, Categorize, Collect, Combine, Comply, Compose, Construct, Create, Design, Develop, Devise, Explain, Formulate, Generate, Plan, Prepare, Rearrange, Reconstruct, Relate, Reorganize, Revise, Rewrite, Set up, Summarize, Synthesize, Tell, Write'
-  },
-  {
-    domain: 'Evaluation',
-    definition: 'Make and defend judgments based on internal evidence or external criteria',
-    verbs: 'Appraise, Argue, Assess, Attach, Choose, Compare, Conclude, Contrast, Defend, Describe, Discriminate, Estimate, Evaluate, Explain, Judge, Justify, Interpret, Relate, Predict, Rate, Select, Summarize, Support, Value'
-  }
-];
+// Bloom's taxonomy verb lists (kept in English as authoritative reference terms; domain/definition translated via lt in component)
 
 type FormulationApproach = 'bloom' | 'tuning';
 type CognitiveDomain = 'knowledge' | 'comprehension' | 'application' | 'analysis' | 'synthesis' | 'evaluation';
@@ -92,14 +62,6 @@ interface LearningOutcomesFormProps {
   standaloneSources?: Array<{ workingTitle?: string; documentId?: string; fileName?: string; data?: Record<string, any> }>;
 }
 
-const COGNITIVE_DOMAINS: { value: CognitiveDomain; label: string }[] = [
-  { value: 'knowledge', label: 'Knowledge' },
-  { value: 'comprehension', label: 'Comprehension' },
-  { value: 'application', label: 'Application' },
-  { value: 'analysis', label: 'Analysis' },
-  { value: 'synthesis', label: 'Synthesis' },
-  { value: 'evaluation', label: 'Evaluation' },
-];
 
 const VERBS_BY_DOMAIN: Record<CognitiveDomain, string[]> = {
   knowledge: [
@@ -148,17 +110,6 @@ const BLOOM_TO_EQF: Record<CognitiveDomain, EQFDimension> = {
   evaluation: 'responsibility',
 };
 
-const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
-  knowledge: 'Knowledge',
-  skills: 'Skills',
-  responsibility: 'Responsibility and autonomy',
-};
-
-const COMPETENCE_DIMENSIONS: { value: CompetenceDimension; label: string }[] = [
-  { value: 'knowledge', label: 'Knowledge' },
-  { value: 'skills', label: 'Skills' },
-  { value: 'responsibility_autonomy', label: 'Responsibility and autonomy' },
-];
 
 const COMPETENCE_TO_EQF: Record<CompetenceDimension, EQFDimension> = {
   knowledge: 'knowledge',
@@ -235,7 +186,39 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   onBreakSingleSourceIntegrity,
   standaloneSources,
 }) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
+
+  const COGNITIVE_DOMAINS: { value: CognitiveDomain; label: string }[] = [
+    { value: 'knowledge', label: lt.loBloomKnowledgeDomain },
+    { value: 'comprehension', label: lt.loBloomComprehensionDomain },
+    { value: 'application', label: lt.loBloomApplicationDomain },
+    { value: 'analysis', label: lt.loBloomAnalysisDomain },
+    { value: 'synthesis', label: lt.loBloomSynthesisDomain },
+    { value: 'evaluation', label: lt.loBloomEvaluationDomain },
+  ];
+
+  const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
+    knowledge: lt.daKnowledge,
+    skills: lt.daSkills,
+    responsibility: lt.daResponsibility,
+  };
+
+  const COMPETENCE_DIMENSIONS: { value: CompetenceDimension; label: string }[] = [
+    { value: 'knowledge', label: lt.daKnowledge },
+    { value: 'skills', label: lt.daSkills },
+    { value: 'responsibility_autonomy', label: lt.daResponsibility },
+  ];
+
+  const BLOOM_TAXONOMY_DATA = [
+    { domain: lt.loBloomKnowledgeDomain, definition: lt.loBloomKnowledgeDef, verbs: VERBS_BY_DOMAIN.knowledge.join(', ') },
+    { domain: lt.loBloomComprehensionDomain, definition: lt.loBloomComprehensionDef, verbs: VERBS_BY_DOMAIN.comprehension.join(', ') },
+    { domain: lt.loBloomApplicationDomain, definition: lt.loBloomApplicationDef, verbs: VERBS_BY_DOMAIN.application.join(', ') },
+    { domain: lt.loBloomAnalysisDomain, definition: lt.loBloomAnalysisDef, verbs: VERBS_BY_DOMAIN.analysis.join(', ') },
+    { domain: lt.loBloomSynthesisDomain, definition: lt.loBloomSynthesisDef, verbs: VERBS_BY_DOMAIN.synthesis.join(', ') },
+    { domain: lt.loBloomEvaluationDomain, definition: lt.loBloomEvaluationDef, verbs: VERBS_BY_DOMAIN.evaluation.join(', ') },
+  ];
   
   const [approach, setApproach] = useState<FormulationApproach | undefined>(
     data.formulationApproach
@@ -354,8 +337,8 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   };
 
   const getOutcomePrefix = (verb?: string) => {
-    if (!verb) return 'The learner must...';
-    return `The learner must ${verb.toLowerCase()}`;
+    if (!verb) return `${lt.loOutcomeTextDefault}...`;
+    return `${lt.loOutcomeTextDefault}${verb.toLowerCase()}`;
   };
 
   const composeTuningOutcome = (outcome: LearningOutcome): string => {
@@ -371,15 +354,15 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   const renderApproachSelector = () => (
     <Card className="p-6 space-y-5 border-primary/30 bg-primary/[0.02]">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Defining Learning Outcomes</h2>
+        <h2 className="text-2xl font-bold text-foreground">{lt.loSelectorTitle}</h2>
         <p className="text-sm text-muted-foreground mt-2">
-          Learning outcomes express what the learner must be able to do by the end of the {courseLabel}. Before you begin formulating outcomes, select the approach that best fits the nature of your learning offer.
+          {lt.loSelectorIntro.replace(/{course}/g, courseLabel)}
         </p>
       </div>
 
       <div className="space-y-3">
         <Label className="text-base font-medium">
-          Which approach will you use to formulate the learning outcomes?
+          {lt.loApproachQuestion}
         </Label>
 
         <RadioGroup
@@ -398,9 +381,9 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           >
             <RadioGroupItem value="bloom" id="approach-bloom" className="mt-0.5" />
             <div className="space-y-1">
-              <span className="font-medium text-foreground">Structured learning outcomes (Bloom approach)</span>
+              <span className="font-medium text-foreground">{lt.loBloomOptionTitle}</span>
               <p className="text-sm text-muted-foreground">
-                Recommended when learning outcomes can be expressed as discrete and measurable actions. This approach guides you through selecting a cognitive domain and an active verb from Bloom's taxonomy, then formulating each outcome as a single observable action. You can change the suggested active verbs if they do not match your intended learning outcome.
+                {lt.loBloomOptionText}
               </p>
             </div>
           </label>
@@ -416,9 +399,9 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           >
             <RadioGroupItem value="tuning" id="approach-tuning" className="mt-0.5" />
             <div className="space-y-1">
-              <span className="font-medium text-foreground">Competence-based learning outcomes (Tuning approach)</span>
+              <span className="font-medium text-foreground">{lt.loTuningOptionTitle}</span>
               <p className="text-sm text-muted-foreground">
-                Recommended when learning outcomes describe complex competences integrating several cognitive processes. This approach guides you through describing the competence focus, context, key actions and expected result, which are then combined into a single coherent statement.
+                {lt.loTuningOptionText}
               </p>
             </div>
           </label>
@@ -426,9 +409,9 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       </div>
 
       <div className="rounded-md border border-border bg-muted/30 p-4 text-sm text-muted-foreground space-y-2">
-        <p className="font-medium text-foreground">How are the two approaches related?</p>
+        <p className="font-medium text-foreground">{lt.loRelationTitle}</p>
         <p>
-          Bloom's taxonomy functions as an analytical reference in both approaches. In the structured approach, you select a single domain and verb explicitly. In the competence-based approach, the system may still detect Bloom verbs automatically to support EQF mapping. Regardless of the chosen approach, all outcomes must remain assessable and measurable.
+          {lt.loRelationText}
         </p>
       </div>
     </Card>
@@ -439,7 +422,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
     <div key={outcome.id} className="border border-border rounded-lg p-4 space-y-4 bg-muted/30">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">
-          Learning outcome {index + 1}
+          {lt.loOutcomeLabel.replace("{index}", String(index + 1))}
         </span>
         {outcomes.length > 1 && (
           <Button
@@ -450,7 +433,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
           >
             <Trash2 className="h-4 w-4 mr-1" />
-            Remove
+            {lt.loRemove}
           </Button>
         )}
       </div>
@@ -458,7 +441,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       {/* Cognitive Domain Dropdown */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Label className="text-sm font-medium">Select cognitive domain</Label>
+          <Label className="text-sm font-medium">{lt.loSelectDomain}</Label>
           <Dialog>
             <TooltipProvider>
               <Tooltip>
@@ -470,25 +453,25 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                   </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>View Bloom's taxonomy definitions and action verbs</p>
+                  <p>{lt.loViewBloomTooltip}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <DialogContent className="max-w-4xl max-h-[80vh]">
               <DialogHeader>
-                <DialogTitle>Bloom's taxonomy and action verbs</DialogTitle>
+                <DialogTitle>{lt.loBloomDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Bloom's taxonomy helps you construct learning outcomes that are observable, measurable and aligned with the intended level of cognitive complexity.
+                  {lt.loBloomDialogIntro}
                 </p>
                 <ScrollArea className="h-[400px] rounded-md border">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[120px] font-semibold">Domain</TableHead>
-                        <TableHead className="w-[200px] font-semibold">Definition</TableHead>
-                        <TableHead className="font-semibold">Verbs</TableHead>
+                        <TableHead className="w-[120px] font-semibold">{lt.loTableDomain}</TableHead>
+                        <TableHead className="w-[200px] font-semibold">{lt.loTableDefinition}</TableHead>
+                        <TableHead className="font-semibold">{lt.loTableVerbs}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -518,7 +501,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           }}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select a cognitive domain" />
+            <SelectValue placeholder={lt.loSelectDomainPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {COGNITIVE_DOMAINS.map((domain) => (
@@ -533,17 +516,17 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       {/* Active Verb Dropdown */}
       {outcome.cognitiveDomain && (
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Select active verb</Label>
+          <Label className="text-sm font-medium">{lt.loSelectVerb}</Label>
           <Select
             value={outcome.activeVerb || ''}
             onValueChange={(value) => updateOutcome(outcome.id, { activeVerb: value })}
           >
             <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select an active verb" />
+              <SelectValue placeholder={lt.loSelectVerbPlaceholder} />
             </SelectTrigger>
             <SelectContent className="max-h-[300px]">
               <SelectItem value="__define_own__" className="font-bold">
-                DEFINE OWN
+                {lt.loDefineOwn}
               </SelectItem>
               {VERBS_BY_DOMAIN[outcome.cognitiveDomain].map((verb) => (
                 <SelectItem key={verb} value={verb}>
@@ -558,16 +541,16 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       {/* Outcome Text */}
       {outcome.activeVerb && (
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Formulate the learning outcome the learner will be measured against</Label>
+          <Label className="text-sm font-medium">{lt.loFormulateOutcome}</Label>
           {outcome.activeVerb !== '__define_own__' && (
             <p className="text-xs text-muted-foreground mb-2">
-              (You can use the starter sentence below if you like, but remember to keep the selected active verb)
+              {lt.loStarterSentenceHint}
             </p>
           )}
           <Textarea
-            value={outcome.outcomeText || (outcome.activeVerb === '__define_own__' ? 'The learner must ' : getOutcomePrefix(outcome.activeVerb))}
+            value={outcome.outcomeText || (outcome.activeVerb === '__define_own__' ? lt.loOutcomeTextDefault : getOutcomePrefix(outcome.activeVerb))}
             onChange={(e) => updateOutcome(outcome.id, { outcomeText: e.target.value })}
-            placeholder={outcome.activeVerb === '__define_own__' ? 'The learner must ' : getOutcomePrefix(outcome.activeVerb)}
+            placeholder={outcome.activeVerb === '__define_own__' ? lt.loOutcomeTextDefault : getOutcomePrefix(outcome.activeVerb)}
             className="min-h-[80px] bg-background"
           />
         </div>
@@ -576,9 +559,9 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       {/* EQF Competence Dimension Selector */}
       {outcome.cognitiveDomain && outcome.activeVerb && (
         <div className="space-y-2 border-t border-border pt-4">
-          <Label className="text-sm font-medium">Suggested competence dimension</Label>
+          <Label className="text-sm font-medium">{lt.loSuggestedDimension}</Label>
           <p className="text-xs text-muted-foreground">
-            The suggested dimension is based on the selected Bloom domain and verb. As there is no one-to-one mapping between Bloom's taxonomy and EQF, you should select the best fit based on the intended learning outcome.
+            {lt.loSuggestedDimensionHelp}
           </p>
           <RadioGroup
             value={outcome.eqfDimension || (outcome.cognitiveDomain ? BLOOM_TO_EQF[outcome.cognitiveDomain] : '')}
@@ -599,7 +582,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                   <RadioGroupItem value={dim} />
                   <span>{EQF_DIMENSION_LABELS[dim]}</span>
                   {isSuggested && (
-                    <span className="text-xs text-primary ml-1">suggested</span>
+                    <span className="text-xs text-primary ml-1">{lt.loSuggested}</span>
                   )}
                 </label>
               );
@@ -614,104 +597,104 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   const renderFieldHelp = (field: 'competenceFocus' | 'context' | 'keyActions' | 'expectedResult') => {
     const content = {
       competenceFocus: {
-        title: 'How to define the competence focus',
+        title: lt.loFieldHelpCompetenceFocusTitle,
         body: (
           <div className="space-y-3">
-            <p>Describe the central capability the learner should demonstrate. Focus on what the learner will be able to do in practice.</p>
-            <p>Use clear and observable action verbs to make the outcome assessable. You may draw inspiration from Bloom's taxonomy, but you are not limited to a single domain.</p>
+            <p>{lt.loFieldHelpCompetenceFocusBody1}</p>
+            <p>{lt.loFieldHelpCompetenceFocusBody2}</p>
             <div>
-              <p className="font-medium">Avoid vague formulations such as:</p>
+              <p className="font-medium">{lt.loFieldHelpAvoidTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>understand</li><li>know</li><li>be familiar with</li><li>appreciate</li>
+                <li>{lt.loFieldHelpAvoid1}</li><li>{lt.loFieldHelpAvoid2}</li><li>{lt.loFieldHelpAvoid3}</li><li>{lt.loFieldHelpAvoid4}</li>
               </ul>
             </div>
             <div>
-              <p className="font-medium">Examples of useful verbs:</p>
+              <p className="font-medium">{lt.loFieldHelpVerbsTitle}</p>
               <div className="mt-1 space-y-1 text-muted-foreground">
-                <p><span className="font-medium text-foreground">Knowledge & understanding:</span> describe, explain, define, identify, outline, illustrate, discuss</p>
-                <p><span className="font-medium text-foreground">Application:</span> apply, use, demonstrate, perform, implement, solve</p>
-                <p><span className="font-medium text-foreground">Analysis:</span> analyse, compare, distinguish, examine, critique</p>
-                <p><span className="font-medium text-foreground">Synthesis / creation:</span> design, develop, construct, formulate, create, organise</p>
-                <p><span className="font-medium text-foreground">Evaluation:</span> evaluate, assess, judge, recommend, justify, defend</p>
+                <p><span className="font-medium text-foreground">{lt.loFieldHelpVerbsKnowledge}</span> {lt.loFieldHelpVerbsKnowledgeList}</p>
+                <p><span className="font-medium text-foreground">{lt.loFieldHelpVerbsApplication}</span> {lt.loFieldHelpVerbsApplicationList}</p>
+                <p><span className="font-medium text-foreground">{lt.loFieldHelpVerbsAnalysis}</span> {lt.loFieldHelpVerbsAnalysisList}</p>
+                <p><span className="font-medium text-foreground">{lt.loFieldHelpVerbsSynthesis}</span> {lt.loFieldHelpVerbsSynthesisList}</p>
+                <p><span className="font-medium text-foreground">{lt.loFieldHelpVerbsEvaluation}</span> {lt.loFieldHelpVerbsEvaluationList}</p>
               </div>
             </div>
             <div>
-              <p className="font-medium">Examples:</p>
+              <p className="font-medium">{lt.loFieldHelpExamplesTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>Manage the design of sustainability transition strategies</li>
-                <li>Develop and evaluate data-driven solutions</li>
+                <li>{lt.loFieldHelpCompetenceFocusExample1}</li>
+                <li>{lt.loFieldHelpCompetenceFocusExample2}</li>
               </ul>
             </div>
           </div>
         ),
       },
       context: {
-        title: 'How to describe the context',
+        title: lt.loFieldHelpContextTitle,
         body: (
           <div className="space-y-3">
-            <p>Describe the situation, environment, or level of complexity in which the competence is applied. This helps define the level and scope of the learning outcome.</p>
+            <p>{lt.loFieldHelpContextBody}</p>
             <div>
-              <p className="font-medium">Consider:</p>
+              <p className="font-medium">{lt.loFieldHelpConsiderTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>Complexity (simple vs complex situations)</li>
-                <li>Setting (organisational, societal, technical)</li>
-                <li>Degree of uncertainty or autonomy</li>
+                <li>{lt.loFieldHelpContextConsider1}</li>
+                <li>{lt.loFieldHelpContextConsider2}</li>
+                <li>{lt.loFieldHelpContextConsider3}</li>
               </ul>
             </div>
             <div>
-              <p className="font-medium">Examples:</p>
+              <p className="font-medium">{lt.loFieldHelpExamplesTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>In complex and context-dependent sustainability challenges</li>
-                <li>In interdisciplinary project environments</li>
-                <li>In real-world organisational or policy contexts</li>
-                <li>Under conditions of uncertainty and multiple stakeholders</li>
+                <li>{lt.loFieldHelpContextExample1}</li>
+                <li>{lt.loFieldHelpContextExample2}</li>
+                <li>{lt.loFieldHelpContextExample3}</li>
+                <li>{lt.loFieldHelpContextExample4}</li>
               </ul>
             </div>
           </div>
         ),
       },
       keyActions: {
-        title: 'How to describe key actions or processes',
+        title: lt.loFieldHelpKeyActionsTitle,
         body: (
           <div className="space-y-3">
-            <p>Describe the main processes, practices, or activities that characterise the competence in action. Multiple actions are expected and should reflect how the competence is applied in practice.</p>
+            <p>{lt.loFieldHelpKeyActionsBody}</p>
             <div>
-              <p className="font-medium">You may include combinations of:</p>
+              <p className="font-medium">{lt.loFieldHelpKeyActionsCombineTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>analysis</li><li>design</li><li>collaboration</li><li>implementation</li><li>evaluation</li>
+                <li>{lt.loFieldHelpKeyActionsCombine1}</li><li>{lt.loFieldHelpKeyActionsCombine2}</li><li>{lt.loFieldHelpKeyActionsCombine3}</li><li>{lt.loFieldHelpKeyActionsCombine4}</li><li>{lt.loFieldHelpKeyActionsCombine5}</li>
               </ul>
             </div>
-            <p className="text-muted-foreground">Avoid reducing the competence to a single action.</p>
+            <p className="text-muted-foreground">{lt.loFieldHelpKeyActionsAvoid}</p>
             <div>
-              <p className="font-medium">Examples:</p>
+              <p className="font-medium">{lt.loFieldHelpExamplesTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>Conduct contextual analysis and develop solution scenarios</li>
-                <li>Collaborate with stakeholders and integrate multiple perspectives</li>
-                <li>Evaluate strategic options and adapt solutions</li>
-                <li>Combine data analysis with co-creation processes</li>
+                <li>{lt.loFieldHelpKeyActionsExample1}</li>
+                <li>{lt.loFieldHelpKeyActionsExample2}</li>
+                <li>{lt.loFieldHelpKeyActionsExample3}</li>
+                <li>{lt.loFieldHelpKeyActionsExample4}</li>
               </ul>
             </div>
           </div>
         ),
       },
       expectedResult: {
-        title: 'How to define the expected result or impact',
+        title: lt.loFieldHelpExpectedResultTitle,
         body: (
           <div className="space-y-3">
-            <p>Describe what the learner ultimately achieves by applying the competence. This reflects the value, contribution, or outcome of their actions.</p>
+            <p>{lt.loFieldHelpExpectedResultBody}</p>
             <div>
-              <p className="font-medium">Focus on:</p>
+              <p className="font-medium">{lt.loFieldHelpExpectedResultFocusTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>impact</li><li>contribution</li><li>change created</li>
+                <li>{lt.loFieldHelpExpectedResultFocus1}</li><li>{lt.loFieldHelpExpectedResultFocus2}</li><li>{lt.loFieldHelpExpectedResultFocus3}</li>
               </ul>
             </div>
             <div>
-              <p className="font-medium">Examples:</p>
+              <p className="font-medium">{lt.loFieldHelpExamplesTitle}</p>
               <ul className="list-disc pl-5 mt-1 space-y-0.5 text-muted-foreground">
-                <li>Contribute to sustainable organisational change</li>
-                <li>Enable effective decision-making in complex environments</li>
-                <li>Support innovation and development in professional practice</li>
-                <li>Improve processes, outcomes, or stakeholder collaboration</li>
+                <li>{lt.loFieldHelpExpectedResultExample1}</li>
+                <li>{lt.loFieldHelpExpectedResultExample2}</li>
+                <li>{lt.loFieldHelpExpectedResultExample3}</li>
+                <li>{lt.loFieldHelpExpectedResultExample4}</li>
               </ul>
             </div>
           </div>
@@ -731,7 +714,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                 </button>
               </DialogTrigger>
             </TooltipTrigger>
-            <TooltipContent><p>View guidance and examples</p></TooltipContent>
+            <TooltipContent><p>{lt.loFieldHelpTooltip}</p></TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <DialogContent className="max-w-2xl max-h-[80vh]">
@@ -754,17 +737,17 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         </button>
       </ReadMorePopoverTrigger>
       <ReadMorePopoverContent className="w-80 text-sm space-y-3">
-        <p>You can read more about the Tuning approach and how to formulate degree programme profiles in:</p>
-        <p className="font-medium">A Tuning Guide to Formulating Degree Programme Profiles</p>
+        <p>{lt.loTuningReadMore1}</p>
+        <p className="font-medium">{lt.loTuningReadMoreGuideTitle}</p>
         <p>
-          A Guide to Formulating Degree Programme Profiles can be found on this resource page:{' '}
+          {lt.loTuningReadMore2}{' '}
           <a
             href="https://tuningacademy.org/publications/tuning-general-publications/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline"
           >
-            Tuning General Publications – Tuning Academy
+            {lt.loTuningReadMoreLinkText}
           </a>
         </p>
       </ReadMorePopoverContent>
@@ -780,7 +763,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       <div key={outcome.id} className="border border-border rounded-lg p-4 space-y-5 bg-muted/30">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">
-            Learning outcome {index + 1}
+            {lt.loOutcomeLabel.replace("{index}", String(index + 1))}
           </span>
           {outcomes.length > 1 && (
             <Button
@@ -791,7 +774,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="h-4 w-4 mr-1" />
-              Remove
+              {lt.loRemove}
             </Button>
           )}
         </div>
@@ -799,14 +782,14 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {/* 1. Competence Focus */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-           <Label className="text-sm font-medium">Competence focus</Label>
+           <Label className="text-sm font-medium">{lt.loCompetenceFocusLabel}</Label>
             {renderFieldHelp('competenceFocus')}
           </div>
-          <p className="text-xs text-muted-foreground">What capability should the learner demonstrate? Describe the central capability or professional competence the learner should develop.</p>
+          <p className="text-xs text-muted-foreground">{lt.loCompetenceFocusHelp}</p>
           <Textarea
             value={outcome.competenceFocus || ''}
             onChange={(e) => updateOutcome(outcome.id, { competenceFocus: e.target.value })}
-            placeholder="e.g. manage the design of a sustainability transition"
+            placeholder={lt.loCompetenceFocusPlaceholder}
             className="min-h-[60px] bg-background"
           />
         </div>
@@ -814,14 +797,14 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {/* 2. Context of Application */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Context of application</Label>
+            <Label className="text-sm font-medium">{lt.loContextLabel}</Label>
             {renderFieldHelp('context')}
           </div>
-          <p className="text-xs text-muted-foreground">In what context or situation should the competence be applied? Describe the context, conditions, or complexity of the situation.</p>
+          <p className="text-xs text-muted-foreground">{lt.loContextHelp}</p>
           <Textarea
             value={outcome.contextOfApplication || ''}
             onChange={(e) => updateOutcome(outcome.id, { contextOfApplication: e.target.value })}
-            placeholder="e.g. in complex and context-dependent sustainability challenges"
+            placeholder={lt.loContextPlaceholder}
             className="min-h-[60px] bg-background"
           />
         </div>
@@ -829,14 +812,14 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {/* 3. Key Actions or Processes */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Key actions or processes</Label>
+            <Label className="text-sm font-medium">{lt.loKeyActionsLabel}</Label>
             {renderFieldHelp('keyActions')}
           </div>
-          <p className="text-xs text-muted-foreground">Which actions or processes may be involved? Describe relevant processes that may contribute to the competence. Multiple processes are allowed.</p>
+          <p className="text-xs text-muted-foreground">{lt.loKeyActionsHelp}</p>
           <Textarea
             value={outcome.keyActions || ''}
             onChange={(e) => updateOutcome(outcome.id, { keyActions: e.target.value })}
-            placeholder="e.g. drawing on contextual analysis and co-creation with stakeholders"
+            placeholder={lt.loKeyActionsPlaceholder}
             className="min-h-[60px] bg-background"
           />
         </div>
@@ -844,38 +827,38 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {/* 4. Expected Result or Impact */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Expected result or impact</Label>
+            <Label className="text-sm font-medium">{lt.loExpectedResultLabel}</Label>
             {renderFieldHelp('expectedResult')}
             
           </div>
-          <p className="text-xs text-muted-foreground">What should the learner ultimately be able to achieve? Describe the expected outcome, value, or impact of applying the competence.</p>
+          <p className="text-xs text-muted-foreground">{lt.loExpectedResultHelp}</p>
           <Textarea
             value={outcome.expectedResult || ''}
             onChange={(e) => updateOutcome(outcome.id, { expectedResult: e.target.value })}
-            placeholder="e.g. contribute to sustainable organisational change"
+            placeholder={lt.loExpectedResultPlaceholder}
             className="min-h-[60px] bg-background"
           />
         </div>
 
         {/* Draft learning outcome section */}
         <div className="space-y-3 pt-2 border-t border-border">
-          <Label className="text-sm font-medium">Draft learning outcome</Label>
+          <Label className="text-sm font-medium">{lt.loDraftLabel}</Label>
           <Textarea
             value={outcome.composedOutcome ?? (draft || '')}
             onChange={(e) => updateOutcome(outcome.id, { composedOutcome: e.target.value })}
-            placeholder="The draft learning outcome will appear here as you fill in the fields above."
+            placeholder={lt.loDraftPlaceholder}
             className="min-h-[100px] bg-background"
           />
           <p className="text-xs text-muted-foreground">
-            This draft is composed automatically from the fields above. Review and refine the wording to ensure it accurately reflects the intended competence.
+            {lt.loDraftHelp}
           </p>
         </div>
 
         {/* Optional competence dimension multi-select */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Competence dimension <span className="text-muted-foreground font-normal">(optional)</span></Label>
+          <Label className="text-sm font-medium">{lt.loCompetenceDimensionLabel} <span className="text-muted-foreground font-normal">{lt.loOptional}</span></Label>
           <p className="text-xs text-muted-foreground">
-            Select the competence dimension(s) addressed by this learning outcome. Multiple selections are allowed.
+            {lt.loCompetenceDimensionHelp}
           </p>
           <div className="flex flex-wrap gap-2">
             {COMPETENCE_DIMENSIONS.map((dim) => {
@@ -907,7 +890,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {/* Detected Bloom verbs */}
         {(outcome.composedOutcome || draft) && detectedVerbs.length > 0 && (
           <div className="text-xs text-muted-foreground flex items-center gap-1 flex-wrap">
-            <span className="font-medium">Detected Bloom verbs:</span>
+            <span className="font-medium">{lt.loDetectedVerbs}</span>
             {detectedVerbs.slice(0, 6).map((v, i) => (
               <span key={i} className="inline-flex items-center rounded-full border border-border bg-background px-2 py-0.5">
                 {v.verb} <span className="text-muted-foreground/60 ml-1">({v.domain})</span>
@@ -925,7 +908,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            How should the learning outcomes for this {courseLabel} be defined?
+            {lt.loOutcomesQuestion.replace(/{course}/g, courseLabel)}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -935,25 +918,25 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.loWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm space-y-3">
                 <p>
-                  Learning outcomes define the specific and observable actions that the learner must perform. Well-formulated learning outcomes support the assessment design and ensure transparency.
+                  {lt.loWhyText}
                 </p>
                 {approach === 'bloom' ? (
                   <>
-                    <p className="font-medium">Examples of Bloom-structured outcomes:</p>
+                    <p className="font-medium">{lt.loWhyBloomExamplesTitle}</p>
                     <ul className="list-disc pl-5 space-y-1">
-                      <li>"The learner must analyze stakeholder feedback to identify recurring patterns."</li>
-                      <li>"The learner must apply ethical guidelines when evaluating case scenarios."</li>
+                      <li>{lt.loWhyBloomExample1}</li>
+                      <li>{lt.loWhyBloomExample2}</li>
                     </ul>
                   </>
                 ) : (
                   <>
-                    <p className="font-medium">Example of a competence-based outcome:</p>
+                    <p className="font-medium">{lt.loWhyTuningExampleTitle}</p>
                     <ul className="list-disc pl-5 space-y-1">
-                      <li>"You will manage the design of an impactful sustainability transition for one or more complex issues in a resilient, context-dependent manner, drawing on contextual analysis and co-creation with stakeholders."</li>
+                      <li>{lt.loWhyTuningExample1}</li>
                     </ul>
                   </>
                 )}
@@ -968,24 +951,24 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.loInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 {approach === 'bloom' ? (
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Select the cognitive domain that best reflects the required performance.</li>
-                    <li>Choose one active verb from Bloom's taxonomy appropriate for the selected domain.</li>
-                    <li>Write only one clear and observable action per learning outcome.</li>
-                    <li>Keep the language concrete and avoid abstract phrasing.</li>
-                    <li>Use the starter sentence to maintain consistency across all outcomes.</li>
+                    <li>{lt.loInspireBloom1}</li>
+                    <li>{lt.loInspireBloom2}</li>
+                    <li>{lt.loInspireBloom3}</li>
+                    <li>{lt.loInspireBloom4}</li>
+                    <li>{lt.loInspireBloom5}</li>
                   </ul>
                 ) : (
                   <ul className="list-disc pl-5 space-y-2">
-                    <li>Start with the capability the learner should demonstrate after completing the course.</li>
-                    <li>Describe the context or situation in which the competence applies.</li>
-                    <li>Identify the key actions or cognitive processes involved (these may span multiple Bloom domains).</li>
-                    <li>Specify the expected result or impact of the competence.</li>
-                    <li>Combine these elements into one coherent statement that remains assessable.</li>
+                    <li>{lt.loInspireTuning1}</li>
+                    <li>{lt.loInspireTuning2}</li>
+                    <li>{lt.loInspireTuning3}</li>
+                    <li>{lt.loInspireTuning4}</li>
+                    <li>{lt.loInspireTuning5}</li>
                   </ul>
                 )}
               </div>
@@ -999,12 +982,12 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                 </button>
               </ReadMorePopoverTrigger>
               <ReadMorePopoverContent className="w-96 text-sm space-y-2">
-                <p>You can explore the theoretical foundation of the revised Bloom's taxonomy in:</p>
+                <p>{lt.loBloomReadMore1}</p>
                 <p className="italic">
-                  Krathwohl, D. R. (2002). A Revision of Bloom's Taxonomy: An Overview.
+                  {lt.loBloomReadMoreCitation}
                 </p>
                 <p>
-                  DOI:{' '}
+                  {lt.loBloomReadMoreDoiLabel}{' '}
                   <a
                     href="https://doi.org/10.1207/s15430421tip4104_2"
                     target="_blank"
@@ -1014,18 +997,18 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                     10.1207/s15430421tip4104_2
                   </a>
                 </p>
-                <p>This article provides a conceptual understanding of the taxonomy and its categories.</p>
-                <p>You may also search for additional explanations and interpretations here:</p>
+                <p>{lt.loBloomReadMore2}</p>
+                <p>{lt.loBloomReadMore3}</p>
                 <a
                   href="https://www.google.com/search?q=Blooms+taxononomy+reviesed"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
                 >
-                  Search: Bloom's taxonomy revised
+                  {lt.loBloomReadMoreSearchText}
                 </a>
                 <p className="text-xs text-muted-foreground italic">
-                  Note: A general search link is provided to reduce the risk of outdated or broken external links.
+                  {lt.loBloomReadMoreNote}
                 </p>
               </ReadMorePopoverContent>
             </ReadMorePopover>
@@ -1036,13 +1019,13 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
         {approach === 'bloom' && (
           <div className="text-sm text-muted-foreground space-y-2 max-w-2xl">
             <p>
-              In this step, you define learning outcomes using Bloom's taxonomy as a structured classification framework. You will select a cognitive domain and an active verb to formulate each learning outcome as a clear, observable action.
+              {lt.loBloomIntro1}
             </p>
             <p>
-              Bloom's taxonomy helps distinguish between different levels of cognitive complexity (e.g. application, analysis, evaluation) and ensures that learning outcomes are aligned with the intended level of learning.
+              {lt.loBloomIntro2}
             </p>
             <p>
-              The selected cognitive classification will later be used to support and validate how your learning outcomes are formulated and structured when they are generated.
+              {lt.loBloomIntro3}
             </p>
           </div>
         )}
@@ -1052,8 +1035,8 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             {(() => {
               const hasBloom = outcomes.some(o => o.approach === 'bloom');
               const hasTuning = outcomes.some(o => o.approach === 'tuning');
-              if (hasBloom && hasTuning) return 'Mixed (Bloom + Tuning)';
-              return approach === 'bloom' ? 'Bloom structured' : 'Competence-based (Tuning)';
+              if (hasBloom && hasTuning) return lt.loMixedBadge;
+              return approach === 'bloom' ? lt.loBloomBadge : lt.loTuningBadge;
             })()}
           </span>
           {courseType !== 'composite-micro-credential' && (
@@ -1067,7 +1050,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                 );
                 if (hasContent) {
                   const confirmed = window.confirm(
-                    'Changing the approach will discard the current learning outcomes. Continue?'
+                    lt.loChangeApproachConfirm
                   );
                   if (!confirmed) return;
                 }
@@ -1080,7 +1063,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               }}
               className="text-xs text-primary hover:underline"
             >
-              Change approach
+              {lt.loChangeApproach}
             </button>
           )}
         </div>
@@ -1093,7 +1076,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-3">
             <Lock className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
             <p className="text-xs text-foreground">
-              Learning outcomes are inherited from the standalone courses that compose this micro-credential. They are locked here to preserve the integrity of the original quality-assured units. Each outcome shows which standalone course it comes from.
+              {lt.loCompositeLocked}
             </p>
           </div>
           <div className="space-y-2">
@@ -1104,7 +1087,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                 }
                 const verb = outcome.activeVerb ? `${outcome.activeVerb} ` : '';
                 const body = outcome.outcomeText?.trim() || '';
-                return body ? `The learner must ${verb}${body}` : '';
+                return body ? `${lt.loOutcomeTextDefault}${verb}${body}` : '';
               })();
               const titles = Array.isArray(outcome._sourceTitles) ? outcome._sourceTitles.filter(Boolean) : [];
               return (
@@ -1117,7 +1100,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                       {index + 1}.
                     </span>
                     <p className="text-sm text-foreground flex-1">
-                      {text || <span className="italic text-muted-foreground">(no outcome text)</span>}
+                      {text || <span className="italic text-muted-foreground">{lt.loNoOutcomeText}</span>}
                     </p>
                   </div>
                   {titles.length > 0 && (
@@ -1128,7 +1111,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                           className="inline-flex items-center gap-1 text-[11px] rounded-full border border-border bg-background px-2 py-0.5 text-muted-foreground"
                         >
                           <BookOpen className="h-3 w-3" />
-                          From: {t}
+                          {lt.loFrom} {t}
                         </span>
                       ))}
                     </div>
@@ -1157,7 +1140,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add another learning outcome
+            {lt.loAddAnother}
           </Button>
         </>
       )}
@@ -1176,7 +1159,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               className="gap-2"
             >
               <CheckCircle className="h-4 w-4" />
-              All learning outcomes have been defined
+              {lt.loAllDefined}
             </Button>
             <Dialog>
               <DialogTrigger asChild>
@@ -1186,14 +1169,14 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>About the EQF Summary</DialogTitle>
+                  <DialogTitle>{lt.loEqfAboutTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="text-sm">
                   <p>
-                    This overview groups your learning outcomes into the three EQF dimensions.
+                    {lt.loEqfAboutText1}
                     {approach === 'bloom'
-                      ? ' Mapping is based on the Bloom cognitive domain you selected for each outcome.'
-                      : ' For competence-based outcomes, Bloom verbs are detected automatically to infer the most relevant EQF dimension.'}
+                      ? lt.loEqfAboutBloom
+                      : lt.loEqfAboutTuning}
                   </p>
                 </div>
               </DialogContent>
@@ -1203,9 +1186,9 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           {showEQFSummary && (
             <div className="border border-border rounded-lg p-4 bg-muted/20 space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-foreground">Summary of learning outcomes</h3>
+                <h3 className="text-lg font-semibold text-foreground">{lt.loEqfSummaryTitle}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Your learning outcomes grouped by EQF dimensions.
+                  {lt.loEqfSummaryHelp}
                 </p>
               </div>
               
@@ -1226,7 +1209,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
                     </Table>
                   ) : (
                     <p className="text-sm text-muted-foreground italic">
-                      No learning outcomes mapped to this dimension.
+                      {lt.loNoOutcomesForDimension}
                     </p>
                   )}
                 </div>
@@ -1256,7 +1239,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
           ? inter.learningOutcomes
           : [];
         return {
-          title: src.workingTitle || src.fileName || src.documentId || 'Uploaded source',
+          title: src.workingTitle || src.fileName || src.documentId || lt.loUploadedSourceFallback,
           documentId: src.documentId,
           outcomes: los.filter((lo) => isOutcomeComplete(lo)),
         };
@@ -1273,10 +1256,10 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-primary" />
                 <span className="text-sm font-medium text-foreground">
-                  Learning outcomes from uploaded source files
+                  {lt.loSourceRefTitle}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  (read-only reference — for inspiration only)
+                  {lt.loSourceRefNote}
                 </span>
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
@@ -1284,7 +1267,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             <CollapsibleContent>
               <div className="px-4 pb-4 space-y-4">
                 <p className="text-xs text-muted-foreground">
-                  These learning outcomes come from the files you uploaded. Define your own learning outcomes for this new micro-credential below — you may use these as inspiration, but they are not copied into your draft.
+                  {lt.loSourceRefHelp}
                 </p>
                 {sourceReferenceOutcomes.map((src, idx) => (
                   <div key={src.documentId || idx} className="space-y-2">
@@ -1328,31 +1311,31 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove learning outcome?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.loRemoveOutcomeTitle}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 {courseType === 'composite-micro-credential' ? (
                   <>
                     <p>
-                      This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                      {lt.loRemoveCompositeText1}
                     </p>
                     <p>
-                      Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole, because the teaching content was designed with the explicit purpose of meeting these learning outcomes.
+                      {lt.loRemoveCompositeText2}
                     </p>
                     <p>
-                      This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to learning outcomes must break that original structure.
+                      {lt.loRemoveCompositeText3}
                     </p>
                   </>
                 ) : (
                   <>
                     <p>
-                      This micro-credential is currently based directly on a single existing standalone course. If you remove a learning outcome, it will no longer be a faithful representation of that source course.
+                      {lt.loRemoveSingleText1}
                     </p>
                     <p>
-                      It will be converted back into a single combined standalone course that can be edited as a whole, because the teaching content was designed with the explicit purpose of meeting these learning outcomes.
+                      {lt.loRemoveSingleText2}
                     </p>
                     <p>
-                      This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                      {lt.loRemoveSingleText3}
                     </p>
                   </>
                 )}
@@ -1360,8 +1343,8 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setRemovalDialogStep('confirm')}>Continue</AlertDialogAction>
+            <AlertDialogCancel>{lt.loCancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setRemovalDialogStep('confirm')}>{lt.loContinue}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -1374,18 +1357,18 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.loAreYouSure}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {lt.loCannotBeUndone}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setRemovalDialogStep('warning')}>Go back</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setRemovalDialogStep('warning')}>{lt.loGoBack}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmRemoveOutcome}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Yes, continue
+              {lt.loYesContinue}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
