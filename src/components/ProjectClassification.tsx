@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { iscedBroadFields, getIscedBroad, getIscedNarrow, getIscedDetailed } from '@/data/isced';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 import { CourseType } from '@/types/course';
 
 interface Developer {
@@ -50,7 +48,9 @@ interface ProjectClassificationProps {
 export function ProjectClassification({ values, onChange, courseType = 'micro-credential', standaloneSources }: ProjectClassificationProps) {
   const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
   const [workingTitle, setWorkingTitle] = useState(values.workingTitle || '');
-  const [classification, setClassification] = useState(values.projectClassification || '');
+  // The classification choice has been removed — every activity follows the
+  // "approved activity" structure (single developing institution).
+  const [classification] = useState('approved');
   const [developers, setDevelopers] = useState<Developer[]>(values.developers || []);
   const [externalDevelopers, setExternalDevelopers] = useState<ExternalDeveloper[]>(values.externalDevelopers || []);
   const [iscedBroad, setIscedBroad] = useState(values.iscedBroadField || '');
@@ -249,18 +249,8 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
   };
 
   const isValid = () => {
-    if (!classification) return false;
     if (!iscedBroad) return false;
-    if (classification === 'approved' && developers.length < 1) return false;
-    if (classification === 'developed' && developers.length < 2) return false;
-    
-    // Check for different institutions in developed mode
-    if (classification === 'developed') {
-      const institutions = developers.map(d => d.institution.toLowerCase().trim()).filter(i => i);
-      const uniqueInstitutions = new Set(institutions);
-      if (uniqueInstitutions.size < 2) return false;
-    }
-    
+    if (developers.length < 1) return false;
     return true;
   };
 
@@ -273,19 +263,13 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       {/* Meta text */}
       <div className="bg-muted/30 border border-border rounded-lg p-6 space-y-4">
         <p className="text-foreground leading-relaxed">
-          Before starting the design process, it is essential to clarify under which conditions the learning activity is developed. Every activity must be classified as either an approved or a developed activity.
-        </p>
-        <p className="text-foreground leading-relaxed">
-          This distinction ensures transparency about ownership, responsibilities, and collaborative processes within the alliance.
+          Before starting the design process, it is essential to clarify under which conditions the learning activity is developed.
         </p>
         <p className="text-foreground leading-relaxed">
           An approved activity is a learning offer developed by a single institution and later aligned to the alliance framework. External stakeholders such as companies, NGOs, or public agencies can still participate in design or validation.
         </p>
         <p className="text-foreground leading-relaxed">
-          A developed activity is co-created and delivered by two or more partner institutions. These activities normally include shared ownership, distributed QA responsibility, and joint evaluation.
-        </p>
-        <p className="text-foreground leading-relaxed">
-          The classification defines who holds academic responsibility, how quality assurance is distributed, and which metadata and institutional references must be included in the final {courseLabel}.
+          This ensures transparency about ownership, responsibilities, and quality assurance, and defines which metadata and institutional references must be included in the final {courseLabel}.
         </p>
       </div>
 
@@ -330,94 +314,16 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
         </p>
       </div>
 
-      {/* Classification Selection */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Label className="text-base font-medium">
-            Project classification
-            <span className="text-destructive ml-1">*</span>
-          </Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Help"
-                >
-                  <Info className="w-4 h-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>Defines whether the activity is based on an existing institutional course or jointly developed within an alliance.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        
-        <p className="text-sm text-muted-foreground">
-          Select how this activity is organised within the alliance framework.
-        </p>
-
-        <RadioGroup value={classification} onValueChange={setClassification}>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card 
-              className={cn(
-                "relative cursor-pointer transition-all hover:border-primary",
-                classification === 'approved' && "border-primary ring-2 ring-primary/20"
-              )}
-              onClick={() => setClassification('approved')}
-            >
-              <div className="p-6 space-y-3">
-                <div className="flex items-start gap-3">
-                  <RadioGroupItem value="approved" id="approved" className="mt-1" />
-                  <Label htmlFor="approved" className="cursor-pointer flex-1">
-                    <div className="font-semibold text-lg text-foreground">Approved activity</div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      A course developed by a single institution and aligned to the alliance framework. External stakeholders may also contribute.
-                    </p>
-                  </Label>
-                </div>
-              </div>
-            </Card>
-
-            <Card 
-              className={cn(
-                "relative cursor-pointer transition-all hover:border-primary",
-                classification === 'developed' && "border-primary ring-2 ring-primary/20"
-              )}
-              onClick={() => setClassification('developed')}
-            >
-              <div className="p-6 space-y-3">
-                <div className="flex items-start gap-3">
-                  <RadioGroupItem value="developed" id="developed" className="mt-1" />
-                  <Label htmlFor="developed" className="cursor-pointer flex-1">
-                    <div className="font-semibold text-lg text-foreground">Developed activity</div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      A new course jointly designed and delivered by two or more partner institutions. External stakeholders may also participate.
-                    </p>
-                  </Label>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </RadioGroup>
-      </div>
-
-      {/* Developers Section - appears after classification is selected */}
+      {/* Developers Section */}
       {classification && (
         <div className="space-y-4">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-foreground">
-              {classification === 'approved' 
-                ? 'Developer (Institution)'
-                : 'Developers (Institutions)'}
+              Developer (Institution)
               <span className="text-destructive ml-1">*</span>
             </h3>
             <p className="text-sm text-muted-foreground">
-              {classification === 'approved' 
-                ? 'List the institution directly developing this activity. For approved activities, list your own institution.'
-                : 'List all institutions directly developing this activity. A minimum of 2 developers from different institutions is required for developed activities.'}
+              List the institution directly developing this activity. For approved activities, list your own institution.
             </p>
           </div>
 
@@ -543,11 +449,8 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
             )}
           </div>
 
-          {classification === 'approved' && developers.length < 1 && (
+          {developers.length < 1 && (
             <p className="text-sm text-destructive">At least 1 developer is required for approved activities.</p>
-          )}
-          {classification === 'developed' && developers.length < 2 && (
-            <p className="text-sm text-destructive">At least 2 developers from different institutions are required for developed activities.</p>
           )}
         </div>
       )}
@@ -560,7 +463,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
               External Developers / Stakeholders (Optional)
             </h3>
             <p className="text-sm text-muted-foreground">
-              External participants can be involved in both approved and developed activities. Use this section to record their role in co-design, validation, or pilot implementation.
+              External participants can be involved in an approved activity. Use this section to record their role in co-design, validation, or pilot implementation.
             </p>
           </div>
 
@@ -804,17 +707,11 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
 
 
       {/* Validation message - only shows when developers are incomplete */}
-      {!isValid() && classification && (
+      {!isValid() && (
         <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-          {classification === 'developed' && developers.length >= 2 && (() => {
-            const institutions = developers.map(d => d.institution.toLowerCase().trim()).filter(i => i);
-            const uniqueInstitutions = new Set(institutions);
-            return uniqueInstitutions.size < 2;
-          })() 
-            ? 'For developed activities, developers must be from at least 2 different institutions.'
-            : !iscedBroad
-              ? 'Please select the academic field of study (ISCED-F 2013) to continue.'
-              : 'Please complete the required developer information to continue.'}
+          {!iscedBroad
+            ? 'Please select the academic field of study (ISCED-F 2013) to continue.'
+            : 'Please complete the required developer information to continue.'}
         </div>
       )}
     </div>
