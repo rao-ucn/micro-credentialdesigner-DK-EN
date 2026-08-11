@@ -2506,9 +2506,9 @@ const Index = () => {
             </div>
             <hr className="border-primary/20" />
             <div>
-              <h3 className="text-sm font-semibold text-primary mb-1.5">📌 Forward reference – Meeting learner needs</h3>
+              <h3 className="text-sm font-semibold text-primary mb-1.5">{lt.forwardRefTitle}</h3>
               <p className="text-sm text-muted-foreground">
-                As you design content and learning activities in this phase, keep in mind that in Phase 6 you will be asked to describe how learners are expected to engage with the course — including flexibility, pacing, and self-organisation. The decisions you make here will directly inform that section.
+                {lt.forwardRefDesc}
               </p>
             </div>
           </div>
@@ -2561,7 +2561,7 @@ const Index = () => {
               })()}
             >
               <ChevronLeft className="mr-2 h-5 w-5" />
-              Previous Item
+              {lt.previousItem}
             </Button>
 
             <div className="flex items-center gap-3">
@@ -2572,7 +2572,7 @@ const Index = () => {
                   variant="outline"
                   size="lg"
                 >
-                  Come back later
+                  {lt.comeBackLater}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               )}
@@ -2584,7 +2584,7 @@ const Index = () => {
                   size="lg"
                   disabled={!isCurrentItemValid()}
                 >
-                  Complete Design
+                  {lt.completeDesign}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               ) : (
@@ -2594,7 +2594,7 @@ const Index = () => {
                   size="lg"
                   disabled={!isCurrentItemValid()}
                 >
-                  Next Item
+                  {lt.nextItem}
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               )}
@@ -2607,15 +2607,15 @@ const Index = () => {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Local Copy?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.deleteLocalCopyTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the local copy of this document. Make sure you have exported it as JSON if you want to keep a backup.
+              {lt.deleteLocalCopyDesc}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{lt.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              {lt.deleteButton}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -2625,41 +2625,41 @@ const Index = () => {
       <AlertDialog open={showSecurityCodeDialog} onOpenChange={setShowSecurityCodeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Document Created</AlertDialogTitle>
+            <AlertDialogTitle>{lt.documentCreatedTitle}</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="space-y-4">
                 <p>
-                  You are now starting the development of a{' '}
+                  {lt.startingDevelopmentPrefix}{' '}
                   <span className="font-semibold">
-                    {courseData?.courseType === 'micro-credential' ? 'Micro-Credential' : 'Standalone Course'}
+                    {courseData?.courseType === 'micro-credential' ? lt.microCredentialLabel : lt.standaloneCourseLabel}
                   </span>.
                 </p>
                 <div className="bg-muted/50 border border-border rounded-lg p-4">
-                  <p className="font-semibold mb-2">Your security code is:</p>
+                  <p className="font-semibold mb-2">{lt.yourSecurityCodeIs}</p>
                   <p className="text-3xl font-mono text-center bg-background px-4 py-3 rounded border-2 border-primary">
                     {securityCode}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Save this code securely. You'll need it to reopen the document.
+                    {lt.saveCodeSecurely}
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
                   <p className="font-semibold text-amber-800 flex items-center gap-2">
-                    ⚠️ Important: Save your work regularly!
+                    {lt.importantSaveWork}
                   </p>
                   <ul className="text-sm text-amber-700 list-disc list-inside space-y-1">
                     <li>
-                      <strong>Export your JSON file regularly</strong> — this is the safest way to backup your work.
+                      <strong>{lt.exportJsonRegularly}</strong> {lt.exportJsonRegularlyRest}
                     </li>
                     <li>
-                      The JSON file contains all information needed to restore your document.
+                      {lt.jsonContainsAllInfo}
                     </li>
                     <li>
-                      You can also generate a PDF at any time — it includes all recovery details.
+                      {lt.canGeneratePdfAnytime}
                     </li>
                     <li>
-                      <strong>Incomplete documents are automatically deleted after 6 months</strong> of inactivity.
+                      <strong>{lt.incompleteDocsDeleted}</strong> {lt.incompleteDocsDeletedRest}
                     </li>
                   </ul>
                 </div>
@@ -2673,10 +2673,10 @@ const Index = () => {
               className="flex items-center gap-2"
             >
               <FileDown className="h-4 w-4" />
-              Download PDF
+              {lt.downloadPdfButton}
             </Button>
             <AlertDialogAction onClick={() => setShowSecurityCodeDialog(false)}>
-              Continue
+              {lt.continueAction}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -2687,13 +2687,13 @@ const Index = () => {
         <AlertDialogContent className="max-w-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {getIncompleteItems().length > 0 ? 'Incomplete Items' : 'Design Complete'}
+              {getIncompleteItems().length > 0 ? lt.incompleteItemsTitle : lt.designCompleteTitle}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-4">
                 {getIncompleteItems().length > 0 ? (
                   <>
-                    <p>The following items still need to be completed:</p>
+                    <p>{lt.incompleteItemsIntro}</p>
                     <div className="max-h-60 overflow-y-auto space-y-2">
                       {getIncompleteItems().map((item, idx) => (
                         <div 
@@ -2715,30 +2715,30 @@ const Index = () => {
                       ))}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Click on an item to navigate to it.
+                      {lt.clickItemToNavigate}
                     </p>
                   </>
                 ) : (
                   <>
                     <p className="text-foreground">
-                      🎉 Congratulations! Your course design is complete.
+                      {lt.congratsComplete}
                     </p>
                     
                     {/* JSON Export - Primary backup */}
                     <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 space-y-3">
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         <Download className="h-5 w-5 text-primary" />
-                        Step 1: Download Your Backup File
+                        {lt.step1Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <strong>This is essential!</strong> The JSON file is your complete backup. Use it to restore and continue editing your design on any device.
+                        <strong>{lt.step1Desc.split('!')[0]}!</strong>{lt.step1Desc.split('!')[1]}
                       </p>
                       <Button onClick={() => {
                         handleExport();
                         setCompletionJsonDownloaded(true);
                       }} className={`w-full ${!completionJsonDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`} size="lg">
                         <Download className="mr-2 h-5 w-5" />
-                        Download JSON Backup
+                        {lt.downloadJsonBackup}
                       </Button>
                     </div>
 
@@ -2746,17 +2746,17 @@ const Index = () => {
                     <div className={`rounded-lg p-4 space-y-3 border ${completionPdfDownloaded ? 'bg-emerald-50 border-emerald-300' : completionJsonDownloaded ? 'bg-muted/50 border-border' : 'bg-muted/30 border-border opacity-60'}`}>
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         {completionPdfDownloaded ? <Check className="h-5 w-5 text-emerald-600" /> : <FileText className="h-5 w-5 text-muted-foreground" />}
-                        Step 2: Generate PDF Documentation
+                        {lt.step2Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        The PDF is a formatted document with all your design decisions. It includes a QR code and security code for quick access.
+                        {lt.step2Desc}
                       </p>
                       <Button onClick={async () => {
                         await handleGeneratePDF();
                         setCompletionPdfDownloaded(true);
                       }} variant="outline" className={`w-full ${completionJsonDownloaded && !completionPdfDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`} disabled={!completionJsonDownloaded || completionPdfDownloaded}>
                         <FileText className="mr-2 h-4 w-4" />
-                        {completionPdfDownloaded ? 'PDF Generated ✓' : 'Generate PDF'}
+                        {completionPdfDownloaded ? lt.pdfGeneratedCheck : lt.generatePdfButton}
                       </Button>
                     </div>
 
@@ -2764,15 +2764,15 @@ const Index = () => {
                     <div className={`rounded-lg p-4 space-y-3 ${completionJsonDownloaded && completionPdfDownloaded ? 'bg-primary/10 border border-primary/30' : 'bg-muted/30 border border-border opacity-60'}`}>
                       <p className="font-semibold text-foreground flex items-center gap-2">
                         <FileDown className="h-5 w-5 text-primary" />
-                        Step 3: Review your PDF
+                        {lt.step3Title}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Open the downloaded PDF and review your design decisions. If you are satisfied, close the designer. If changes are needed, continue editing.
+                        {lt.step3Desc}
                       </p>
                     </div>
 
                     <p className="text-xs text-muted-foreground text-center">
-                      ⚠️ Your work is only saved in this browser. Download the JSON file to keep your data safe!
+                      {lt.onlySavedInBrowser}
                     </p>
                   </>
                 )}
@@ -2781,7 +2781,7 @@ const Index = () => {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
             {getIncompleteItems().length > 0 ? (
-              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogCancel>{lt.closeButton}</AlertDialogCancel>
             ) : (
               <>
                 <Button
@@ -2791,7 +2791,7 @@ const Index = () => {
                   variant="outline"
                   className="w-full"
                 >
-                  Continue editing
+                  {lt.continueEditing}
                 </Button>
                 <Button
                   onClick={() => {
@@ -2811,7 +2811,7 @@ const Index = () => {
                   className={`w-full transition-colors ${completionJsonDownloaded && completionPdfDownloaded ? 'bg-primary hover:bg-primary/90' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
                   disabled={!(completionJsonDownloaded && completionPdfDownloaded)}
                 >
-                  Close template designer
+                  {lt.closeTemplateDesigner}
                 </Button>
               </>
             )}
@@ -2828,17 +2828,17 @@ const Index = () => {
       <Dialog open={showPhaseTransitionModal} onOpenChange={() => {}}>
         <DialogContent className="max-w-lg [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle className="text-xl">You are now entering the development phase</DialogTitle>
+            <DialogTitle className="text-xl">{lt.enteringDevelopmentPhase}</DialogTitle>
             <DialogDescription asChild>
               <div className="space-y-4 pt-2">
                 <p className="text-sm text-foreground">
-                  You are now moving from designing your micro-credential to developing concrete learning activities and assessment.
+                  {lt.movingToDevelopment}
                 </p>
                 <p className="text-sm text-foreground">
-                  At this stage, many course developers choose to pause, as the next phase requires focused work on teaching content, learning activities, and assessment design based on the framework you have defined.
+                  {lt.manyDevelopersPause}
                 </p>
                 <p className="text-sm font-semibold text-foreground">
-                  Regardless of whether you continue now or later, it is recommended to save your current progress as a checkpoint before proceeding by downloading the JSON and PDF summary.
+                  {lt.recommendSaveCheckpoint}
                 </p>
               </div>
             </DialogDescription>
@@ -2849,39 +2849,39 @@ const Index = () => {
               size="lg"
               className={`w-full transition-colors ${jsonDownloaded && pdfDownloaded ? 'bg-primary hover:bg-primary/90' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
             >
-              Continue to development phase
+              {lt.continueToDevelopmentPhase}
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
             <div className="flex flex-col sm:flex-row gap-2 w-full">
               <Button onClick={() => { handleExport(); setJsonDownloaded(true); }} variant="outline" className={`flex-1 ${!jsonDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`}>
                 <Download className="mr-2 h-4 w-4" />
-                Download JSON
+                {lt.downloadJson}
               </Button>
               <Button onClick={() => { handleGeneratePDF(); setPdfDownloaded(true); }} variant="outline" className={`flex-1 ${!pdfDownloaded ? 'animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] ring-2 ring-primary/50' : ''}`}>
                 <FileText className="mr-2 h-4 w-4" />
-                Download PDF summary
+                {lt.downloadPdfSummary}
               </Button>
             </div>
             {courseData?.courseType !== 'composite-micro-credential' && (
               <>
                 <p className="text-xs text-muted-foreground text-center">
-                  This auto-generated checklist summarises your design choices from Phases 3–4 and provides actionable reminders for Phase 5 development.
+                  {lt.didacticalGuideNote}
                 </p>
                 <Button
                   onClick={async () => {
                     if (!courseData) return;
                     try {
                       await generateDidacticalGuidePDF(courseData);
-                      toast({ title: 'Didactical Guide Generated', description: 'Your didactical guide checklist has been exported as PDF' });
+                      toast({ title: lt.didacticalGeneratedTitle, description: lt.didacticalGeneratedDesc });
                     } catch (error) {
-                      toast({ title: 'Generation Failed', description: 'Failed to generate didactical guide PDF', variant: 'destructive' });
+                      toast({ title: lt.didacticalFailedTitle, description: lt.didacticalFailedDesc, variant: 'destructive' });
                     }
                   }}
                   variant="outline"
                   className="w-full"
                 >
                   <FileDown className="mr-2 h-4 w-4" />
-                  Download Didactical Guide Checklist
+                  {lt.downloadDidacticalGuide}
                 </Button>
               </>
             )}
@@ -2893,7 +2893,7 @@ const Index = () => {
         <footer className="bg-muted/30 border-t border-border py-2 px-4">
           <div className="container mx-auto flex items-center justify-center gap-2">
             <Lock className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Security Code:</span>
+            <span className="text-xs text-muted-foreground">{lt.securityCodeFooter}</span>
             <span className="font-mono text-xs font-semibold">{securityCode}</span>
           </div>
         </footer>
