@@ -1114,37 +1114,33 @@ const Index = () => {
     <AlertDialog open={!!overwriteWarning} onOpenChange={(open) => { if (!open) setOverwriteWarning(null); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>A document with this ID is already saved</AlertDialogTitle>
+          <AlertDialogTitle>{lt.documentAlreadySavedTitle}</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-3 text-sm">
               <p>
-                Document ID <strong>{overwriteWarning?.data.documentId}</strong> is already
-                saved on this device.
+                {lt.docIdSavedPrefix} <strong>{overwriteWarning?.data.documentId}</strong> {lt.docIdSavedSuffix}
               </p>
               <p>
-                Your uploaded file was last updated{' '}
+                {lt.lastUpdatedPrefix}{' '}
                 <strong>
                   {overwriteWarning?.data.updatedAt
                     ? new Date(overwriteWarning.data.updatedAt).toLocaleString()
-                    : 'unknown'}
+                    : lt.unknownWord}
                 </strong>.
               </p>
               <p>
-                If these are different versions of the same document, overwriting will{' '}
-                <strong>permanently replace</strong> the saved version with your file.
+                {lt.differentVersionsPrefix}{' '}
+                <strong>{lt.permanentlyReplace}</strong> {lt.differentVersionsSuffix}
               </p>
               <p>
-                Alternatively, you can continue with a <strong>new ID</strong> — this saves
-                your uploaded file as a new document, equivalent to creating a new
-                micro-credential based on the uploaded file. The saved version is left
-                untouched.
+                {lt.alternativelyPrefix} <strong>{lt.newIdWord}</strong> {lt.alternativelySuffix}
               </p>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2">
           <AlertDialogCancel onClick={() => setOverwriteWarning(null)}>
-            Cancel
+            {lt.cancel}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={async () => {
@@ -1161,20 +1157,20 @@ const Index = () => {
                 setIsImportedDocument(false);
                 setOverwriteWarning(null);
                 toast({
-                  title: 'Saved as new document',
-                  description: `Your file was saved with a new ID: ${newId}. The saved version was not changed.`,
+                  title: lt.savedAsNewTitle,
+                  description: lt.savedAsNewDesc.replace('{newId}', String(newId)),
                 });
               } catch (e) {
                 console.error('Save as new document failed:', e);
                 toast({
-                  title: 'Save failed',
-                  description: e instanceof Error ? e.message : 'Could not save as a new document.',
+                  title: lt.saveFailedGenericTitle,
+                  description: e instanceof Error ? e.message : lt.saveAsNewFailedDesc,
                   variant: 'destructive',
                 });
               }
             }}
           >
-            Continue with new ID
+            {lt.continueWithNewId}
           </AlertDialogAction>
           <AlertDialogAction
             onClick={async () => {
@@ -1188,20 +1184,20 @@ const Index = () => {
                 setIsImportedDocument(false);
                 setOverwriteWarning(null);
                 toast({
-                  title: 'Saved version overwritten',
-                  description: 'The saved document was replaced with your uploaded file.',
+                  title: lt.overwrittenTitle,
+                  description: lt.overwrittenDesc,
                 });
               } catch (e) {
                 toast({
-                  title: 'Save failed',
-                  description: 'Could not overwrite the saved version.',
+                  title: lt.saveFailedGenericTitle,
+                  description: lt.overwriteFailedDesc,
                   variant: 'destructive',
                 });
               }
             }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Overwrite saved version
+            {lt.overwriteSavedVersion}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1227,16 +1223,16 @@ const Index = () => {
         ...courseData,
         displaySecurityCode: securityCode
       };
-      await generatePDF(dataForPDF);
+      await generatePDF(dataForPDF, language);
       toast({
-        title: 'PDF Generated',
-        description: 'Your course design has been exported as PDF',
+        title: lt.pdfGeneratedTitle,
+        description: lt.pdfGeneratedDesc,
       });
     } catch (error) {
       console.error('PDF generation error:', error);
       toast({
-        title: 'PDF Generation Failed',
-        description: error instanceof Error ? error.message : 'Failed to generate PDF',
+        title: lt.pdfFailedTitle,
+        description: error instanceof Error ? error.message : lt.pdfFailedDescFallback,
         variant: 'destructive',
       });
     }
@@ -1254,8 +1250,8 @@ const Index = () => {
     setShowDeleteDialog(false);
     
     toast({
-      title: 'Deleted',
-      description: 'Local copy deleted',
+      title: lt.deletedTitle,
+      description: lt.deletedDesc,
     });
   };
 

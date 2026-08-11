@@ -486,7 +486,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
 
     // ---------- Phase 4.4 / didactical guide — Multimodal ----------
     contentRepLabels: {
-      written: 'Skriftligt materiale (tekster, PDF'er, artikler)',
+      written: 'Skriftligt materiale (tekster, PDF-filer, artikler)',
       visual: 'Visuelt materiale (slides, diagrammer, infografik)',
       video: 'Videomateriale (præsentationsvideoer)',
       audio: 'Lydforklaringer (podcasts)',
@@ -742,7 +742,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
     contentRepresentationTitle: 'Indholdsrepræsentation',
     checklistVideo: 'Har du designet eller planlagt videoindhold til de lærende?',
     checklistAudio: 'Har du designet eller planlagt lydindhold (fx podcasts) til de lærende?',
-    checklistWritten: 'Har du forberedt skriftligt materiale (tekster, PDF'er, artikler)?',
+    checklistWritten: 'Har du forberedt skriftligt materiale (tekster, PDF-filer, artikler)?',
     checklistVisual: 'Har du forberedt visuelt materiale (slides, diagrammer, infografik)?',
     checklistInteractive: 'Har du designet interaktivt digitalt indhold til de lærende?',
     checklistDemonstrations: 'Har du planlagt demonstrationer eller gennemgange?',
