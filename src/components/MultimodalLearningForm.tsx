@@ -6,6 +6,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Check } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 interface MultimodalLearningFormProps {
   data: {
@@ -24,41 +26,44 @@ interface MultimodalLearningFormProps {
   basedOnSingleSource?: boolean;
 }
 
-const CONTENT_REPRESENTATION_OPTIONS = [
-  { id: 'written', label: 'Written materials (texts, PDFs, articles)' },
-  { id: 'visual', label: 'Visual materials (slides, diagrams, infographics)' },
-  { id: 'video', label: 'Video materials (presentation videos)' },
-  { id: 'audio', label: 'Audio explanations (podcasts)' },
-  { id: 'interactive', label: 'Interactive digital content' },
-  { id: 'demonstrations', label: 'Demonstrations or walkthroughs' },
-  { id: 'other', label: 'Other format' },
-];
-
-const ACTIVE_ENGAGEMENT_OPTIONS = [
-  { id: 'plenary', label: 'Discussions in plenary' },
-  { id: 'peer-learning', label: 'Peer-learning interaction' },
-  { id: 'exercises', label: 'Practical exercises or applied tasks' },
-  { id: 'exploration', label: 'Exploration and experiencing together' },
-  { id: 'reflection', label: 'Reflection activities' },
-  { id: 'challenge-based', label: 'Challenge-based learning' },
-  { id: 'independent-work', label: 'Independent work / individual study' },
-  { id: 'other', label: 'Other' },
-];
-
-const APPLICATION_TRANSFER_OPTIONS = [
-  { id: 'practice-tasks', label: 'Practice-oriented tasks' },
-  { id: 'simulations', label: 'Simulations or scenarios' },
-  { id: 'project-portfolio', label: 'Project or portfolio elements' },
-  { id: 'real-world', label: 'Real-world or workplace-related activities' },
-  { id: 'other', label: 'Other' },
-];
-
 const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
   data,
   onChange,
   courseType,
   basedOnSingleSource,
 }) => {
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+
+  const CONTENT_REPRESENTATION_OPTIONS = [
+    { id: 'written', label: lt.mlContentWritten },
+    { id: 'visual', label: lt.mlContentVisual },
+    { id: 'video', label: lt.mlContentVideo },
+    { id: 'audio', label: lt.mlContentAudio },
+    { id: 'interactive', label: lt.mlContentInteractive },
+    { id: 'demonstrations', label: lt.mlContentDemonstrations },
+    { id: 'other', label: lt.mlContentOther },
+  ];
+
+  const ACTIVE_ENGAGEMENT_OPTIONS = [
+    { id: 'plenary', label: lt.mlEngagementPlenary },
+    { id: 'peer-learning', label: lt.mlEngagementPeerLearning },
+    { id: 'exercises', label: lt.mlEngagementExercises },
+    { id: 'exploration', label: lt.mlEngagementExploration },
+    { id: 'reflection', label: lt.mlEngagementReflection },
+    { id: 'challenge-based', label: lt.mlEngagementChallengeBased },
+    { id: 'independent-work', label: lt.mlEngagementIndependentWork },
+    { id: 'other', label: lt.mlEngagementOther },
+  ];
+
+  const APPLICATION_TRANSFER_OPTIONS = [
+    { id: 'practice-tasks', label: lt.mlTransferPracticeTasks },
+    { id: 'simulations', label: lt.mlTransferSimulations },
+    { id: 'project-portfolio', label: lt.mlTransferProjectPortfolio },
+    { id: 'real-world', label: lt.mlTransferRealWorld },
+    { id: 'other', label: lt.mlTransferOther },
+  ];
+
   const isLocked = courseType === 'composite-micro-credential' || basedOnSingleSource === true;
   const [formData, setFormData] = useState({
     contentRepresentation: data.contentRepresentation || [],
@@ -108,16 +113,16 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
     <div className="space-y-6">
       {/* Title */}
       <div className="border-l-4 border-primary pl-4">
-        <h2 className="text-2xl font-bold text-foreground">Use multimodal learning resources</h2>
+        <h2 className="text-2xl font-bold text-foreground">{lt.mlTitle}</h2>
       </div>
 
       {isLocked && (
         <div className="rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-3">
           <p className="text-xs text-amber-800 dark:text-amber-300">
-            <span className="font-semibold">Locked.</span>{' '}
+            <span className="font-semibold">{lt.mlLocked}</span>{' '}
             {courseType === 'composite-micro-credential'
-              ? 'These choices are inherited from the underlying standalone course(s) and cannot be edited here. All formats and activities used by any of the source courses are pre-selected.'
-              : 'These choices are inherited from the underlying standalone course and cannot be edited here.'}
+              ? lt.mlLockedCompositeText
+              : lt.mlLockedSingleText}
           </p>
         </div>
       )}
@@ -125,18 +130,18 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
       {/* Meta text */}
       <Card className="p-6">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Learning outcomes are realised through content and activity. In this step, you define how learners encounter content, actively work with it, and apply it in practice. Start by making your own design choices. You will later be invited to reflect on whether additional modalities could strengthen learning.
+          {lt.mlMeta}
         </p>
       </Card>
 
       {/* Block 1: Content Representation */}
       <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Content representation</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.mlBlock1Title}</h3>
         <p className="text-sm text-muted-foreground">
-          How will core concepts and themes be presented to learners?
+          {lt.mlBlock1Question}
         </p>
         <p className="text-xs text-muted-foreground">
-          Select at least 2 formats ({formData.contentRepresentation.length}/2 selected)
+          {lt.mlBlock1MinNote.replace(/{count}/g, String(formData.contentRepresentation.length))}
         </p>
 
         <div className="space-y-3">
@@ -158,13 +163,13 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
         {formData.contentRepresentation.includes('other') && (
           <div className="space-y-2 pl-6">
             <Label htmlFor="content-other-text" className="text-sm font-medium">
-              Please specify:
+              {lt.mlSpecify}
             </Label>
             <Input
               id="content-other-text"
               value={formData.contentRepresentationOther}
               onChange={(e) => updateField('contentRepresentationOther', e.target.value)}
-              placeholder="Describe other format..."
+              placeholder={lt.mlOtherFormatPlaceholder}
               className="max-w-md"
               disabled={isLocked}
             />
@@ -174,9 +179,9 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
 
       {/* Block 2: Active Engagement */}
       <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Active engagement with content</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.mlBlock2Title}</h3>
         <p className="text-sm text-muted-foreground">
-          How will learners actively work with and process the content?
+          {lt.mlBlock2Question}
         </p>
 
         <div className="space-y-3">
@@ -198,13 +203,13 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
         {formData.activeEngagement.includes('other') && (
           <div className="space-y-2 pl-6">
             <Label htmlFor="engagement-other-text" className="text-sm font-medium">
-              Please specify:
+              {lt.mlSpecify}
             </Label>
             <Input
               id="engagement-other-text"
               value={formData.activeEngagementOther}
               onChange={(e) => updateField('activeEngagementOther', e.target.value)}
-              placeholder="Describe other engagement method..."
+              placeholder={lt.mlOtherEngagementPlaceholder}
               className="max-w-md"
               disabled={isLocked}
             />
@@ -214,9 +219,9 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
 
       {/* Block 3: Application and Transfer */}
       <Card className="p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Application and transfer of learning</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.mlBlock3Title}</h3>
         <p className="text-sm text-muted-foreground">
-          How will learners apply what they have learned in meaningful ways?
+          {lt.mlBlock3Question}
         </p>
 
         <div className="space-y-3">
@@ -238,13 +243,13 @@ const MultimodalLearningForm: React.FC<MultimodalLearningFormProps> = ({
         {formData.applicationTransfer.includes('other') && (
           <div className="space-y-2 pl-6">
             <Label htmlFor="transfer-other-text" className="text-sm font-medium">
-              Please specify:
+              {lt.mlSpecify}
             </Label>
             <Input
               id="transfer-other-text"
               value={formData.applicationTransferOther}
               onChange={(e) => updateField('applicationTransferOther', e.target.value)}
-              placeholder="Describe other application method..."
+              placeholder={lt.mlOtherTransferPlaceholder}
               className="max-w-md"
               disabled={isLocked}
             />

@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms34Translations } from '@/lib/translations/forms34';
 
 type EQFDimension = 'knowledge' | 'skills' | 'responsibility';
 type CognitiveDomain = 'knowledge' | 'comprehension' | 'application' | 'analysis' | 'synthesis' | 'evaluation';
@@ -58,40 +60,7 @@ const BLOOM_TO_EQF: Record<CognitiveDomain, EQFDimension> = {
   evaluation: 'responsibility',
 };
 
-const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
-  knowledge: 'Knowledge',
-  skills: 'Skills',
-  responsibility: 'Responsibility and autonomy',
-};
-
-const ASSESSMENT_TYPES = [
-  { value: 'written', label: 'Written' },
-  { value: 'oral', label: 'Oral' },
-  { value: 'combination', label: 'Combination of written and oral' },
-];
-
-const INDIVIDUAL_OR_GROUP = [
-  { value: 'individual', label: 'Individual assessment' },
-  { value: 'group', label: 'Group assessment' },
-  { value: 'combination', label: 'Combination' },
-];
-
-const DELIVERY_MODES = [
-  { value: 'physical', label: 'Physical attendance required' },
-  { value: 'online-possible', label: 'Online possible' },
-  { value: 'fully-online', label: 'Fully online' },
-];
-
-const ACTIVITY_TYPES = [
-  { value: 'simulation', label: 'Simulation' },
-  { value: 'portfolio', label: 'Portfolio with oral defence' },
-  { value: 'case-based', label: 'Case-based assessment' },
-  { value: 'project-based', label: 'Project-based assessment' },
-  { value: 'practical-performance', label: 'Practical performance task' },
-  { value: 'presentation', label: 'Presentation' },
-  { value: 'observation-checklist', label: 'Observation checklist' },
-  { value: 'other', label: 'Other' },
-];
+// Labels are resolved inside the component via the active-language dictionary (lt).
 
 const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
   data,
@@ -99,7 +68,44 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
   courseType,
   learningOutcomes = [],
 }) => {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language } = useLanguage();
+  const lt = forms34Translations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
+
+  const EQF_DIMENSION_LABELS: Record<EQFDimension, string> = {
+    knowledge: lt.daKnowledge,
+    skills: lt.daSkills,
+    responsibility: lt.daResponsibility,
+  };
+
+  const ASSESSMENT_TYPES = [
+    { value: 'written', label: lt.daTypeWritten },
+    { value: 'oral', label: lt.daTypeOral },
+    { value: 'combination', label: lt.daTypeCombination },
+  ];
+
+  const INDIVIDUAL_OR_GROUP = [
+    { value: 'individual', label: lt.daGroupIndividual },
+    { value: 'group', label: lt.daGroupGroup },
+    { value: 'combination', label: lt.daGroupCombination },
+  ];
+
+  const DELIVERY_MODES = [
+    { value: 'physical', label: lt.daDeliveryPhysical },
+    { value: 'online-possible', label: lt.daDeliveryOnlinePossible },
+    { value: 'fully-online', label: lt.daDeliveryFullyOnline },
+  ];
+
+  const ACTIVITY_TYPES = [
+    { value: 'simulation', label: lt.daActivitySimulation },
+    { value: 'portfolio', label: lt.daActivityPortfolio },
+    { value: 'case-based', label: lt.daActivityCaseBased },
+    { value: 'project-based', label: lt.daActivityProjectBased },
+    { value: 'practical-performance', label: lt.daActivityPracticalPerformance },
+    { value: 'presentation', label: lt.daActivityPresentation },
+    { value: 'observation-checklist', label: lt.daActivityObservationChecklist },
+    { value: 'other', label: lt.daActivityOther },
+  ];
   
   const [formData, setFormData] = useState({
     assessmentType: data.assessmentType || '',
@@ -211,9 +217,9 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       {/* Learning Outcomes Reference Table */}
       {hasLearningOutcomes && (
         <Card className="p-6 space-y-4 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800">
-          <h3 className="text-lg font-semibold text-foreground">Summary of learning outcomes</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.daSummaryTitle}</h3>
           <p className="text-sm text-muted-foreground">
-            Your learning outcomes grouped by EQF dimensions. Use this as a reference when defining your assessment framework.
+            {lt.daSummaryHelp}
           </p>
           
           {(['knowledge', 'skills', 'responsibility'] as EQFDimension[]).map((dimension) => (
@@ -233,7 +239,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
                 </Table>
               ) : (
                 <p className="text-sm text-muted-foreground italic">
-                  No learning outcomes mapped to this dimension.
+                  {lt.daNoOutcomesForDimension}
                 </p>
               )}
             </div>
@@ -245,7 +251,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       {/* Metatext */}
       <Card className="p-6">
         <p className="text-sm text-muted-foreground">
-          Define assessment establishes the overall assessment framework for the {courseLabel}. Before designing specific assessment activities, the developer must determine the general form of assessment, the mode of delivery, and whether it is individual or group-based. These choices create the fixed parameters within which the final assessment design will later be developed. The actual assessment tasks will be defined in a later step.
+          {lt.daIntro.replace(/{course}/g, courseLabel)}
         </p>
       </Card>
 
@@ -253,7 +259,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            What overall assessment type will you use?
+            {lt.daQ1Label}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -263,11 +269,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.daWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  The overall assessment type sets the primary format for how the learner will be evaluated. Written assessments typically measure analytical reasoning, structured argumentation, and comprehension. Oral assessments examine verbal articulation, critical reflection, and real-time reasoning. A combination allows flexibility when learning outcomes require both written structure and oral explanation.
+                  {lt.daQ1Why}
                 </p>
               </div>
             </DialogContent>
@@ -280,11 +286,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.daInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Consider which format best aligns with your learning outcomes. Outcomes related to analysis or argumentation may suit a written assessment, while outcomes focused on explanation, discussion, or judgment might be better evaluated orally. If your learning outcomes require both structured writing and oral demonstration, a combination is often the most accurate choice.
+                  {lt.daQ1Inspire}
                 </p>
               </div>
             </DialogContent>
@@ -296,7 +302,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
           onValueChange={(value) => updateField('assessmentType', value)}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select assessment type" />
+            <SelectValue placeholder={lt.daQ1Placeholder} />
           </SelectTrigger>
           <SelectContent>
             {ASSESSMENT_TYPES.map((option) => (
@@ -312,7 +318,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Will the assessment be individual, group-based, or a combination?
+            {lt.daQ2Label}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -322,11 +328,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.daWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Micro-credentials must document individual achievement, but group work can still be part of the assessment design. This selection clarifies whether the performance being assessed is individual, group-based, or combines both aspects. If group work is involved, the final assessment activity must still make it possible to determine each learner's contribution.
+                  {lt.daQ2Why}
                 </p>
               </div>
             </DialogContent>
@@ -339,11 +345,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.daInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Choose group assessment only if collaboration is an essential part of the intended learning outcomes. Otherwise, select individual assessment or a combination. Many programmes use group processes for learning but ensure individual grading.
+                  {lt.daQ2Inspire}
                 </p>
               </div>
             </DialogContent>
@@ -355,7 +361,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
           onValueChange={(value) => updateField('individualOrGroup', value)}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select assessment format" />
+            <SelectValue placeholder={lt.daQ2Placeholder} />
           </SelectTrigger>
           <SelectContent>
             {INDIVIDUAL_OR_GROUP.map((option) => (
@@ -371,7 +377,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Will any part of the assessment require physical attendance?
+            {lt.daQ3Label}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -381,11 +387,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.daWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  This choice determines whether the assessment relies on in-person performance, can be conducted online, or is fully digital. This affects logistical planning and may influence which assessment activities are feasible later.
+                  {lt.daQ3Why}
                 </p>
               </div>
             </DialogContent>
@@ -398,11 +404,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.daInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  For practical demonstrations or simulations, physical attendance may be necessary. Written assessments or oral defenses can often be conducted online. Choose the solution that best supports fairness, accessibility, and validity.
+                  {lt.daQ3Inspire}
                 </p>
               </div>
             </DialogContent>
@@ -414,7 +420,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
           onValueChange={(value) => updateField('deliveryMode', value)}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select delivery mode" />
+            <SelectValue placeholder={lt.daQ3Placeholder} />
           </SelectTrigger>
           <SelectContent>
             {DELIVERY_MODES.map((option) => (
@@ -430,7 +436,7 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
       <Card className="p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Label className="text-base font-medium">
-            Describe the intended type of assessment activities
+            {lt.daQ4Label}
           </Label>
           <Dialog>
             <DialogTrigger asChild>
@@ -440,11 +446,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.daWhy}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Assessment activities specify how the learner will demonstrate mastery. A simulation tests applied decision-making in realistic scenarios. A portfolio with oral defence allows learners to document progress and justify choices. Practical performance tasks verify procedural competence. Explain the activities clearly so they can later be developed into a complete assessment design.
+                  {lt.daQ4Why}
                 </p>
               </div>
             </DialogContent>
@@ -457,11 +463,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Inspiration</DialogTitle>
+                <DialogTitle>{lt.daInspiration}</DialogTitle>
               </DialogHeader>
               <div className="text-sm">
                 <p>
-                  Look back at your learning outcomes table. Identify what kinds of evidence would most convincingly demonstrate that the learner has achieved each outcome. Choose activity types that naturally fit the cognitive level and complexity of your outcomes.
+                  {lt.daQ4Inspire}
                 </p>
               </div>
             </DialogContent>
@@ -469,12 +475,12 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          Within the parameters you selected above, describe the assessment activities you intend to use. This information will guide the development of the final assessment design later in the process.
+          {lt.daQ4Help}
         </p>
 
         {/* Multi-select Activity Types */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Select activity type(s)</Label>
+          <Label className="text-sm font-medium">{lt.daActivityTypesLabel}</Label>
           <div className="flex flex-wrap gap-2">
             {ACTIVITY_TYPES.map((activity) => (
               <Badge
@@ -495,11 +501,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
         {/* Other Activity Type Text Field */}
         {formData.activityTypes?.includes('other') && (
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Specify other activity type</Label>
+            <Label className="text-sm font-medium">{lt.daOtherActivityLabel}</Label>
             <Input
               value={formData.otherActivityType}
               onChange={(e) => updateField('otherActivityType', e.target.value)}
-              placeholder="Enter your custom activity type"
+              placeholder={lt.daOtherActivityPlaceholder}
               className="bg-background"
             />
           </div>
@@ -507,11 +513,11 @@ const DefineAssessmentForm: React.FC<DefineAssessmentFormProps> = ({
 
         {/* Activity Description Textarea */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Activity description</Label>
+          <Label className="text-sm font-medium">{lt.daActivityDescriptionLabel}</Label>
           <Textarea
             value={formData.activityDescription}
             onChange={(e) => updateField('activityDescription', e.target.value)}
-            placeholder="Describe the assessment activity you intend to use. Explain briefly how the learner will demonstrate achievement within the chosen format."
+            placeholder={lt.daActivityDescriptionPlaceholder}
             className="min-h-[120px] bg-background"
           />
         </div>

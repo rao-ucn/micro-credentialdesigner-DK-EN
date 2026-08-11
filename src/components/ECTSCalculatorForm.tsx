@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Trash2, Plus, Calculator, Info, Lightbulb, RotateCcw, AlertTriangle, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { CourseType } from "@/types/course";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { forms56bTranslations } from "@/lib/translations/forms56b";
 import {
   Dialog,
   DialogContent,
@@ -98,6 +100,8 @@ const generateECTSOptions = (min: number, max: number): number[] => {
 };
 
 const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActivities = [], assessmentProcessDescription, onBreakCompositeIntegrity, basedOnSingleSource, onBreakSingleSourceIntegrity, onGoToLearningActivities }: ECTSCalculatorFormProps) => {
+  const { language } = useLanguage();
+  const lt = forms56bTranslations[language];
   const hasAssessmentSection = courseType !== 'standalone';
   // Initialize learning activities with predefined ones from Phase 5.1 (if not already saved)
   const getInitialLearningActivities = (): Activity[] => {
@@ -181,7 +185,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
     if (!hasInitialized) setHasInitialized(true);
   }, [predefinedLearningActivities]);
 
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const courseLabel = courseType === 'standalone' ? lt.ectsStandaloneLabel : lt.ectsMicroCredentialLabel;
 
   useEffect(() => {
     onChange({
@@ -225,13 +229,13 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
       if (learningActivities.length > 1) {
         setLearningActivities(learningActivities.filter((a) => a.id !== id));
       } else {
-        toast.error("You must have at least one learning activity row");
+        toast.error(lt.ectsAtLeastOneLearningRow);
       }
     } else {
       if (assessmentActivities.length > 1) {
         setAssessmentActivities(assessmentActivities.filter((a) => a.id !== id));
       } else {
-        toast.error("You must have at least one assessment activity row");
+        toast.error(lt.ectsAtLeastOneAssessmentRow);
       }
     }
   };
@@ -327,7 +331,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
       }
     }
 
-    toast.success("ECTS calculated successfully");
+    toast.success(lt.ectsCalculatedSuccess);
   };
 
   const handleReset = () => {
@@ -336,7 +340,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
     setResults(null);
     setConfirmedECTS(undefined);
     setShowResetDialog(false);
-    toast.info("Calculator reset");
+    toast.info(lt.ectsCalculatorReset);
   };
 
   // Check if total is under 1 ECTS for MC/composite MC
@@ -352,10 +356,10 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              What is the estimated workload for this {courseLabel}?
+              {lt.ectsHeading.replace('{courseLabel}', courseLabel)}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Define learning activities and their estimated hours to calculate ECTS credits.
+              {lt.ectsSubheading}
             </p>
           </div>
           <div className="flex gap-2">
@@ -367,20 +371,17 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Why calculate ECTS?</DialogTitle>
+                  <DialogTitle>{lt.ectsWhyDialogTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 text-sm text-muted-foreground">
                   <p>
-                    ECTS (European Credit Transfer and Accumulation System) credits help standardize 
-                    the workload across different educational institutions.
+                    {lt.ectsWhyP1}
                   </p>
                   <p>
-                    1 ECTS credit equals 25-30 hours of student workload, including lectures, 
-                    self-study, assignments, and assessments.
+                    {lt.ectsWhyP2}
                   </p>
                   <p>
-                    Calculating ECTS ensures transparency and helps learners understand the 
-                    time commitment required for this {courseLabel}.
+                    {lt.ectsWhyP3.replace('{courseLabel}', courseLabel)}
                   </p>
                 </div>
               </DialogContent>
@@ -393,27 +394,27 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Inspiration for activities</DialogTitle>
+                  <DialogTitle>{lt.ectsInspirationDialogTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-3 text-sm text-muted-foreground">
-                  <p><strong>Learning activities may include:</strong></p>
+                  <p><strong>{lt.ectsInspirationLearningTitle}</strong></p>
                   <ul className="list-disc pl-5 space-y-1">
-                    <li>Lectures and seminars</li>
-                    <li>Self-study and reading</li>
-                    <li>Group work and discussions</li>
-                    <li>Practical exercises</li>
-                    <li>Online modules</li>
-                    <li>Project work</li>
+                    <li>{lt.ectsInspirationLearning1}</li>
+                    <li>{lt.ectsInspirationLearning2}</li>
+                    <li>{lt.ectsInspirationLearning3}</li>
+                    <li>{lt.ectsInspirationLearning4}</li>
+                    <li>{lt.ectsInspirationLearning5}</li>
+                    <li>{lt.ectsInspirationLearning6}</li>
                   </ul>
                   {courseType === 'micro-credential' && (
                     <>
-                      <p className="mt-4"><strong>Assessment activities may include:</strong></p>
+                      <p className="mt-4"><strong>{lt.ectsInspirationAssessmentTitle}</strong></p>
                       <ul className="list-disc pl-5 space-y-1">
-                        <li>Written exams</li>
-                        <li>Oral presentations</li>
-                        <li>Portfolio submissions</li>
-                        <li>Practical demonstrations</li>
-                        <li>Peer assessments</li>
+                        <li>{lt.ectsInspirationAssessment1}</li>
+                        <li>{lt.ectsInspirationAssessment2}</li>
+                        <li>{lt.ectsInspirationAssessment3}</li>
+                        <li>{lt.ectsInspirationAssessment4}</li>
+                        <li>{lt.ectsInspirationAssessment5}</li>
                       </ul>
                     </>
                   )}
@@ -426,14 +427,14 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
         {/* Learning Activities Table */}
         <div>
           <Label className="text-base font-medium mb-3 block">
-            Learning activities that the learner must engage with
+            {lt.ectsLearningActivitiesLabel}
           </Label>
           
           {/* Info about predefined activities */}
           <div className="flex items-start gap-2 p-3 mb-3 bg-primary/10 rounded-lg border border-primary/20">
             <Info className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
             <p className="text-sm text-muted-foreground">
-              These activities are transferred from your learning activities design (Phase 5) and cannot be edited or created here. Only the estimated workload is entered below. To add, rename or remove an activity, go back to Phase 5, change it there and lock the item again.
+              {lt.ectsPredefinedInfo}
             </p>
           </div>
 
@@ -442,10 +443,10 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               <thead>
                 <tr className="bg-muted">
                   <th className="text-left p-3 border border-border font-medium text-sm">
-                    Activity
+                    {lt.activity}
                   </th>
                   <th className="text-left p-3 border border-border font-medium text-sm w-48">
-                    Estimated workload (hours)
+                    {lt.estimatedWorkloadHours}
                   </th>
                 </tr>
               </thead>
@@ -453,7 +454,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                 {learningActivities.length === 0 && (
                   <tr>
                     <td colSpan={2} className="p-3 border border-border text-sm text-muted-foreground italic">
-                      No learning activities yet — add them in Phase 5 (Develop learning activities).
+                      {lt.ectsNoLearningActivities}
                     </td>
                   </tr>
                 )}
@@ -481,7 +482,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
 
           <Button onClick={addLearningRow} variant="outline" size="sm" className="mt-3">
             <Plus className="h-4 w-4 mr-2" />
-            Add activity
+            {lt.addActivity}
           </Button>
         </div>
 
@@ -489,7 +490,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
         {hasAssessmentSection && (
           <div className="space-y-4">
             <Label className="text-base font-medium block">
-              Assessment activities that the learner must engage with
+              {lt.ectsAssessmentActivitiesLabel}
             </Label>
             
             {/* Read-only Assessment Process Description */}
@@ -497,13 +498,13 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
                 <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                   <FileText className="h-4 w-4" />
-                  <span>Assessment process description</span>
+                  <span>{lt.ectsAssessmentProcessDescriptionLabel}</span>
                 </div>
                 <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                   {assessmentProcessDescription}
                 </p>
                 <p className="text-xs text-muted-foreground italic pt-2 border-t border-border/50 mt-3">
-                  Use this as inspiration to derive all time-consuming activities, so that ECTS activities for assessment can be ensured.
+                  {lt.ectsAssessmentProcessDescriptionHint}
                 </p>
               </div>
             )}
@@ -512,10 +513,10 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                 <thead>
                   <tr className="bg-muted">
                     <th className="text-left p-3 border border-border font-medium text-sm">
-                      Activity
+                      {lt.activity}
                     </th>
                     <th className="text-left p-3 border border-border font-medium text-sm w-48">
-                      Estimated workload (hours)
+                      {lt.estimatedWorkloadHours}
                     </th>
                     <th className="w-12 p-3 border border-border"></th>
                   </tr>
@@ -527,7 +528,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                         <Input
                           value={activity.name}
                           onChange={(e) => updateActivity(activity.id, "name", e.target.value, "assessment")}
-                          placeholder="Enter activity name"
+                          placeholder={lt.enterActivityName}
                           className="border-input bg-background"
                         />
                       </td>
@@ -559,7 +560,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
             </div>
             <Button onClick={addAssessmentRow} variant="outline" size="sm" className="mt-3">
               <Plus className="h-4 w-4 mr-2" />
-              Add activity
+              {lt.addActivity}
             </Button>
           </div>
         )}
@@ -568,25 +569,25 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
         <div className="flex flex-wrap gap-3">
           <Button onClick={calculateECTS}>
             <Calculator className="h-4 w-4 mr-2" />
-            Calculate ECTS
+            {lt.ectsCalculateButton}
           </Button>
           <Button variant="outline" onClick={() => setShowResetDialog(true)}>
             <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
+            {lt.ectsResetButton}
           </Button>
         </div>
 
         {/* Results */}
         {results && (
           <div className="bg-secondary/30 rounded-lg p-4 space-y-4">
-            <h4 className="font-semibold text-foreground">Results</h4>
+            <h4 className="font-semibold text-foreground">{lt.ectsResultsTitle}</h4>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="bg-card p-4 rounded-lg border border-border">
-                <Label className="text-sm text-muted-foreground">Total hours (learning)</Label>
+                <Label className="text-sm text-muted-foreground">{lt.ectsTotalHoursLearning}</Label>
                 <p className="text-2xl font-bold text-foreground mt-1">{results.totalLearningHours}</p>
               </div>
               <div className="bg-card p-4 rounded-lg border border-border">
-                <Label className="text-sm text-muted-foreground">ECTS (learning)</Label>
+                <Label className="text-sm text-muted-foreground">{lt.ectsEctsLearning}</Label>
                 <p className="text-2xl font-bold text-primary mt-1">
                   {results.ectsLearningMin} - {results.ectsLearningMax}
                 </p>
@@ -594,17 +595,17 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               {hasAssessmentSection && (
                 <>
                   <div className="bg-card p-4 rounded-lg border border-border">
-                    <Label className="text-sm text-muted-foreground">Total hours (assessment)</Label>
+                    <Label className="text-sm text-muted-foreground">{lt.ectsTotalHoursAssessment}</Label>
                     <p className="text-2xl font-bold text-foreground mt-1">{results.totalAssessmentHours}</p>
                   </div>
                   <div className="bg-card p-4 rounded-lg border border-border">
-                    <Label className="text-sm text-muted-foreground">ECTS (assessment)</Label>
+                    <Label className="text-sm text-muted-foreground">{lt.ectsEctsAssessment}</Label>
                     <p className="text-2xl font-bold text-primary mt-1">
                       {results.ectsAssessmentMin} - {results.ectsAssessmentMax}
                     </p>
                   </div>
                   <div className="bg-card p-4 rounded-lg border border-border sm:col-span-2">
-                    <Label className="text-sm text-muted-foreground">Total micro-credential workload</Label>
+                    <Label className="text-sm text-muted-foreground">{lt.ectsTotalWorkload}</Label>
                     <p className="text-3xl font-bold text-primary mt-1">
                       {results.ectsTotalMin} - {results.ectsTotalMax} ECTS
                     </p>
@@ -618,10 +619,9 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
               <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
                 <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-destructive">Workload is below minimum</p>
+                  <p className="font-medium text-destructive">{lt.ectsUnderMinimumTitle}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Micro-credentials must have a minimum of 1 ECTS credit. 
-                    Please add more learning or assessment activities to reach at least 25 hours of total workload.
+                    {lt.ectsUnderMinimumText}
                   </p>
                 </div>
               </div>
@@ -631,17 +631,17 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
             {hasAssessmentSection && !isUnderMinimum && ectsOptions.length > 0 && (
               <div className="bg-card p-4 rounded-lg border-2 border-primary/30">
                 <Label className="text-sm font-medium text-foreground">
-                  Confirm final ECTS value for this micro-credential <span className="text-destructive">*</span>
+                  {lt.ectsConfirmFinalLabel} <span className="text-destructive">*</span>
                 </Label>
                 <p className="text-xs text-muted-foreground mt-1 mb-3">
-                  You must select a whole or half ECTS value (e.g., 1.0, 1.5, 2.0) within the calculated range.
+                  {lt.ectsConfirmFinalHint}
                 </p>
                 <Select
                   value={confirmedECTS?.toString()}
                   onValueChange={(val) => setConfirmedECTS(parseFloat(val))}
                 >
                   <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select ECTS value" />
+                    <SelectValue placeholder={lt.ectsSelectValuePlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     {ectsOptions.map((opt) => (
@@ -653,14 +653,14 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                 </Select>
                 {confirmedECTS && (
                   <p className="text-sm text-primary font-medium mt-3">
-                    Confirmed: {confirmedECTS.toFixed(1)} ECTS
+                    {lt.ectsConfirmedLabel.replace('{value}', confirmedECTS.toFixed(1))}
                   </p>
                 )}
               </div>
             )}
 
             <p className="text-xs text-muted-foreground italic">
-              Calculated using ECTS standard: 1 ECTS = 25-30 hours of workload.
+              {lt.ectsStandardNote}
             </p>
           </div>
         )}
@@ -670,14 +670,14 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
       <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>{lt.ectsResetDialogTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will clear all activities and calculated results. This action cannot be undone.
+              {lt.ectsResetDialogText}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No, keep data</AlertDialogCancel>
-            <AlertDialogAction onClick={handleReset}>Yes, reset</AlertDialogAction>
+            <AlertDialogCancel>{lt.ectsKeepData}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleReset}>{lt.ectsYesReset}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -699,32 +699,32 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Remove activity row?
+              {lt.ectsRemoveRowTitle}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 {courseType === 'composite-micro-credential' ? (
                   <>
                     <p>
-                      This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                      {lt.ectsRemoveRowCompositeP1}
                     </p>
                     <p>
-                      Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                      {lt.ectsRemoveRowCompositeP2}
                     </p>
                     <p>
-                      This is required because the standalone courses used here are packaged and quality-assured as independent units.
+                      {lt.ectsRemoveRowCompositeP3}
                     </p>
                   </>
                 ) : (
                   <>
                     <p>
-                      This micro-credential is currently based directly on a single existing standalone course. If you remove an activity, it will no longer be a faithful representation of that source course.
+                      {lt.ectsRemoveRowSingleP1}
                     </p>
                     <p>
-                      It will be treated as an independent micro-credential going forward, and the link to the original standalone course will be considered modified.
+                      {lt.ectsRemoveRowSingleP2}
                     </p>
                     <p>
-                      This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                      {lt.ectsRemoveRowSingleP3}
                     </p>
                   </>
                 )}
@@ -732,8 +732,8 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={openFinalDeleteConfirmation}>Continue</AlertDialogAction>
+            <AlertDialogCancel>{lt.cancel}</AlertDialogCancel>
+            <AlertDialogAction onClick={openFinalDeleteConfirmation}>{lt.ectsContinue}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -750,19 +750,19 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              Are you sure?
+              {lt.ectsConfirmAreYouSure}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {lt.ectsCannotBeUndone}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteDialogStep('warning')}>Go back</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setDeleteDialogStep('warning')}>{lt.ectsGoBack}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteActivity}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Yes, continue
+              {lt.ectsYesContinue}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -773,21 +773,21 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Info className="h-5 w-5 text-primary" />
-              Add the activity in Phase 5 instead
+              {lt.ectsAddInPhase5Title}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 <p>
-                  Learning activities cannot be created here. The list below mirrors the activities you designed in Phase 5 (Develop learning activities), so that the workload calculation always matches the actual course design.
+                  {lt.ectsAddInPhase5P1}
                 </p>
                 <p>
-                  Go back to Phase 5, add the activity there and lock the item again. It will then appear automatically in this table, where you only need to enter the estimated workload.
+                  {lt.ectsAddInPhase5P2}
                 </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowAddInfo(false)}>Got it</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowAddInfo(false)}>{lt.ectsGotIt}</AlertDialogCancel>
             {onGoToLearningActivities && (
               <AlertDialogAction
                 onClick={() => {
@@ -795,7 +795,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                   onGoToLearningActivities();
                 }}
               >
-                Go to Phase 5
+                {lt.ectsGoToPhase5}
               </AlertDialogAction>
             )}
           </AlertDialogFooter>

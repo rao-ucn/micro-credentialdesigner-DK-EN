@@ -105,50 +105,43 @@ interface DesignAssessmentFormProps {
   standaloneSources?: Array<{ workingTitle?: string; documentId?: string; fileName?: string; data?: Record<string, any> }>;
 }
 
-const ASSESSOR_TYPE_OPTIONS = [
-  { value: 'internal', label: 'Internal assessor (from the institution)' },
-  { value: 'external', label: 'External assessor (outside the institution)' },
-  { value: 'other', label: 'Other' },
+const getAssessorTypeOptions = (lt: typeof forms56Translations['en']) => [
+  { value: 'internal', label: lt.dafAssessorInternal },
+  { value: 'external', label: lt.dafAssessorExternal },
+  { value: 'other', label: lt.dafOther },
 ];
 
-const QUALITY_FRAMEWORK_OPTIONS = [
-  { value: 'institutional', label: 'Institutional QA framework' },
-  { value: 'national', label: 'National framework' },
-  { value: 'european', label: 'European framework' },
-  { value: 'other', label: 'Other' },
+const getQualityFrameworkOptions = (lt: typeof forms56Translations['en']) => [
+  { value: 'institutional', label: lt.dafQfInstitutional },
+  { value: 'national', label: lt.dafQfNational },
+  { value: 'european', label: lt.dafQfEuropean },
+  { value: 'other', label: lt.dafOther },
 ];
 
-const ASSESSING_INSTITUTION_OPTIONS = [
-  { value: 'hosting', label: 'Hosting institution' },
-  { value: 'partner', label: 'Partner institution' },
-  { value: 'external', label: 'External assessor' },
-  { value: 'joint', label: 'Joint responsibility' },
+const getCalibrationMethods = (lt: typeof forms56Translations['en']) => [
+  { value: 'shared-criteria', label: lt.dafCalibShared },
+  { value: 'example-submissions', label: lt.dafCalibExamples },
+  { value: 'calibration-meetings', label: lt.dafCalibMeetings },
+  { value: 'rubrics', label: lt.dafCalibRubrics },
 ];
 
-const CALIBRATION_METHODS = [
-  { value: 'shared-criteria', label: 'Shared criteria among assessors' },
-  { value: 'example-submissions', label: 'Use of example submissions' },
-  { value: 'calibration-meetings', label: 'Calibration meetings' },
-  { value: 'rubrics', label: 'Rubrics or scoring guides' },
-];
+const getAssessmentTypeLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'written': lt.dafAssessmentTypeWritten,
+  'oral': lt.dafAssessmentTypeOral,
+  'combination': lt.dafAssessmentTypeCombination,
+});
 
-const ASSESSMENT_TYPE_LABELS: Record<string, string> = {
-  'written': 'Written',
-  'oral': 'Oral',
-  'combination': 'Combination of written and oral',
-};
+const getIndividualGroupLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'individual': lt.dafIndividual,
+  'group': lt.dafGroup,
+  'combination': lt.dafCombination,
+});
 
-const INDIVIDUAL_GROUP_LABELS: Record<string, string> = {
-  'individual': 'Individual assessment',
-  'group': 'Group assessment',
-  'combination': 'Combination',
-};
-
-const DELIVERY_MODE_LABELS: Record<string, string> = {
-  'physical': 'Physical attendance required',
-  'online-possible': 'Online possible',
-  'fully-online': 'Fully online',
-};
+const getDeliveryModeLabels = (lt: typeof forms56Translations['en']): Record<string, string> => ({
+  'physical': lt.dafDeliveryPhysical,
+  'online-possible': lt.dafDeliveryOnlinePossible,
+  'fully-online': lt.dafDeliveryFullyOnline,
+});
 
 const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   data,
@@ -160,6 +153,14 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   currentItemId,
   standaloneSources = [],
 }) => {
+  const { language } = useLanguage();
+  const lt = forms56Translations[language];
+  const ASSESSOR_TYPE_OPTIONS = getAssessorTypeOptions(lt);
+  const QUALITY_FRAMEWORK_OPTIONS = getQualityFrameworkOptions(lt);
+  const CALIBRATION_METHODS = getCalibrationMethods(lt);
+  const ASSESSMENT_TYPE_LABELS = getAssessmentTypeLabels(lt);
+  const INDIVIDUAL_GROUP_LABELS = getIndividualGroupLabels(lt);
+  const DELIVERY_MODE_LABELS = getDeliveryModeLabels(lt);
   const [formData, setFormData] = useState(data);
   const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -256,7 +257,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       {/* Learning Outcomes Summary */}
       {hasLearningOutcomes && (
         <Card className="p-4 bg-secondary/50 border-secondary">
-          <h4 className="text-sm font-semibold text-foreground mb-2">Learning Outcomes</h4>
+          <h4 className="text-sm font-semibold text-foreground mb-2">{lt.dafLearningOutcomesTitle}</h4>
           <Table>
             <TableBody>
               {completeOutcomes.map((outcome, index) => (
@@ -274,30 +275,30 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       {/* Assessment Framework Summary */}
       <Card className="p-4 bg-accent/50 border-accent">
-        <h4 className="text-sm font-semibold text-foreground mb-3">Assessment Framework (from Phase 3)</h4>
+        <h4 className="text-sm font-semibold text-foreground mb-3">{lt.dafFrameworkTitle}</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
           <div>
-            <span className="text-muted-foreground">Type:</span>
+            <span className="text-muted-foreground">{lt.dafTypeLabel}</span>
             <p className="font-medium">
               {assessmentFramework.assessmentType 
                 ? ASSESSMENT_TYPE_LABELS[assessmentFramework.assessmentType] || assessmentFramework.assessmentType
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
           <div>
-            <span className="text-muted-foreground">Format:</span>
+            <span className="text-muted-foreground">{lt.dafFormatLabel}</span>
             <p className="font-medium">
               {assessmentFramework.individualOrGroup 
                 ? INDIVIDUAL_GROUP_LABELS[assessmentFramework.individualOrGroup] || assessmentFramework.individualOrGroup
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
           <div>
-            <span className="text-muted-foreground">Delivery:</span>
+            <span className="text-muted-foreground">{lt.dafDeliveryLabel}</span>
             <p className="font-medium">
               {assessmentFramework.deliveryMode 
                 ? DELIVERY_MODE_LABELS[assessmentFramework.deliveryMode] || assessmentFramework.deliveryMode
-                : 'Not defined'}
+                : lt.dafNotDefined}
             </p>
           </div>
         </div>
@@ -319,13 +320,13 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-                Action required: Implement authentic case-based assessment
+                {lt.dafActionRequiredTitle}
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-300">
-                You indicated you would like to reconsider and revise the assessment design to include authentic case-based assessment. Please update your assessment process description below accordingly.
+                {lt.dafActionRequiredText}
               </p>
               <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 italic">
-                Note: Once implemented, return to the authentic case-based assessment question and select "Yes" to confirm the change.
+                {lt.dafActionRequiredNote}
               </p>
             </div>
           </div>
@@ -334,7 +335,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <Card className="p-6 space-y-6">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">Define the assessment process</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafProcessTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -343,10 +344,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.dafWhy}</DialogTitle>
               </DialogHeader>
               <p className="text-sm">
-                Describe how learner performance is assessed, when assessment takes place, and on what basis judgements are made. A clear process supports transparency and fairness.
+                {lt.dafProcessWhyText}
               </p>
             </DialogContent>
           </Dialog>
@@ -354,20 +355,20 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-medium">Assessment process description</Label>
+            <Label className="text-sm font-medium">{lt.dafProcessDescLabel}</Label>
             {assessmentFramework.activityDescription && (
               <Badge variant="secondary" className="text-xs">
-                Pre-filled from Phase 3
+                {lt.dafPrefilledBadge}
               </Badge>
             )}
           </div>
           <p className="text-sm text-muted-foreground">
-            Your initial activity description from Phase 3 is shown below. You can now expand and refine this description with additional details about the assessment process. Any changes made here will automatically update the description in Phase 3.
+            {lt.dafProcessDescHelp}
           </p>
           <Textarea
             value={formData.assessmentProcessDescription || ''}
             onChange={(e) => updateField('assessmentProcessDescription', e.target.value)}
-            placeholder="Briefly describe how learner performance will be assessed..."
+            placeholder={lt.dafProcessDescPlaceholder}
             className="min-h-[100px] bg-background"
           />
         </div>
@@ -375,10 +376,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {/* Authentic Case-Based Assessment Section */}
         <div className="space-y-4 pt-4 border-t">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Authentic case-based assessment can strengthen validity by assessing learners' ability to apply knowledge and skills in realistic or professional contexts.
+            {lt.dafAuthenticIntro1}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            In this step, you are asked to explicitly consider whether such an approach is relevant for this assessment design.
+            {lt.dafAuthenticIntro2}
           </p>
 
           {/* Check if case-based was already selected in Phase 3 */}
@@ -387,7 +388,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="space-y-4 pt-2">
               <Card className="p-4 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800">
                 <p className="text-sm text-foreground mb-4">
-                  You have marked that case-based assessment is part of the assessment in Phase 3. Please confirm that it is implemented in the description.
+                  {lt.dafCaseBasedMarkedText}
                 </p>
                 <div className="flex items-center gap-3">
                   <Checkbox
@@ -402,7 +403,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }}
                   />
                   <Label htmlFor="caseBasedConfirmation" className="text-sm font-medium cursor-pointer">
-                    I confirm that authentic case-based assessment is implemented in the assessment description <span className="text-destructive">*</span>
+                    {lt.dafCaseBasedConfirmLabel} <span className="text-destructive">*</span>
                   </Label>
                 </div>
               </Card>
@@ -412,7 +413,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2">
                 <Label className="text-sm font-medium">
-                  Is authentic case-based assessment used in the assessment design? <span className="text-destructive">*</span>
+                  {lt.dafCaseBasedQuestion} <span className="text-destructive">*</span>
                 </Label>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -422,14 +423,14 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                   </DialogTrigger>
                   <DialogContent className="max-w-md">
                     <DialogHeader>
-                      <DialogTitle>Authentic case-based assessment</DialogTitle>
+                      <DialogTitle>{lt.dafCaseBasedDialogTitle}</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 text-sm text-muted-foreground">
                       <p>
-                        Authentic case-based assessment evaluates learners through realistic or professional scenarios that reflect how competencies are used in practice.
+                        {lt.dafCaseBasedDialogP1}
                       </p>
                       <p>
-                        It is not mandatory, but should be deliberately considered as part of a robust assessment design.
+                        {lt.dafCaseBasedDialogP2}
                       </p>
                     </div>
                   </DialogContent>
@@ -454,7 +455,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {caseBasedAnswer === 'yes' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">Yes, authentic case-based assessment is used in the assessment description</span>
+                    <span className="text-sm">{lt.dafCaseBasedYes}</span>
                   </div>
                 </div>
 
@@ -475,7 +476,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {caseBasedAnswer === 'no' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">No, authentic case-based assessment is not used</span>
+                    <span className="text-sm">{lt.dafCaseBasedNo}</span>
                   </div>
                 </div>
               </div>
@@ -486,10 +487,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           {!assessmentFramework.activityTypes?.includes('case-based') && caseBasedAnswer === 'no' && (
             <div className="space-y-4 p-4 bg-muted/50 border rounded-lg">
               <p className="text-sm text-foreground leading-relaxed">
-                Many learning outcomes involving application, judgement, or problem-solving are often well supported by authentic cases or scenarios.
+                {lt.dafReflectionText1}
               </p>
               <p className="text-sm text-foreground leading-relaxed font-medium">
-                Are you sure you want to proceed without authentic case-based assessment?
+                {lt.dafReflectionQuestion}
               </p>
 
               <div className="space-y-3">
@@ -510,7 +511,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {reconsiderAnswer === 'reconsider' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">Yes, I would like to reconsider and revise the assessment design</span>
+                    <span className="text-sm">{lt.dafReconsiderYes}</span>
                   </div>
                 </div>
 
@@ -531,7 +532,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }`}>
                       {reconsiderAnswer === 'proceed' && <div className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
-                    <span className="text-sm">No, I want to proceed without authentic case-based assessment</span>
+                    <span className="text-sm">{lt.dafReconsiderNo}</span>
                   </div>
                 </div>
               </div>

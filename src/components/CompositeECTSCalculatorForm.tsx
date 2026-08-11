@@ -36,6 +36,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { forms56bTranslations } from "@/lib/translations/forms56b";
 
 interface CompositeSource {
   sourceIndex?: number;
@@ -162,6 +164,8 @@ const CompositeECTSCalculatorForm = ({
   phase5EitherGroups,
   phase5EitherSources,
 }: CompositeECTSCalculatorFormProps) => {
+  const { language } = useLanguage();
+  const lt = forms56bTranslations[language];
   // Build the set of candidate ids Phase 5 may have used for a given source.
   // Phase 5 keys sources as: documentId || fileName || `source-${index}`.
   const candidateIdsFor = (source: CompositeSource, index: number): string[] => {
@@ -288,7 +292,7 @@ const CompositeECTSCalculatorForm = ({
         (a, b) => a - b
       );
       for (const num of distinctNums) {
-        const label = `Either/or group ${num} (from Phase 5)`;
+        const label = lt.cectsEitherOrGroupFromPhase5.replace('{num}', String(num));
         let existing = next.find((g) => g.label === label);
         if (!existing) {
           const id = `phase5-grp-${num}`;
@@ -450,7 +454,7 @@ const CompositeECTSCalculatorForm = ({
   const deleteAssessmentRow = (id: string) => {
     setAssessmentActivities((prev) => {
       if (prev.length <= 1) {
-        toast.error("You must have at least one assessment activity row");
+        toast.error(lt.cectsAtLeastOneAssessmentRow);
         return prev;
       }
       return prev.filter((a) => a.id !== id);
@@ -463,14 +467,10 @@ const CompositeECTSCalculatorForm = ({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold text-foreground">
-            Composite ECTS — workload from your standalone sources
+            {lt.cectsHeading}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Each standalone source loads its own learning activities from the
-            uploaded file and produces an ECTS <strong>range</strong> (1 ECTS =
-            25–30 h). Pick a value inside each range. Assessment workload from
-            the sources is excluded — the composite designs its own assessment
-            below.
+            {lt.cectsSubheading}
           </p>
         </div>
         <div className="flex gap-2">
@@ -482,27 +482,17 @@ const CompositeECTSCalculatorForm = ({
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>How ECTS works for a composite</DialogTitle>
+                <DialogTitle>{lt.cectsHowItWorksTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-3 text-sm text-muted-foreground">
                 <p>
-                  A composite micro-credential reuses the{" "}
-                  <strong>learning activities</strong> of its standalone
-                  sources. For each source we sum the hours of its learning
-                  activities and convert to an ECTS range using the 25–30 h
-                  standard.
+                  {lt.cectsHowItWorksP1}
                 </p>
                 <p>
-                  You then pick a value inside each source's range. Assessment
-                  workload from the source is intentionally left out, because
-                  the composite designs its own assessment.
+                  {lt.cectsHowItWorksP2}
                 </p>
                 <p>
-                  An <strong>either/or group</strong> represents a real choice
-                  for the learner ("take Course A <em>or</em> Course B"). To
-                  keep the total ECTS stable, all courses in such a group must
-                  carry the same selected ECTS — only one of them counts toward
-                  the workload.
+                  {lt.cectsHowItWorksP3}
                 </p>
               </div>
             </DialogContent>
@@ -519,18 +509,14 @@ const CompositeECTSCalculatorForm = ({
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Tips</DialogTitle>
+                <DialogTitle>{lt.cectsTipsTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-3 text-sm text-muted-foreground">
                 <p>
-                  Expand a source to inspect its learning activities — these
-                  come straight from the uploaded standalone file and drive the
-                  ECTS range.
+                  {lt.cectsTipsP1}
                 </p>
                 <p>
-                  When designing either/or pathways, line up courses with
-                  matching ECTS so every learner path adds up to the same
-                  total.
+                  {lt.cectsTipsP2}
                 </p>
               </div>
             </DialogContent>
@@ -543,8 +529,7 @@ const CompositeECTSCalculatorForm = ({
         <div className="flex items-start gap-3 p-4 bg-muted/40 border border-border rounded-lg">
           <Info className="h-4 w-4 text-muted-foreground mt-0.5" />
           <p className="text-sm text-muted-foreground">
-            Upload at least two standalone source files in Phase 1 to build the
-            composite workload here.
+            {lt.cectsEmptyState}
           </p>
         </div>
       )}
@@ -582,20 +567,20 @@ const CompositeECTSCalculatorForm = ({
                       <p className="text-xs text-muted-foreground mt-1">
                         {hasActivities ? (
                           <>
-                            {entry.learningActivities.length} learning{" "}
+                            {entry.learningActivities.length}{" "}
                             {entry.learningActivities.length === 1
-                              ? "activity"
-                              : "activities"}{" "}
-                            · {entry.totalLearningHours} h · range{" "}
+                              ? lt.cectsLearningActivity
+                              : lt.cectsLearningActivities}{" "}
+                            · {entry.totalLearningHours} h · {lt.cectsRangeLabel}{" "}
                             <strong>
                               {entry.ectsMin.toFixed(1)} –{" "}
                               {entry.ectsMax.toFixed(1)} ECTS
                             </strong>{" "}
-                            (assessment excluded)
+                            {lt.cectsAssessmentExcluded}
                           </>
                         ) : (
                           <span className="text-warning">
-                            No learning activities found in this source.
+                            {lt.cectsNoLearningActivitiesFound}
                           </span>
                         )}
                       </p>
@@ -603,7 +588,7 @@ const CompositeECTSCalculatorForm = ({
 
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">
-                        Contribution
+                        {lt.cectsContribution}
                       </p>
                       <p className="text-sm font-semibold text-foreground">
                         {entry.totalLearningHours} h
@@ -627,8 +612,7 @@ const CompositeECTSCalculatorForm = ({
                           className="gap-2 text-xs"
                         >
                           <BookOpen className="h-3 w-3" />
-                          {entry.expanded ? "Hide" : "Show"} learning activities
-                          from this source
+                          {entry.expanded ? lt.cectsHideActivities : lt.cectsShowActivities}
                           {entry.expanded ? (
                             <ChevronUp className="h-3 w-3" />
                           ) : (
@@ -642,10 +626,10 @@ const CompositeECTSCalculatorForm = ({
                             <thead>
                               <tr className="bg-muted">
                                 <th className="text-left p-2 border-b border-border font-medium">
-                                  Learning activity (from source)
+                                  {lt.cectsLearningActivityFromSource}
                                 </th>
                                 <th className="text-right p-2 border-b border-border font-medium w-32">
-                                  Hours
+                                  {lt.cectsHours}
                                 </th>
                               </tr>
                             </thead>
@@ -664,7 +648,7 @@ const CompositeECTSCalculatorForm = ({
                                 </tr>
                               ))}
                               <tr className="bg-muted/60 font-medium">
-                                <td className="p-2">Total learning hours</td>
+                                <td className="p-2">{lt.cectsTotalLearningHours}</td>
                                 <td className="p-2 text-right">
                                   {entry.totalLearningHours} h
                                 </td>
@@ -672,9 +656,10 @@ const CompositeECTSCalculatorForm = ({
                             </tbody>
                           </table>
                           <p className="text-xs text-muted-foreground p-2">
-                            ECTS range: {entry.totalLearningHours} h ÷ 30 ={" "}
-                            {entry.ectsMin.toFixed(2)} ECTS · ÷ 25 ={" "}
-                            {entry.ectsMax.toFixed(2)} ECTS
+                            {lt.cectsEctsRangeCalc
+                              .replace('{hours}', String(entry.totalLearningHours))
+                              .replace('{min}', entry.ectsMin.toFixed(2))
+                              .replace('{max}', entry.ectsMax.toFixed(2))}
                           </p>
                         </div>
                       </CollapsibleContent>
@@ -692,7 +677,7 @@ const CompositeECTSCalculatorForm = ({
                     return (
                       <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-border text-xs">
                         <Label className="text-muted-foreground">
-                          Either/or group:
+                          {lt.cectsEitherOrGroupLabel}
                         </Label>
                         {isFromPhase5 ? (
                           <Badge variant="default" className="text-xs gap-1">
@@ -701,11 +686,11 @@ const CompositeECTSCalculatorForm = ({
                           </Badge>
                         ) : (
                           <span className="text-muted-foreground italic">
-                            No group (Required or unassigned in Phase 5)
+                            {lt.cectsNoGroupUnassigned}
                           </span>
                         )}
                         <span className="text-muted-foreground/70 ml-1">
-                          · synced from Phase 5 assessment access model
+                          {lt.cectsSyncedFromPhase5}
                         </span>
                       </div>
                     );
@@ -740,18 +725,15 @@ const CompositeECTSCalculatorForm = ({
               <div className="flex items-center gap-2">
                 <Layers className="h-4 w-4 text-primary" />
                 <Label className="text-sm font-medium">
-                  Either/or groups (auto-synced from Phase 5)
+                  {lt.cectsAutoSyncedGroupsLabel}
                 </Label>
               </div>
               <p className="text-xs text-muted-foreground">
-                These groups come from your Phase 5 assessment access model
-                ("Partially Fixed"). To change them, edit the assessment access
-                model in Phase 5.5 — this calculator stays in sync.
+                {lt.cectsAutoSyncedGroupsHint}
               </p>
               {phase5Groups.length === 0 ? (
                 <p className="text-xs text-muted-foreground italic">
-                  No either/or groups defined in Phase 5 — every standalone
-                  source counts toward the total.
+                  {lt.cectsNoGroupsDefined}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -765,13 +747,12 @@ const CompositeECTSCalculatorForm = ({
                         <div className="text-sm">
                           <span className="font-medium">{g.label}</span>
                           <span className="text-muted-foreground ml-2">
-                            — {members.length} course
-                            {members.length === 1 ? "" : "s"}
+                            — {members.length}{" "}
+                            {members.length === 1 ? lt.cectsCourseCountLabel : lt.cectsCoursesCountLabel}
                             {members.length > 0 && (
                               <>
                                 {" "}
-                                · counts as{" "}
-                                {Number(members[0].totalLearningHours) || 0} h
+                                {lt.cectsCountsAs.replace('{hours}', String(Number(members[0].totalLearningHours) || 0))}
                               </>
                             )}
                           </span>
@@ -788,8 +769,7 @@ const CompositeECTSCalculatorForm = ({
         // No Phase 5 input → no manual group UI; either/or groups must come from Phase 5.5
         return (
           <p className="text-xs text-muted-foreground italic">
-            Either/or groups are managed in Phase 5.5 (set assessment access
-            model to "Partially Fixed"). They will appear here automatically.
+            {lt.cectsManagedInPhase55}
           </p>
         );
       })()}
@@ -800,24 +780,21 @@ const CompositeECTSCalculatorForm = ({
           <div className="flex items-center gap-2">
             <ClipboardCheck className="h-4 w-4 text-primary" />
             <Label className="text-base font-medium">
-              Assessment activities (designed for this composite)
+              {lt.cectsAssessmentDesignedLabel}
             </Label>
           </div>
           <p className="text-sm text-muted-foreground">
-            The composite designs its own assessment — assessment workload from
-            the source courses is intentionally excluded above. Add the
-            assessment activities the learner must engage with here, with an
-            estimated workload in hours.
+            {lt.cectsAssessmentDesignedHint}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-muted">
                   <th className="text-left p-3 border border-border font-medium text-sm">
-                    Activity
+                    {lt.activity}
                   </th>
                   <th className="text-left p-3 border border-border font-medium text-sm w-48">
-                    Estimated workload (hours)
+                    {lt.estimatedWorkloadHours}
                   </th>
                   <th className="w-12 p-3 border border-border"></th>
                 </tr>
@@ -834,7 +811,7 @@ const CompositeECTSCalculatorForm = ({
                         onChange={(e) =>
                           updateAssessmentRow(a.id, "name", e.target.value)
                         }
-                        placeholder="Enter activity name"
+                        placeholder={lt.enterActivityName}
                         className="border-input bg-background"
                       />
                     </td>
@@ -868,7 +845,7 @@ const CompositeECTSCalculatorForm = ({
           </div>
           <Button onClick={addAssessmentRow} variant="outline" size="sm">
             <Plus className="h-4 w-4 mr-2" />
-            Add activity
+            {lt.addActivity}
           </Button>
         </div>
       )}
@@ -877,47 +854,45 @@ const CompositeECTSCalculatorForm = ({
       {entries.length > 0 && (
         <div className="bg-secondary/30 rounded-lg p-4 space-y-4">
           <h4 className="font-semibold text-foreground">
-            Total composite workload
+            {lt.cectsTotalCompositeWorkload}
           </h4>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="bg-card p-4 rounded-lg border border-border">
               <Label className="text-sm text-muted-foreground">
-                Learning hours from sources
+                {lt.cectsLearningHoursFromSources}
               </Label>
               <p className="text-2xl font-bold text-foreground mt-1">
                 {sourcesLearningHours} h
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 ≈ {sourcesECTSMin.toFixed(1)} – {sourcesECTSMax.toFixed(1)} ECTS
-                · only one course per either/or group counts
+                {lt.cectsOnlyOnePerGroupCounts}
               </p>
             </div>
             <div className="bg-card p-4 rounded-lg border border-border">
               <Label className="text-sm text-muted-foreground">
-                Composite assessment hours
+                {lt.cectsCompositeAssessmentHours}
               </Label>
               <p className="text-2xl font-bold text-primary mt-1">
                 {assessmentTotals.hours} h
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 ≈ {assessmentTotals.ectsMin.toFixed(1)} –{" "}
-                {assessmentTotals.ectsMax.toFixed(1)} ECTS · 1 ECTS = 25–30 h
+                {assessmentTotals.ectsMax.toFixed(1)} ECTS {lt.cectsEctsStandardNote}
               </p>
             </div>
           </div>
 
           <div className="bg-card p-4 rounded-lg border border-border">
             <Label className="text-sm text-muted-foreground">
-              Total ECTS for this composite micro-credential (range)
+              {lt.cectsTotalEctsForComposite}
             </Label>
             <p className="text-3xl font-bold text-primary mt-1">
               {totalECTSMin.toFixed(1)} – {totalECTSMax.toFixed(1)} ECTS
             </p>
             <p className="text-xs text-muted-foreground mt-2">
-              Calculated from {totalHours} total hours (source learning hours +
-              composite assessment hours) using the 25–30 h per ECTS standard.
-              Pick your final value below.
+              {lt.cectsCalculatedFromNote.replace('{hours}', String(totalHours))}
             </p>
           </div>
 
@@ -925,8 +900,7 @@ const CompositeECTSCalculatorForm = ({
             <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded">
               <AlertTriangle className="h-4 w-4 text-destructive mt-0.5" />
               <p className="text-sm text-destructive">
-                Fix the either/or groups above so every member has the same
-                total learning hours.
+                {lt.cectsFixGroupsError}
               </p>
             </div>
           )}
@@ -935,18 +909,18 @@ const CompositeECTSCalculatorForm = ({
           {ectsOptions.length > 0 && Object.keys(groupErrors).length === 0 && (
             <div className="bg-card p-4 rounded-lg border-2 border-primary/30">
               <Label className="text-sm font-medium text-foreground">
-                Confirm final ECTS value for this micro-credential{" "}
+                {lt.cectsConfirmFinalLabel}{" "}
                 <span className="text-destructive">*</span>
               </Label>
               <p className="text-xs text-muted-foreground mt-1 mb-3">
-                Pick a whole or half ECTS value within the calculated range.
+                {lt.cectsConfirmFinalHint}
               </p>
               <Select
                 value={confirmedECTS?.toString()}
                 onValueChange={(val) => setConfirmedECTS(parseFloat(val))}
               >
                 <SelectTrigger className="w-48 bg-background">
-                  <SelectValue placeholder="Select ECTS value" />
+                  <SelectValue placeholder={lt.cectsSelectValuePlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
                   {ectsOptions.map((opt) => (
@@ -958,7 +932,7 @@ const CompositeECTSCalculatorForm = ({
               </Select>
               {confirmedECTS !== undefined && (
                 <p className="text-sm text-primary font-medium mt-3">
-                  Confirmed: {confirmedECTS.toFixed(1)} ECTS
+                  {lt.cectsConfirmedLabel.replace('{value}', confirmedECTS.toFixed(1))}
                 </p>
               )}
             </div>
