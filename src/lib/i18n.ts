@@ -2,7 +2,7 @@ export type Language = 'en' | 'da';
 
 export const translations = {
   en: {
-    appTitle: 'Micro-Credential Designer',
+    appTitle: 'The Micro-Credential Designer',
     courseType: 'Course Type',
     standalone: 'Standalone Course',
     microCredential: 'Micro-Credential',
@@ -39,7 +39,7 @@ export const translations = {
     phase6: 'Format, delivery of content, and learning pathways',
   },
   da: {
-    appTitle: 'Micro-Credential Designer',
+    appTitle: 'The Micro-Credential Designer',
     courseType: 'Kursustype',
     standalone: 'Selvstændigt Kursus',
     microCredential: 'Micro-Credential',

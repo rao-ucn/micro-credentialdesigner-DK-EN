@@ -35,9 +35,9 @@ const isMCType = (ct: CourseType) => ct === 'micro-credential' || ct === 'compos
 
 const Index = () => {
   const { toast } = useToast();
-  const [welcomeStep, setWelcomeStep] = useState<'initial' | 'approval' | 'courseType' | 'compositeUpload' | 'newFromFileUpload' | 'loadExisting' | null>('initial');
+  const [welcomeStep, setWelcomeStep] = useState<'initial' | 'courseType' | 'compositeUpload' | 'newFromFileUpload' | 'loadExisting' | null>('initial');
   const [loadDocumentId, setLoadDocumentId] = useState('');
-  const [approvalConfirmed, setApprovalConfirmed] = useState(false);
+  
   const [selectedCourseType, setSelectedCourseType] = useState<CourseType | null>(null);
   const [isLocked, setIsLocked] = useState(true);
   const [securityCode, setSecurityCode] = useState('');
@@ -127,7 +127,6 @@ const Index = () => {
       currentPhaseId: 'phase2', // Start at Phase 2
       currentItemIndex: 0,
       data: {
-        '1.1': { approvalConfirmed: true },
         '1.2': { selectedCourseType }
       },
     };
@@ -217,7 +216,6 @@ const Index = () => {
       delete mergedData['6.4'];
     }
 
-    mergedData['1.1'] = { approvalConfirmed: true };
     mergedData['1.2'] = { selectedCourseType: 'micro-credential' };
 
     const documentId = await getNextDocumentId();
@@ -409,7 +407,6 @@ const Index = () => {
     };
 
     const mergedData: Record<string, any> = {
-      '1.1': { approvalConfirmed: true },
       '1.2': { selectedCourseType: 'composite-micro-credential' },
     };
 
@@ -1011,7 +1008,6 @@ const Index = () => {
         }] as any,
         data: {
           ...pendingImport.data,
-          '1.1': { approvalConfirmed: true },
           '1.2': { selectedCourseType: 'micro-credential' },
         },
       };
@@ -1980,7 +1976,7 @@ const Index = () => {
                 <div className="w-10 h-10 bg-primary rounded-full"></div>
               </div>
               <h1 className="text-4xl font-bold mb-2 text-foreground">
-                Micro-Credential Designer
+                The Micro-Credential Designer
               </h1>
               <p className="text-muted-foreground">
                 Design standalone courses and micro-credentials with a structured, phase-based framework
@@ -1990,7 +1986,7 @@ const Index = () => {
             <div className="space-y-6">
               {welcomeStep === 'initial' && (
                 <>
-                  <Button onClick={() => setWelcomeStep('approval')} className="w-full" size="lg">
+                  <Button onClick={() => setWelcomeStep('courseType')} className="w-full" size="lg">
                     Start New Document
                   </Button>
 
@@ -2103,41 +2099,9 @@ const Index = () => {
               </div>
             )}
 
-            {welcomeStep === 'approval' && (
+            {welcomeStep === 'courseType' && (
               <div className="space-y-6">
-                <div className="flex items-start space-x-3 p-4 border border-border rounded-lg">
-                  <input
-                    type="checkbox"
-                    id="approval"
-                    checked={approvalConfirmed}
-                    onChange={(e) => {
-                      setApprovalConfirmed(e.target.checked);
-                      if (e.target.checked) {
-                        setWelcomeStep('courseType');
-                      }
-                    }}
-                    className="mt-1 h-5 w-5 rounded border-gray-300"
-                  />
-                  <label htmlFor="approval" className="text-sm cursor-pointer flex-1">
-                    I confirm that this activity has received institutional approval to start development
-                  </label>
-                </div>
-              </div>
-            )}
 
-            {welcomeStep === 'courseType' && approvalConfirmed && (
-              <div className="space-y-6">
-                <div className="flex items-start space-x-3 p-4 border border-border rounded-lg bg-muted/30">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    disabled
-                    className="mt-1 h-5 w-5 rounded border-gray-300"
-                  />
-                  <span className="text-sm flex-1 text-muted-foreground">
-                    I confirm that this activity has received institutional approval to start development
-                  </span>
-                </div>
 
                 <div>
                   <Label className="text-lg font-semibold mb-4 block text-primary">Choose what fits you</Label>
@@ -2249,7 +2213,7 @@ const Index = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => { setSelectedCourseType(null); setApprovalConfirmed(false); setWelcomeStep('initial'); }}
+                      onClick={() => { setSelectedCourseType(null); setWelcomeStep('initial'); }}
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
                       Back to welcome screen
@@ -2380,7 +2344,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Micro-Credential Designer</h1>
+              <h1 className="text-2xl font-bold text-foreground">The Micro-Credential Designer</h1>
               <div className="flex items-center gap-4 mt-1 text-sm">
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-muted-foreground">Type:</span>
@@ -2843,7 +2807,6 @@ const Index = () => {
                     setIsLocked(true);
                     setInputCode('');
                     setSelectedCourseType(null);
-                    setApprovalConfirmed(false);
                     setCompletionJsonDownloaded(false);
                     setCompletionPdfDownloaded(false);
                     setJsonDownloaded(false);

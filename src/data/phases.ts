@@ -4,21 +4,8 @@ export const phases: Phase[] = [
   {
     id: 'phase1',
     number: 1,
-    title: 'Authorisation and course type',
+    title: 'Course type',
     items: [
-      {
-        id: '1.1',
-        title: 'Institutional approval',
-        fields: [
-          {
-            name: 'approvalConfirmed',
-            label: 'I confirm that this activity has received institutional approval to start development',
-            type: 'checkbox',
-            required: true,
-            helpText: 'Institutional approval is required before beginning course development'
-          }
-        ]
-      },
       {
         id: '1.2',
         title: 'Select course type',
