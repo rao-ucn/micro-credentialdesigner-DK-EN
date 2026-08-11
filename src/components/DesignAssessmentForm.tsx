@@ -1009,7 +1009,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   const renderQualityFramework = () => (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-foreground">Use an assessment quality framework</h3>
+        <h3 className="text-lg font-semibold text-foreground">{lt.dafQualityFrameworkTitle}</h3>
         <Dialog>
           <DialogTrigger asChild>
             <button className="text-primary hover:text-primary/80">
@@ -1018,23 +1018,23 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Why?</DialogTitle>
+              <DialogTitle>{lt.dafWhy}</DialogTitle>
             </DialogHeader>
             <p className="text-sm">
-              An assessment quality framework ensures that evaluation is valid, reliable, and aligned with recognised standards.
+              {lt.dafQualityFrameworkWhyText}
             </p>
           </DialogContent>
         </Dialog>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Select quality framework</Label>
+        <Label className="text-sm font-medium">{lt.dafSelectQualityFramework}</Label>
         <Select
           value={formData.qualityFrameworkType || ''}
           onValueChange={(value) => updateField('qualityFrameworkType', value)}
         >
           <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Select framework type" />
+            <SelectValue placeholder={lt.dafSelectFrameworkTypePlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {QUALITY_FRAMEWORK_OPTIONS.map((option) => (
@@ -1048,11 +1048,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       {formData.qualityFrameworkType === 'other' && (
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Specify framework</Label>
+          <Label className="text-sm font-medium">{lt.dafSpecifyFramework}</Label>
           <Input
             value={formData.qualityFrameworkOther || ''}
             onChange={(e) => updateField('qualityFrameworkOther', e.target.value)}
-            placeholder="Enter the name of the framework..."
+            placeholder={lt.dafFrameworkNamePlaceholder}
             className="bg-background"
           />
         </div>
