@@ -19,6 +19,8 @@ import { Download, Upload, FileText, Save, Lock, Unlock, Trash2, ChevronLeft, Ch
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CompositeUploadForm } from '@/components/CompositeUploadForm';
 import { NewMcUploadForm } from '@/components/NewMcUploadForm';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +37,7 @@ const isMCType = (ct: CourseType) => ct === 'micro-credential' || ct === 'compos
 
 const Index = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [welcomeStep, setWelcomeStep] = useState<'initial' | 'courseType' | 'compositeUpload' | 'newFromFileUpload' | 'loadExisting' | null>('initial');
   const [loadDocumentId, setLoadDocumentId] = useState('');
   
@@ -1947,6 +1950,9 @@ const Index = () => {
     return (
       <>
         <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-primary/10 flex items-center justify-center p-4 relative">
+          <div className="fixed top-4 right-4 z-10">
+            <LanguageToggle />
+          </div>
           <Popover>
             <PopoverTrigger asChild>
               <button
@@ -1958,7 +1964,7 @@ const Index = () => {
               </button>
             </PopoverTrigger>
             <PopoverContent side="top" align="end" className="max-w-xs text-xs leading-relaxed">
-              This application was developed by Rasmus Otvald, <a href="mailto:rao@ucn.dk" className="text-primary underline">rao@ucn.dk</a>, as part of an open-source educational innovation project to support the design of micro-credentials.
+              {t.aboutText1}<a href="mailto:rao@ucn.dk" className="text-primary underline">rao@ucn.dk</a>{t.aboutText2}
             </PopoverContent>
           </Popover>
           <Card className="max-w-2xl w-full p-8 shadow-xl border-t-4 border-t-primary">
@@ -1967,10 +1973,10 @@ const Index = () => {
                 <div className="w-10 h-10 bg-primary rounded-full"></div>
               </div>
               <h1 className="text-4xl font-bold mb-2 text-foreground">
-                The Micro-Credential Designer
+                {t.appTitle}
               </h1>
               <p className="text-muted-foreground">
-                Design standalone courses and micro-credentials with a structured, phase-based framework
+                {t.welcomeTagline}
               </p>
             </div>
 
@@ -1978,21 +1984,21 @@ const Index = () => {
               {welcomeStep === 'initial' && (
                 <>
                   <Button onClick={() => setWelcomeStep('courseType')} className="w-full" size="lg">
-                    Start New Document
+                    {t.startNew}
                   </Button>
 
                   <div className="pt-6 border-t border-border space-y-3">
                     <Button onClick={() => setWelcomeStep('loadExisting')} variant="outline" className="w-full" size="lg">
                       <Lock className="mr-2 h-5 w-5" />
-                      Continue with a saved document (if not expired)
+                      {t.continueSaved}
                     </Button>
-                    <div className="text-center text-xs uppercase tracking-wider text-muted-foreground">or</div>
+                    <div className="text-center text-xs uppercase tracking-wider text-muted-foreground">{t.or}</div>
                     <Button onClick={() => handleImport('continue')} variant="outline" className="w-full" size="lg">
                       <Upload className="mr-2 h-5 w-5" />
-                      Continue from a JSON file
+                      {t.continueJson}
                     </Button>
                     <p className="text-xs text-muted-foreground text-center px-2">
-                      You will continue editing the existing document with the same Document ID. Any previously saved material on this ID will be overwritten when you save — remember to export the latest version yourself first if you want to keep a backup.
+                      {t.continueNote}
                     </p>
                   </div>
                 </>
@@ -2002,7 +2008,7 @@ const Index = () => {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="docId">Document ID</Label>
+                    <Label htmlFor="docId">{t.documentId}</Label>
                     <Input
                       id="docId"
                       placeholder="e.g. 000-000-001"
@@ -2011,12 +2017,12 @@ const Index = () => {
                       className="font-mono text-sm"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Find your Document ID on your exported PDF or JSON file
+                      {t.findDocId}
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="secCode">Security Code</Label>
+                    <Label htmlFor="secCode">{t.securityCode}</Label>
                     <Input
                       id="secCode"
                       placeholder="XXXX-XXXX-XXXX"
@@ -2026,7 +2032,7 @@ const Index = () => {
                       className="font-mono text-xl tracking-widest text-center"
                     />
                     <p className="text-xs text-muted-foreground">
-                      12-character code from your PDF or JSON file
+                      {t.codeHint}
                     </p>
                   </div>
                 </div>
@@ -2036,8 +2042,8 @@ const Index = () => {
                     const normalizedCode = inputCode.replace(/-/g, '').toUpperCase();
                     if (!loadDocumentId.trim() || normalizedCode.length !== 12) {
                       toast({
-                        title: 'Missing Information',
-                        description: 'Please enter both Document ID and 12-character security code',
+                        title: t.missingInfo,
+                        description: t.missingInfoDesc,
                         variant: 'destructive',
                       });
                       return;
@@ -2335,17 +2341,17 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">The Micro-Credential Designer</h1>
+              <h1 className="text-2xl font-bold text-foreground">{t.appTitle}</h1>
               <div className="flex items-center gap-4 mt-1 text-sm">
                 <span className="flex items-center gap-2">
-                  <span className="font-semibold text-muted-foreground">Type:</span>
+                  <span className="font-semibold text-muted-foreground">{t.type}:</span>
                   {courseData.compositeIntegrityBroken ? (
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded border border-primary/20 font-medium">
-                      Develop new micro-credential inspired by multiple other courses
+                      {t.compositeInspired}
                     </span>
                   ) : courseData.courseType === 'composite-micro-credential' ? (
                     <span className="bg-primary/10 text-primary px-3 py-1 rounded border border-primary/20 font-medium">
-                      Composite Micro-Credential
+                      {t.compositeMC}
                     </span>
                   ) : (
                     <select
@@ -2389,14 +2395,14 @@ const Index = () => {
                         }
 
                         toast({
-                          title: 'Course Type Changed',
-                          description: `Switched to ${newType === 'micro-credential' ? 'Micro-Credential' : 'Standalone'}`,
+                          title: t.courseTypeChanged,
+                          description: `${t.switchedTo} ${newType === 'micro-credential' ? t.microCredential : t.standalone}`,
                         });
                       }}
                       className="bg-primary/10 text-primary px-3 py-1 rounded border border-primary/20 font-medium cursor-pointer hover:bg-primary/20 transition-colors"
                     >
-                      <option value="standalone">Standalone (non-credit bearing)</option>
-                      <option value="micro-credential">Micro-Credential (credit bearing)</option>
+                      <option value="standalone">{t.standaloneLong}</option>
+                      <option value="micro-credential">{t.microCredentialLong}</option>
                     </select>
                   )}
                 </span>
@@ -2405,27 +2411,28 @@ const Index = () => {
                   <span className="font-mono text-xs">{courseData.documentId}</span>
                 </span>
                 {autoSaving && (
-                  <span className="text-primary animate-pulse">Saving...</span>
+                  <span className="text-primary animate-pulse">{t.saving}</span>
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
+              <LanguageToggle />
               <Button onClick={handleSave} variant="default" size="sm">
                 <Save className="mr-2 h-4 w-4" />
-                Save
+                {t.save}
               </Button>
               <Button onClick={handleExport} variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
-                Export
+                {t.export}
               </Button>
               <Button onClick={handleGeneratePDF} variant="default" size="sm">
                 <FileText className="mr-2 h-4 w-4" />
-                Generate PDF
+                {t.generatePdf}
               </Button>
               <Button onClick={() => setShowDeleteDialog(true)} variant="destructive" size="sm">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t.delete}
               </Button>
             </div>
           </div>
