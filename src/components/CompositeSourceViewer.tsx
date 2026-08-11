@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Lock, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 interface CompositeSourceData {
   sourceIndex: number;
@@ -22,6 +24,8 @@ interface CompositeSourceViewerProps {
  * with a collapsible per-source dropdown for inspiration / reference.
  */
 export function CompositeSourceViewer({ sources, integrityBroken }: CompositeSourceViewerProps) {
+  const { language } = useLanguage();
+  const lt = coreuiTranslations[language];
   const [expandedSources, setExpandedSources] = useState<Set<number>>(new Set());
 
   if (!sources || sources.length === 0) return null;
@@ -44,7 +48,7 @@ export function CompositeSourceViewer({ sources, integrityBroken }: CompositeSou
         <div key={key} className="flex items-center gap-2 py-1" style={{ paddingLeft: depth * 16 }}>
           <span className="text-sm font-medium text-muted-foreground capitalize">{formatKey(key)}:</span>
           <Badge variant={value ? 'default' : 'secondary'} className="text-xs">
-            {value ? 'Yes' : 'No'}
+            {value ? lt.yesLabel : lt.noLabel}
           </Badge>
         </div>
       );
@@ -116,9 +120,8 @@ export function CompositeSourceViewer({ sources, integrityBroken }: CompositeSou
         <div className="flex items-start gap-2 p-3 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700">
           <ShieldAlert className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 dark:text-amber-300">
-            <span className="font-semibold">Standalone integrity modified.</span>{' '}
-            Embedded standalone data has been edited — this micro-credential now functions
-            as a single combined course rather than a composite of independent standalone courses.
+            <span className="font-semibold">{lt.integrityModifiedTitle}</span>{' '}
+            {lt.integrityModifiedBody}
           </p>
         </div>
       )}
@@ -127,7 +130,9 @@ export function CompositeSourceViewer({ sources, integrityBroken }: CompositeSou
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-3.5 w-3.5 text-primary" />
           <span className="text-xs font-semibold text-primary">
-            Inspiration from {sources.length} standalone source{sources.length > 1 ? 's' : ''} — click to expand
+            {lt.inspirationFromSources
+              .replace('{count}', String(sources.length))
+              .replace('{plural}', sources.length > 1 ? 's' : '')}
           </span>
         </div>
         <div className="space-y-1.5">
@@ -155,7 +160,7 @@ export function CompositeSourceViewer({ sources, integrityBroken }: CompositeSou
                         {dataEntries.map(([key, val]) => renderValue(key, val))}
                       </div>
                     ) : (
-                      <p className="text-sm text-muted-foreground italic">No data for this section.</p>
+                      <p className="text-sm text-muted-foreground italic">{lt.noDataForSection}</p>
                     )}
                   </div>
                 )}

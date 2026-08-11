@@ -7,6 +7,8 @@ import { importFromJSON } from '@/lib/storage';
 import { Upload, X, FileText, AlertTriangle, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 // Assessment-related item IDs that should be stripped when importing from MCs
 const ASSESSMENT_ITEM_IDS = ['3.10', '5.5'];
@@ -30,6 +32,8 @@ function stripAssessmentData(data: Record<string, any>): Record<string, any> {
 
 export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormProps) {
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const lt = coreuiTranslations[language];
   const [sources, setSources] = useState<StandaloneSource[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0, fileName: '' });
@@ -63,10 +67,10 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
           if (imported.courseType !== 'standalone' && imported.courseType !== 'micro-credential') {
             const isComposite = imported.courseType === 'composite-micro-credential';
             toast({
-              title: isComposite ? 'Composite files cannot be used as a source' : 'Skipped: Unsupported Course Type',
+              title: isComposite ? lt.compositeFilesUnsupportedTitle : lt.unsupportedCourseTypeTitle,
               description: isComposite
-                ? `"${file.name}" is a composite micro-credential and cannot be nested inside another composite. A composite must be built directly from its individual standalone courses (and/or micro-credentials) — please upload those original source files instead.`
-                : `"${file.name}" is a ${imported.courseType}. Only standalone courses and micro-credentials can be used as sources.`,
+                ? lt.compositeFilesUnsupportedDescription.replace('{fileName}', file.name)
+                : lt.unsupportedCourseTypeDescription.replace('{fileName}', file.name).replace('{courseType}', imported.courseType),
               variant: 'destructive',
             });
             continue;
@@ -74,8 +78,8 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
 
           if (reuseCondition === 'no') {
             toast({
-              title: 'Skipped: Reuse Restricted',
-              description: `"${file.name}" cannot be loaded into a composite micro-credential because reuse of learning content is marked as No.`,
+              title: lt.reuseRestrictedTitle,
+              description: lt.reuseRestrictedCompositeDescription.replace('{fileName}', file.name),
               variant: 'destructive',
             });
             continue;
@@ -86,8 +90,8 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
             newSources.some(s => s.documentId === imported.documentId);
           if (isDuplicate) {
             toast({
-              title: 'Duplicate Skipped',
-              description: `"${file.name}" has already been added (Document ID: ${imported.documentId}).`,
+              title: lt.duplicateSkippedTitle,
+              description: lt.duplicateSkippedDescription.replace('{fileName}', file.name).replace('{id}', imported.documentId),
               variant: 'destructive',
             });
             continue;
@@ -110,8 +114,8 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
           });
         } catch (error) {
           toast({
-            title: 'Invalid File',
-            description: `"${file.name}" is not a valid export file.`,
+            title: lt.invalidFileTitle,
+            description: lt.invalidFileDescription.replace('{fileName}', file.name),
             variant: 'destructive',
           });
         }
@@ -123,17 +127,17 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
       if (newSources.length > 0) {
         setSources(prev => [...prev, ...newSources]);
         toast({
-          title: 'Files Added',
-          description: `${newSources.length} course(s) imported successfully.`,
+          title: lt.filesAddedTitle,
+          description: lt.filesAddedDescription.replace('{count}', String(newSources.length)),
         });
       }
     };
 
     input.click();
-  }, [sources, toast]);
+  }, [sources, toast, lt]);
 
   const removeSource = (index: number) => {
-    const shouldContinue = window.confirm('Are you sure you want to remove this source file?');
+    const shouldContinue = window.confirm(lt.removeSourceConfirm);
     if (!shouldContinue) return;
 
     setSources(prev => prev.filter((_, i) => i !== index));
@@ -145,25 +149,23 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
     <div className="space-y-6">
       <div>
         <Label className="text-lg font-semibold mb-2 block text-primary">
-          Upload Courses
+          {lt.uploadCoursesLabel}
         </Label>
         <p className="text-sm text-muted-foreground mb-4">
-          Upload at least 2 course JSON files (standalone or micro-credential). These will be combined into a new composite micro-credential.
-          For micro-credential files, only the standalone-relevant data will be imported — assessment sections (Define assessment, Design assessment) will be excluded and must be defined anew.
-          Files marked with <strong>No</strong> under reuse of learning content within the alliance cannot be loaded.
+          {lt.compositeUploadDescription}
           <br /><br />
-          <strong>Note:</strong> Existing composite micro-credential files cannot be uploaded here — a composite cannot contain another composite. If you want to reuse content from an existing composite, please upload its original individual standalone (or MC) source files instead.
+          <strong>{lt.compositeUploadNote}</strong>
         </p>
 
         <div className="flex items-start gap-2 text-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-200 p-3 rounded-md mb-4">
           <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold mb-1">Important: Source content is quality-assured and locked</p>
+            <p className="font-semibold mb-1">{lt.lockedNoticeTitle}</p>
             <p>
-              The uploaded standalone courses are kept intact to preserve their quality assurance. As long as you don't modify their content, the micro-credential remains a true composition of the original sources.
+              {lt.lockedNoticeBody1}
             </p>
             <p className="mt-2">
-              <strong>If you edit any of the locked source content</strong>, the micro-credential is automatically converted into a micro-credential with a single, unified standalone course — the link to the original sources is then broken, and the result is treated as one coherent course rather than a composition.
+              <strong>{lt.lockedNoticeBody2}</strong>
             </p>
           </div>
         </div>
@@ -179,12 +181,12 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
         {isProcessing ? (
           <>
             <Loader2 className="h-6 w-6 text-primary animate-spin" />
-            <span className="text-muted-foreground">Processing files…</span>
+            <span className="text-muted-foreground">{lt.processingFiles}</span>
           </>
         ) : (
           <>
             <Upload className="h-6 w-6 text-muted-foreground" />
-            <span className="text-muted-foreground">Click to upload course JSON files (standalone or MC)</span>
+            <span className="text-muted-foreground">{lt.clickToUploadComposite}</span>
           </>
         )}
       </Button>
@@ -194,7 +196,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground truncate flex-1 min-w-0 mr-2">
-              {progress.fileName ? `Reading: ${progress.fileName}` : 'Finalizing…'}
+              {progress.fileName ? lt.readingFile.replace('{fileName}', progress.fileName) : lt.finalizing}
             </span>
             <span className="text-muted-foreground flex-shrink-0">
               {progress.current} / {progress.total}
@@ -208,7 +210,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
       {sources.length > 0 && (
         <div className="space-y-3">
           <Label className="text-sm font-medium">
-            Uploaded Courses ({sources.length})
+            {lt.uploadedCoursesLabel.replace('{count}', String(sources.length))}
           </Label>
           {sources.map((source, index) => (
             <Card key={source.documentId} className="p-4 flex items-start justify-between gap-3">
@@ -219,12 +221,12 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm truncate">{source.workingTitle}</p>
                   <p className="text-xs text-muted-foreground">
-                    Document ID: {source.documentId}
+                    {lt.documentIdLabel.replace('{id}', source.documentId)}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    File: {source.fileName}
+                    {lt.fileLabel.replace('{name}', source.fileName)}
                     {source.originalCourseType === 'micro-credential' && (
-                      <span className="ml-2 text-amber-600">(MC — assessment data excluded)</span>
+                      <span className="ml-2 text-amber-600">{lt.mcAssessmentExcluded}</span>
                     )}
                   </p>
                 </div>
@@ -246,7 +248,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
       {sources.length > 0 && sources.length < 2 && (
         <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md">
           <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-          <span>You need at least 2 courses to create a composite micro-credential.</span>
+          <span>{lt.minimumCoursesWarning}</span>
         </div>
       )}
 
@@ -254,7 +256,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
       {canProceed && (
         <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-md">
           <Check className="h-4 w-4 flex-shrink-0" />
-          <span>Ready! {sources.length} courses will be combined into a composite micro-credential.</span>
+          <span>{lt.readyCompositeSummary.replace('{count}', String(sources.length))}</span>
         </div>
       )}
 
@@ -265,12 +267,12 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
           className="w-full"
           size="lg"
         >
-          Continue with {sources.length} Courses
+          {lt.continueWithCourses.replace('{count}', String(sources.length))}
         </Button>
       )}
 
       <Button onClick={onBack} variant="outline" className="w-full">
-        Back
+        {lt.backButton}
       </Button>
     </div>
   );
