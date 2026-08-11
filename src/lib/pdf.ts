@@ -267,11 +267,11 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Created: ${new Date(data.createdAt).toLocaleDateString()}`, margin, yPos);
+  doc.text(`${pl.created} ${new Date(data.createdAt).toLocaleDateString()}`, margin, yPos);
   yPos += 7;
-  doc.text(`Last Updated: ${new Date(data.updatedAt).toLocaleDateString()}`, margin, yPos);
+  doc.text(`${pl.lastUpdated} ${new Date(data.updatedAt).toLocaleDateString()}`, margin, yPos);
   yPos += 7;
-  doc.text(`Version: ${data.version}`, margin, yPos);
+  doc.text(`${pl.version} ${data.version}`, margin, yPos);
   yPos += 20;
 
   // QR Code and reopen instructions
@@ -688,26 +688,26 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           yPos += 8;
           
           doc.setFont('helvetica', 'normal');
-          doc.text(`Total learning hours: ${ectsData.results.totalLearningHours}`, margin + 3, yPos);
+          doc.text(`${pl.totalLearningHours} ${ectsData.results.totalLearningHours}`, margin + 3, yPos);
           yPos += 6;
-          doc.text(`ECTS (learning): ${ectsData.results.ectsLearningMin} - ${ectsData.results.ectsLearningMax}`, margin + 3, yPos);
+          doc.text(`${pl.ectsLearning} ${ectsData.results.ectsLearningMin} - ${ectsData.results.ectsLearningMax}`, margin + 3, yPos);
           yPos += 6;
           
           if (data.courseType === 'micro-credential') {
-            doc.text(`Total assessment hours: ${ectsData.results.totalAssessmentHours}`, margin + 3, yPos);
+            doc.text(`${pl.totalAssessmentHours} ${ectsData.results.totalAssessmentHours}`, margin + 3, yPos);
             yPos += 6;
-            doc.text(`ECTS (assessment): ${ectsData.results.ectsAssessmentMin} - ${ectsData.results.ectsAssessmentMax}`, margin + 3, yPos);
+            doc.text(`${pl.ectsAssessment} ${ectsData.results.ectsAssessmentMin} - ${ectsData.results.ectsAssessmentMax}`, margin + 3, yPos);
             yPos += 8;
             
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(0, 124, 113);
-            doc.text(`Total micro-credential range: ${ectsData.results.ectsTotalMin} - ${ectsData.results.ectsTotalMax} ECTS`, margin + 3, yPos);
+            doc.text(`${pl.totalMicroCredentialRange} ${ectsData.results.ectsTotalMin} - ${ectsData.results.ectsTotalMax} ECTS`, margin + 3, yPos);
             yPos += 8;
             
             // Confirmed ECTS value
             if (ectsData.confirmedECTS) {
               doc.setFontSize(12);
-              doc.text(`Confirmed ECTS: ${ectsData.confirmedECTS.toFixed(1)} ECTS`, margin + 3, yPos);
+              doc.text(`${pl.confirmedEcts} ${ectsData.confirmedECTS.toFixed(1)} ECTS`, margin + 3, yPos);
               yPos += 10;
               doc.setFontSize(10);
             }
@@ -748,7 +748,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         doc.setFont('helvetica', 'normal');
         if (eqfData.descriptorMatches) {
           if (eqfData.descriptorMatches.knowledge) {
-            doc.text(`Knowledge: Level ${eqfData.descriptorMatches.knowledge}`, margin + 3, yPos);
+            doc.text(`${pl.knowledgeLevel} ${eqfData.descriptorMatches.knowledge}`, margin + 3, yPos);
             yPos += 6;
             if (eqfData.descriptorComments?.knowledge) {
               doc.setFont('helvetica', 'italic');
@@ -761,7 +761,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             }
           }
           if (eqfData.descriptorMatches.skills) {
-            doc.text(`Skills: Level ${eqfData.descriptorMatches.skills}`, margin + 3, yPos);
+            doc.text(`${pl.skillsLevel} ${eqfData.descriptorMatches.skills}`, margin + 3, yPos);
             yPos += 6;
             if (eqfData.descriptorComments?.skills) {
               doc.setFont('helvetica', 'italic');
@@ -774,7 +774,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             }
           }
           if (eqfData.descriptorMatches.responsibilityAutonomy) {
-            doc.text(`Responsibility/Autonomy: Level ${eqfData.descriptorMatches.responsibilityAutonomy}`, margin + 3, yPos);
+            doc.text(`${pl.responsibilityAutonomyLevel} ${eqfData.descriptorMatches.responsibilityAutonomy}`, margin + 3, yPos);
             yPos += 6;
             if (eqfData.descriptorComments?.responsibilityAutonomy) {
               doc.setFont('helvetica', 'italic');
@@ -804,7 +804,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         
         doc.setFont('helvetica', 'normal');
         if (eqfData.suggestedLevel) {
-          doc.text(`Suggested level: Level ${eqfData.suggestedLevel}`, margin + 3, yPos);
+          doc.text(`${pl.suggestedLevel} ${eqfData.suggestedLevel}`, margin + 3, yPos);
           yPos += 6;
         }
 
@@ -1074,7 +1074,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             yPos += 5;
           }
           if (assessmentData.otherActivityType) {
-            doc.text(`  (Other: ${assessmentData.otherActivityType})`, margin + 6, yPos);
+            doc.text(`  (${pl.otherPrefix} ${assessmentData.otherActivityType})`, margin + 6, yPos);
             yPos += 5;
           }
           yPos += 5;
@@ -1190,7 +1190,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             yPos += 5;
           }
           if (multimodalData.contentRepresentationOther) {
-            doc.text(`  (Other: ${multimodalData.contentRepresentationOther})`, margin + 6, yPos);
+            doc.text(`  (${pl.otherPrefix} ${multimodalData.contentRepresentationOther})`, margin + 6, yPos);
             yPos += 5;
           }
           yPos += 5;
@@ -1210,7 +1210,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             yPos += 5;
           }
           if (multimodalData.activeEngagementOther) {
-            doc.text(`  (Other: ${multimodalData.activeEngagementOther})`, margin + 6, yPos);
+            doc.text(`  (${pl.otherPrefix} ${multimodalData.activeEngagementOther})`, margin + 6, yPos);
             yPos += 5;
           }
           yPos += 5;
@@ -1230,7 +1230,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
             yPos += 5;
           }
           if (multimodalData.applicationTransferOther) {
-            doc.text(`  (Other: ${multimodalData.applicationTransferOther})`, margin + 6, yPos);
+            doc.text(`  (${pl.otherPrefix} ${multimodalData.applicationTransferOther})`, margin + 6, yPos);
             yPos += 5;
           }
           yPos += 5;
@@ -1517,7 +1517,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           // Open: confirmation
           if (assessmentData.assessmentAccessModel === 'open' && assessmentData.assessmentAccessConfirmed) {
             checkNewPage(8);
-            doc.text('• Confirmed: assessment alone is sufficient to demonstrate all learning outcomes.', margin + 3, yPos);
+            doc.text(`• ${pl.accessConfirmedOpen}`, margin + 3, yPos);
             yPos += 6;
           }
 
@@ -1853,10 +1853,10 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           doc.text(pl.physicalPresenceRequirements, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.text(`${reuseData.physicalDays} teaching day(s)`, margin + 3, yPos);
+          doc.text(pl.teachingDays(reuseData.physicalDays), margin + 3, yPos);
           yPos += 5;
           if (reuseData.teachingLocations) {
-            doc.text(`Location(s): ${reuseData.teachingLocations}`, margin + 3, yPos);
+            doc.text(`${pl.locations} ${reuseData.teachingLocations}`, margin + 3, yPos);
             yPos += 5;
           }
           yPos += 5;
@@ -1872,7 +1872,7 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
           if (reuseData.courseDurationMode === 'async') {
             doc.text(pl.fullyAsynchronousNoFixedPeriod, margin + 3, yPos);
           } else if (reuseData.courseDurationMode === 'time-bound' && reuseData.estimatedWeeks) {
-            doc.text(`Time-bound: ${reuseData.estimatedWeeks} week(s)`, margin + 3, yPos);
+            doc.text(pl.timeBoundWeeks(reuseData.estimatedWeeks), margin + 3, yPos);
           }
           yPos += 10;
         }
