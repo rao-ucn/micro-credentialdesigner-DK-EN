@@ -68,7 +68,7 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
           ) {
             toast({
               title: 'Skipped: Unsupported File',
-              description: `"${file.name}" is not a recognised HEROES course file.`,
+              description: `"${file.name}" is not a recognised course file.`,
               variant: 'destructive',
             });
             continue;
@@ -111,7 +111,7 @@ export function NewMcUploadForm({ onComplete, onBack }: NewMcUploadFormProps) {
         } catch (error) {
           toast({
             title: 'Invalid File',
-            description: `"${file.name}" is not a valid HEROES export file.`,
+            description: `"${file.name}" is not a valid export file.`,
             variant: 'destructive',
           });
         }

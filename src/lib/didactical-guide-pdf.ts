@@ -91,7 +91,7 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('HEROES Course Design', pageWidth / 2, 14, { align: 'center' });
+  doc.text('Course Design', pageWidth / 2, 14, { align: 'center' });
 
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
@@ -381,13 +381,13 @@ export async function generateDidacticalGuidePDF(data: CourseData): Promise<void
   doc.setDrawColor(parseInt(PRIMARY_COLOR.slice(1, 3), 16), parseInt(PRIMARY_COLOR.slice(3, 5), 16), parseInt(PRIMARY_COLOR.slice(5, 7), 16));
   doc.line(margin, yPos, pageWidth - margin, yPos);
   yPos += 6;
-  addText('This checklist was auto-generated from your HEROES course design template. Use it as a working document during Phase 5 development.', 8, false, '#888888');
+  addText('This checklist was auto-generated from your course design template. Use it as a working document during Phase 5 development.', 8, false, '#888888');
 
   // Save
   const sanitizedTitle = courseTitle.replace(/[^a-zA-Z0-9æøåÆØÅäöüÄÖÜ\s-]/g, '').trim().replace(/\s+/g, '_').slice(0, 40);
   const filename = sanitizedTitle
     ? `${sanitizedTitle}_didactical_guide.pdf`
-    : `heroes_didactical_guide_${data.documentId.slice(0, 8)}.pdf`;
+    : `didactical_guide_${data.documentId.slice(0, 8)}.pdf`;
 
   doc.save(filename);
 }

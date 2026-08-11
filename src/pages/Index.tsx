@@ -12,14 +12,13 @@ import { phases } from '@/data/phases';
 import { PhaseNavigator } from '@/components/PhaseNavigator';
 import { ItemForm } from '@/components/ItemForm';
 import { generateSecurityCode, hashSecurityCode, verifySecurityCode } from '@/lib/crypto';
-import { saveCourseData, loadCourseData, deleteCourseData, documentExists, exportToJSON, importFromJSON, saveImportedData, getNextDocumentId, getCloudDocumentMeta } from '@/lib/storage';
+import { saveCourseData, loadCourseData, deleteCourseData, documentExists, exportToJSON, importFromJSON, saveImportedData, getNextDocumentId } from '@/lib/storage';
 import { generatePDF } from '@/lib/pdf';
 import { generateDidacticalGuidePDF } from '@/lib/didactical-guide-pdf';
 import { Download, Upload, FileText, Save, Lock, Unlock, Trash2, ChevronLeft, ChevronRight, FileDown, Check, Layers, Loader2, Info } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CompositeUploadForm } from '@/components/CompositeUploadForm';
 import { NewMcUploadForm } from '@/components/NewMcUploadForm';
-import heroesLogo from '@/assets/heroes-logo.png';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,11 +55,11 @@ const Index = () => {
   const [autoSaving, setAutoSaving] = useState(false);
   const [isImportedDocument, setIsImportedDocument] = useState(false); // Track if document was just imported from JSON
   const [pendingImport, setPendingImport] = useState<CourseData | null>(null); // Detected import awaiting user confirmation
-  const [overwriteWarning, setOverwriteWarning] = useState<{ data: CourseData; code: string; cloudUpdatedAt: string } | null>(null);
+  const [overwriteWarning, setOverwriteWarning] = useState<{ data: CourseData; code: string } | null>(null);
 
   // Session restore key - kept only for the tab's lifetime so a manual refresh
   // doesn't dump the user back to the welcome screen.
-  const SESSION_KEY = 'heroes:active-session';
+  const SESSION_KEY = 'mcd:active-session';
 
   // Restore active session on mount (after a browser refresh)
   useEffect(() => {
@@ -741,20 +740,19 @@ const Index = () => {
         // twice (which can take several seconds on slower devices).
         
         // Before overwriting, check if a different document with the same ID
-        // already exists in the Cloud (could happen if user imports an old export
-        // while a newer doc has reused that ID, or two devices clashed).
-        const cloudMeta = await getCloudDocumentMeta(courseData.documentId);
-        if (cloudMeta) {
+        // already exists on this device (could happen if user imports an old
+        // export while a newer document has reused that ID).
+        const existsLocally = await documentExists(courseData.documentId);
+        if (existsLocally) {
           // Pause here and ask the user what to do.
           setOverwriteWarning({
             data: courseData,
             code: formattedCode,
-            cloudUpdatedAt: cloudMeta.updatedAt,
           });
           return;
         }
 
-        // Save the imported data to Cloud + localStorage with the provided security code
+        // Save the imported data locally with the provided security code
         await saveImportedData(courseData, formattedCode);
         setSecurityCode(formattedCode);
         setIsLocked(false);
@@ -831,7 +829,7 @@ const Index = () => {
       : null;
     const filename = sanitizedTitle 
       ? `${sanitizedTitle}.json`
-      : `heroes_${courseData.documentId.slice(0, 8)}.json`;
+      : `course_${courseData.documentId.slice(0, 8)}.json`;
     
     a.download = filename;
     a.click();
@@ -959,7 +957,7 @@ const Index = () => {
       } catch (error) {
         toast({
           title: 'Import Failed',
-          description: 'Invalid JSON file. Make sure all selected files are valid HEROES export files.',
+          description: 'Invalid JSON file. Make sure all selected files are valid export files.',
           variant: 'destructive',
         });
       } finally {
@@ -1114,15 +1112,12 @@ const Index = () => {
     <AlertDialog open={!!overwriteWarning} onOpenChange={(open) => { if (!open) setOverwriteWarning(null); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>A document with this ID already exists in the cloud</AlertDialogTitle>
+          <AlertDialogTitle>A document with this ID is already saved</AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-3 text-sm">
               <p>
-                Document ID <strong>{overwriteWarning?.data.documentId}</strong> already
-                exists in the cloud and was last updated{' '}
-                <strong>
-                  {overwriteWarning ? new Date(overwriteWarning.cloudUpdatedAt).toLocaleString() : ''}
-                </strong>.
+                Document ID <strong>{overwriteWarning?.data.documentId}</strong> is already
+                saved on this device.
               </p>
               <p>
                 Your uploaded file was last updated{' '}
@@ -1134,12 +1129,12 @@ const Index = () => {
               </p>
               <p>
                 If these are different versions of the same document, overwriting will{' '}
-                <strong>permanently replace</strong> the cloud version with your file.
+                <strong>permanently replace</strong> the saved version with your file.
               </p>
               <p>
                 Alternatively, you can continue with a <strong>new ID</strong> — this saves
                 your uploaded file as a new document, equivalent to creating a new
-                micro-credential based on the uploaded file. The cloud version is left
+                micro-credential based on the uploaded file. The saved version is left
                 untouched.
               </p>
             </div>
@@ -1165,7 +1160,7 @@ const Index = () => {
                 setOverwriteWarning(null);
                 toast({
                   title: 'Saved as new document',
-                  description: `Your file was saved with a new ID: ${newId}. The cloud version was not changed.`,
+                  description: `Your file was saved with a new ID: ${newId}. The saved version was not changed.`,
                 });
               } catch (e) {
                 console.error('Save as new document failed:', e);
@@ -1191,20 +1186,20 @@ const Index = () => {
                 setIsImportedDocument(false);
                 setOverwriteWarning(null);
                 toast({
-                  title: 'Cloud version overwritten',
-                  description: 'The cloud document was replaced with your uploaded file.',
+                  title: 'Saved version overwritten',
+                  description: 'The saved document was replaced with your uploaded file.',
                 });
               } catch (e) {
                 toast({
                   title: 'Save failed',
-                  description: 'Could not overwrite the cloud version.',
+                  description: 'Could not overwrite the saved version.',
                   variant: 'destructive',
                 });
               }
             }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Overwrite cloud version
+            Overwrite saved version
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -1976,7 +1971,7 @@ const Index = () => {
               </button>
             </PopoverTrigger>
             <PopoverContent side="top" align="end" className="max-w-xs text-xs leading-relaxed">
-              This application was developed by WP6 member Rasmus Otvald, <a href="mailto:rao@ucn.dk" className="text-primary underline">rao@ucn.dk</a>, based on feedback and collaboration within WP6 as part of an open-source educational innovation project to support the HEROES Alliance <em>Joint Action Plan for Micro-credentials</em>.
+              This application was developed by Rasmus Otvald, <a href="mailto:rao@ucn.dk" className="text-primary underline">rao@ucn.dk</a>, as part of an open-source educational innovation project to support the design of micro-credentials.
             </PopoverContent>
           </Popover>
           <Card className="max-w-2xl w-full p-8 shadow-xl border-t-4 border-t-primary">
@@ -1984,12 +1979,11 @@ const Index = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
                 <div className="w-10 h-10 bg-primary rounded-full"></div>
               </div>
-              <h1 className="text-4xl font-bold mb-2 flex items-center justify-center gap-3 flex-wrap">
-                <img src={heroesLogo} alt="HEROES" className="h-9 w-auto" />
-                <span className="text-foreground">Micro-Credential Designer</span>
+              <h1 className="text-4xl font-bold mb-2 text-foreground">
+                Micro-Credential Designer
               </h1>
               <p className="text-muted-foreground">
-                Design standalone courses and micro-credentials with the HEROES framework
+                Design standalone courses and micro-credentials with a structured, phase-based framework
               </p>
             </div>
 
@@ -2068,7 +2062,7 @@ const Index = () => {
                     if (!exists) {
                       toast({
                         title: 'Document Not Found',
-                        description: 'No document with this ID exists in Cloud or local storage. If you have a JSON export file, use "Import JSON" instead.',
+                        description: 'No document with this ID exists in local storage. If you have a JSON export file, use "Import JSON" instead.',
                         variant: 'destructive',
                       });
                       return;
@@ -2386,7 +2380,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">HEROES Micro-Credential Designer</h1>
+              <h1 className="text-2xl font-bold text-foreground">Micro-Credential Designer</h1>
               <div className="flex items-center gap-4 mt-1 text-sm">
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-muted-foreground">Type:</span>

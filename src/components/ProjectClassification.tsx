@@ -273,16 +273,16 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       {/* Meta text */}
       <div className="bg-muted/30 border border-border rounded-lg p-6 space-y-4">
         <p className="text-foreground leading-relaxed">
-          Before starting the design process, it is essential to clarify under which conditions the learning activity is developed. According to the HEROES Joint Action Plan, every activity must be classified as either an approved or a developed HEROES activity.
+          Before starting the design process, it is essential to clarify under which conditions the learning activity is developed. Every activity must be classified as either an approved or a developed activity.
         </p>
         <p className="text-foreground leading-relaxed">
           This distinction ensures transparency about ownership, responsibilities, and collaborative processes within the alliance.
         </p>
         <p className="text-foreground leading-relaxed">
-          A HEROES approved activity is a learning offer developed by a single HEROES institution and later aligned to the HEROES framework. External stakeholders such as companies, NGOs, or public agencies can still participate in design or validation.
+          An approved activity is a learning offer developed by a single institution and later aligned to the alliance framework. External stakeholders such as companies, NGOs, or public agencies can still participate in design or validation.
         </p>
         <p className="text-foreground leading-relaxed">
-          A HEROES developed activity is co-created and delivered by two or more HEROES partner institutions. These activities normally include shared ownership, distributed QA responsibility, and joint evaluation.
+          A developed activity is co-created and delivered by two or more partner institutions. These activities normally include shared ownership, distributed QA responsibility, and joint evaluation.
         </p>
         <p className="text-foreground leading-relaxed">
           The classification defines who holds academic responsibility, how quality assurance is distributed, and which metadata and institutional references must be included in the final {courseLabel}.
@@ -349,14 +349,14 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p>Defines whether the activity is based on an existing institutional course or jointly developed within the HEROES alliance.</p>
+                <p>Defines whether the activity is based on an existing institutional course or jointly developed within an alliance.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         
         <p className="text-sm text-muted-foreground">
-          Select how this activity is organised within the HEROES framework.
+          Select how this activity is organised within the alliance framework.
         </p>
 
         <RadioGroup value={classification} onValueChange={setClassification}>
@@ -372,9 +372,9 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                 <div className="flex items-start gap-3">
                   <RadioGroupItem value="approved" id="approved" className="mt-1" />
                   <Label htmlFor="approved" className="cursor-pointer flex-1">
-                    <div className="font-semibold text-lg text-foreground">HEROES approved activity</div>
+                    <div className="font-semibold text-lg text-foreground">Approved activity</div>
                     <p className="text-sm text-muted-foreground mt-2">
-                      A course developed by a single HEROES institution and aligned to the HEROES framework. External stakeholders may also contribute.
+                      A course developed by a single institution and aligned to the alliance framework. External stakeholders may also contribute.
                     </p>
                   </Label>
                 </div>
@@ -392,9 +392,9 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                 <div className="flex items-start gap-3">
                   <RadioGroupItem value="developed" id="developed" className="mt-1" />
                   <Label htmlFor="developed" className="cursor-pointer flex-1">
-                    <div className="font-semibold text-lg text-foreground">HEROES developed activity</div>
+                    <div className="font-semibold text-lg text-foreground">Developed activity</div>
                     <p className="text-sm text-muted-foreground mt-2">
-                      A new course jointly designed and delivered by two or more HEROES partner institutions. External stakeholders may also participate.
+                      A new course jointly designed and delivered by two or more partner institutions. External stakeholders may also participate.
                     </p>
                   </Label>
                 </div>
@@ -410,14 +410,14 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-foreground">
               {classification === 'approved' 
-                ? 'Developer (HEROES Institution)'
-                : 'Developers (HEROES Institutions)'}
+                ? 'Developer (Institution)'
+                : 'Developers (Institutions)'}
               <span className="text-destructive ml-1">*</span>
             </h3>
             <p className="text-sm text-muted-foreground">
               {classification === 'approved' 
-                ? 'List the HEROES institution directly developing this activity. For approved activities, list your own institution.'
-                : 'List all HEROES institutions directly developing this activity. A minimum of 2 developers from different institutions is required for developed activities.'}
+                ? 'List the institution directly developing this activity. For approved activities, list your own institution.'
+                : 'List all institutions directly developing this activity. A minimum of 2 developers from different institutions is required for developed activities.'}
             </p>
           </div>
 

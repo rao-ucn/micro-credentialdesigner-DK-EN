@@ -111,7 +111,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
         } catch (error) {
           toast({
             title: 'Invalid File',
-            description: `"${file.name}" is not a valid HEROES export file.`,
+            description: `"${file.name}" is not a valid export file.`,
             variant: 'destructive',
           });
         }
