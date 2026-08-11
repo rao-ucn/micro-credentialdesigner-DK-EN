@@ -1108,7 +1108,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     <Card className="p-6 space-y-6">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">How is the assessment graded?</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafGradingTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -1117,42 +1117,42 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Grading systems and comparability</DialogTitle>
+                <DialogTitle>{lt.dafGradingDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-3 text-sm">
                 <p>
-                  The selected grading system defines how learner performance is formally evaluated.
+                  {lt.dafGradingWhyP1}
                 </p>
                 <p>
-                  Grades can always be converted or interpreted in connection with recognition, credit transfer, or stackability within an institution or across institutions.
+                  {lt.dafGradingWhyP2}
                 </p>
               </div>
             </DialogContent>
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          Specify the grading system used for this micro-credential.
+          {lt.dafGradingIntro1}
         </p>
         <p className="text-sm text-muted-foreground">
-          This information supports transparency, recognition, and potential credit transfer across institutions.
+          {lt.dafGradingIntro2}
         </p>
       </div>
 
       {/* Grading system selection */}
       <div className="space-y-4">
         <Label htmlFor="grading-select" className="text-sm font-medium">
-          Select the grading system applied to this micro-credential <span className="text-destructive">*</span>
+          {lt.dafGradingSelectLabel} <span className="text-destructive">*</span>
         </Label>
         
         <Select value={selectedGrading} onValueChange={handleGradingChange}>
           <SelectTrigger id="grading-select">
-            <SelectValue placeholder="Select a grading system..." />
+            <SelectValue placeholder={lt.dafGradingSelectPlaceholder} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pass-fail">Pass / Fail</SelectItem>
-            <SelectItem value="eu-scale">EU grading scale (A–F)</SelectItem>
-            <SelectItem value="national">National grading framework</SelectItem>
-            <SelectItem value="dual">Dual grading system (EU grading + National framework)</SelectItem>
+            <SelectItem value="pass-fail">{lt.dafGradingPassFail}</SelectItem>
+            <SelectItem value="eu-scale">{lt.dafGradingEuScale}</SelectItem>
+            <SelectItem value="national">{lt.dafGradingNational}</SelectItem>
+            <SelectItem value="dual">{lt.dafGradingDual}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -1160,12 +1160,12 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {(selectedGrading === 'national' || selectedGrading === 'dual') && (
           <div className="space-y-2">
             <Label className="text-sm font-medium">
-              Country / national framework <span className="text-destructive">*</span>
+              {lt.dafCountryLabel} <span className="text-destructive">*</span>
             </Label>
             <Input
               value={gradingCountry}
               onChange={handleCountryChange}
-              placeholder="e.g. Denmark, Germany, Finland"
+              placeholder={lt.dafCountryPlaceholder}
               className="bg-background"
             />
           </div>
@@ -1176,9 +1176,9 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       <div className="flex gap-3 p-4 bg-muted/50 border rounded-lg">
         <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="text-sm font-medium">Note</p>
+          <p className="text-sm font-medium">{lt.dafNote}</p>
           <p className="text-sm text-muted-foreground">
-            Regardless of the grading system selected, results can be converted or interpreted for purposes such as recognition of prior learning, credit transfer, or stackability within institutional frameworks.
+            {lt.dafGradingNoteText}
           </p>
         </div>
       </div>
