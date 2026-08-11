@@ -27,6 +27,8 @@ import ContentReuseForm from './ContentReuseForm';
 import MeetingLearnerNeedsForm from './MeetingLearnerNeedsForm';
 import EvaluationPlanForm from './EvaluationPlanForm';
 import { CompositeSourceViewer } from './CompositeSourceViewer';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 interface ItemFormProps {
   item: Item;
@@ -44,6 +46,8 @@ interface ItemFormProps {
 }
 
 export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem, allData, compositeIntegrityBroken, onBreakCompositeIntegrity, basedOnSingleSource, onBreakSingleSourceIntegrity, standaloneSources, onGoToLearningActivities }: ItemFormProps) {
+  const { language } = useLanguage();
+  const lt = coreuiTranslations[language];
   const validateECTS = (value: string): boolean => {
     const num = parseFloat(value);
     if (isNaN(num)) return false;
@@ -448,7 +452,7 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
                   {isRequired && <span className="text-destructive ml-1">*</span>}
                   {field.mcOnly && (
                     <span className="ml-2 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      MC Only
+                      {lt.mcOnlyBadge}
                     </span>
                   )}
                 </Label>
@@ -459,7 +463,7 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
                         <button
                           type="button"
                           className="text-muted-foreground hover:text-foreground transition-colors"
-                          aria-label="Help"
+                          aria-label={lt.helpAriaLabel}
                         >
                           <Info className="w-4 h-4" />
                         </button>
@@ -523,7 +527,7 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
                       const val = e.target.value;
                       onChange(field.name, val);
                     }}
-                    placeholder="e.g., 1.0, 1.5, 2.0"
+                    placeholder={lt.ectsPlaceholder}
                     required={isRequired}
                     aria-required={isRequired}
                     min={field.validation?.min ?? 0}
@@ -535,12 +539,12 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
                   />
                   {value && !validateECTS(value) && (
                     <p className="text-sm text-destructive">
-                      ECTS must be whole or half points (e.g., 1.0, 1.5, 2.0)
+                      {lt.ectsInvalidMessage}
                     </p>
                   )}
                   {courseType !== 'standalone' && value && parseFloat(value) < 1.0 && (
                     <p className="text-sm text-destructive">
-                      Minimum 1.0 ECTS required for a micro-credential
+                      {lt.ectsMinimumMessage}
                     </p>
                   )}
                 </div>
@@ -561,7 +565,7 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
               {field.type === 'select' && (
                 <Select value={value} onValueChange={(val) => onChange(field.name, val)}>
                   <SelectTrigger id={fieldId} className="transition-all duration-200 focus:ring-2 focus:ring-primary">
-                    <SelectValue placeholder="Select an option" />
+                    <SelectValue placeholder={lt.selectAnOption} />
                   </SelectTrigger>
                   <SelectContent>
                     {field.options?.map((option) => (
@@ -582,7 +586,7 @@ export function ItemForm({ item, courseType, values, onChange, onUpdateOtherItem
                     aria-required={isRequired}
                   />
                   <Label htmlFor={fieldId} className="font-normal cursor-pointer">
-                    {field.placeholder || 'Yes'}
+                    {field.placeholder || lt.yesLabel}
                   </Label>
                 </div>
               )}
