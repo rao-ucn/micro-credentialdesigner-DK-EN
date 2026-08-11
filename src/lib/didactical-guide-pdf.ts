@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { CourseData } from '@/types/course';
 
-const PRIMARY_COLOR = '#007c71';
+const PRIMARY_COLOR = '#195562';
 const CHECK_BOX = '☐';
 
 export async function generateDidacticalGuidePDF(data: CourseData): Promise<void> {
