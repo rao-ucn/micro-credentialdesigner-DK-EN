@@ -2807,7 +2807,6 @@ const Index = () => {
                     setIsLocked(true);
                     setInputCode('');
                     setSelectedCourseType(null);
-                    setApprovalConfirmed(false);
                     setCompletionJsonDownloaded(false);
                     setCompletionPdfDownloaded(false);
                     setJsonDownloaded(false);
