@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Trash2, Plus, Calculator, Info, Lightbulb, RotateCcw, AlertTriangle, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { CourseType } from "@/types/heroes";
+import { CourseType } from "@/types/course";
 import {
   Dialog,
   DialogContent,

@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { CourseData, CourseType, StandaloneSource } from '@/types/heroes';
+import { CourseData, CourseType, StandaloneSource } from '@/types/course';
 import { phases } from '@/data/phases';
 import { PhaseNavigator } from '@/components/PhaseNavigator';
 import { ItemForm } from '@/components/ItemForm';

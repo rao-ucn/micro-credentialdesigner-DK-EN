@@ -1,4 +1,4 @@
-import { Item, CourseType } from '@/types/heroes';
+import { Item, CourseType } from '@/types/course';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';

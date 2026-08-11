@@ -1,4 +1,4 @@
-import { CourseData, EncryptedData } from '@/types/heroes';
+import { CourseData, EncryptedData } from '@/types/course';
 import { encryptData, decryptData } from './crypto';
 import { supabase } from '@/integrations/supabase/client';
 

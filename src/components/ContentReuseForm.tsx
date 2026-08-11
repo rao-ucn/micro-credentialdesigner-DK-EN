@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { CourseType } from '@/types/heroes';
+import { CourseType } from '@/types/course';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

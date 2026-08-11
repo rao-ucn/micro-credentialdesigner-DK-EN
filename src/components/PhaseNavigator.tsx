@@ -1,4 +1,4 @@
-import { Phase, CourseType } from '@/types/heroes';
+import { Phase, CourseType } from '@/types/course';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import { CourseData } from '@/types/heroes';
+import { CourseData } from '@/types/course';
 
 const PRIMARY_COLOR = '#007c71';
 const CHECK_BOX = '☐';

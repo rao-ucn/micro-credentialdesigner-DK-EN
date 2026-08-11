@@ -1,4 +1,4 @@
-import { Phase } from '@/types/heroes';
+import { Phase } from '@/types/course';
 
 export const phases: Phase[] = [
   {

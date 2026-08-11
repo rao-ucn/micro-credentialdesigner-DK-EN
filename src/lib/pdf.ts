@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
-import { CourseData } from '@/types/heroes';
+import { CourseData } from '@/types/course';
 import { phases } from '@/data/phases';
 import { getIscedBroad, getIscedNarrow, getIscedDetailed } from '@/data/isced';
 

@@ -1,4 +1,4 @@
-import { EncryptedData } from '@/types/heroes';
+import { EncryptedData } from '@/types/course';
 
 const PBKDF2_ITERATIONS = 100000;
 const KEY_LENGTH = 256;
