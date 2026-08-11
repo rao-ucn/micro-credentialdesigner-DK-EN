@@ -27,11 +27,6 @@ interface LearningOutcome {
   expectedResult?: string;
 }
 
-interface BoKSAContent {
-  knowledge: string[];
-  skills: string[];
-  attitudes: string[];
-}
 
 interface AssessmentData {
   assessmentType?: string;
@@ -44,8 +39,6 @@ interface AssessmentData {
 
 interface TopicsData {
   themes?: string[];
-  boksaGenerated?: boolean;
-  boksaContent?: BoKSAContent;
 }
 
 interface ConstructiveAlignmentFormProps {
@@ -171,11 +164,6 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
   const filledThemes = topicsData?.themes?.filter((t) => t.trim().length > 0) || [];
   const hasThemes = filledThemes.length > 0;
 
-  const boksaContent = topicsData?.boksaContent || { knowledge: [], skills: [], attitudes: [] };
-  const hasBoksaContent = 
-    boksaContent.knowledge.some(k => k.trim()) ||
-    boksaContent.skills.some(s => s.trim()) ||
-    boksaContent.attitudes.some(a => a.trim());
 
   const hasAssessmentData = !!(
     assessmentData?.assessmentType ||
@@ -190,7 +178,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
       <Card className="p-6">
         <div className="text-sm text-muted-foreground space-y-3">
           <p>
-            At this point, the core elements of the {courseLabel} have been defined. Learning outcomes describe what the learner must be able to demonstrate. These outcomes are supported by themes and topics, which structure the learning content. The underlying Body of Knowledge, Skills and Attitudes (BoKSA) explains the disciplinary foundation required to achieve the learning outcomes. Finally, assessment defines how achievement of the learning outcomes is evaluated.
+            At this point, the core elements of the {courseLabel} have been defined. Learning outcomes describe what the learner must be able to demonstrate. These outcomes are supported by themes and topics, which structure the learning content. Finally, assessment defines how achievement of the learning outcomes is evaluated.
           </p>
           <p>
             This section brings these elements together. The purpose is to review whether learning outcomes, content and assessment are aligned in a coherent and logical way.
@@ -274,112 +262,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
         )}
       </Card>
 
-      {/* Narrative between Topics and BoKSA */}
-      <div className="text-sm text-muted-foreground px-2">
-        <p>
-          The themes and topics outline how the learning outcomes are realised through content. To support this content, learners must draw on specific knowledge, skills and attitudes. These are captured in the Body of Knowledge, Skills and Attitudes (BoKSA) below.
-        </p>
-      </div>
-
-      {/* Part 3: BoKSA Summary */}
-      <Card className="p-6 space-y-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-foreground">BoKSA foundation</h3>
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="text-primary hover:text-primary/80">
-                <Info className="h-4 w-4" />
-              </button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>About BoKSA</DialogTitle>
-              </DialogHeader>
-              <div className="text-sm space-y-3">
-                <p>
-                  A BoKSA describes the underlying Body of Knowledge, Skills and Attitudes that must be in place for learners to achieve the learning outcomes.
-                </p>
-                <p>
-                  Unlike learning outcomes, BoKSA elements are not assessed individually. They function as the academic and professional scaffolding that supports learning activities, assessment design and progression.
-                </p>
-                <p>
-                  Think of BoKSA as answering the question: "What does the learner need to know, be able to work with, and be disposed towards in order to achieve the learning outcomes?"
-                </p>
-                <p>
-                  A BoKSA improves transparency, supports constructive alignment, and helps ensure that important foundations are not left implicit.
-                </p>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        
-        {hasBoksaContent ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Knowledge Column */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground border-b border-border pb-2">Knowledge</h4>
-                {boksaContent.knowledge.filter(k => k.trim()).length > 0 ? (
-                  <ul className="space-y-1">
-                    {boksaContent.knowledge.filter(k => k.trim()).map((item, idx) => (
-                      <li key={idx} className="text-sm text-muted-foreground">• {item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No items defined</p>
-                )}
-              </div>
-
-              {/* Skills Column */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground border-b border-border pb-2">Skills</h4>
-                {boksaContent.skills.filter(s => s.trim()).length > 0 ? (
-                  <ul className="space-y-1">
-                    {boksaContent.skills.filter(s => s.trim()).map((item, idx) => (
-                      <li key={idx} className="text-sm text-muted-foreground">• {item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No items defined</p>
-                )}
-              </div>
-
-              {/* Attitudes Column */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground border-b border-border pb-2">Attitudes</h4>
-                {boksaContent.attitudes.filter(a => a.trim()).length > 0 ? (
-                  <ul className="space-y-1">
-                    {boksaContent.attitudes.filter(a => a.trim()).map((item, idx) => (
-                      <li key={idx} className="text-sm text-muted-foreground">• {item}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No items defined</p>
-                )}
-              </div>
-            </div>
-            
-            <p className="text-sm text-muted-foreground italic border-t border-border pt-4">
-              The BoKSA elements describe the knowledge base, skills and professional dispositions required to support achievement of the learning outcomes.
-            </p>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground italic">
-            No BoKSA content has been generated yet. Return to Topics and skills to generate the BoKSA.
-          </p>
-        )}
-      </Card>
-
-      {/* Narrative between BoKSA and Assessment */}
-      {courseType === 'micro-credential' && (
-        <div className="text-sm text-muted-foreground px-2">
-          <p>
-            The BoKSA describes the underlying disciplinary foundation required for learning to take place. Assessment should therefore allow learners to demonstrate learning outcomes in a way that reflects this knowledge base, skill set and level of responsibility.
-          </p>
-        </div>
-      )}
-
-      {/* Part 4: Assessment Approach Summary (only for micro-credentials) */}
+      {/* Part 3: Assessment Approach Summary (only for micro-credentials) */}
       {courseType === 'micro-credential' && (
         <Card className="p-6 space-y-4 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
           <h3 className="text-lg font-semibold text-foreground">Assessment approach defined so far</h3>
@@ -473,7 +356,7 @@ const ConstructiveAlignmentForm: React.FC<ConstructiveAlignmentFormProps> = ({
 
         <div className="space-y-3">
           <Label className="text-base font-medium">
-            Based on the overview above, is constructive alignment ensured between learning outcomes, themes and topics, BoKSA, and assessment?
+            Based on the overview above, is constructive alignment ensured between learning outcomes, themes and topics, and assessment?
           </Label>
           
           <RadioGroup
