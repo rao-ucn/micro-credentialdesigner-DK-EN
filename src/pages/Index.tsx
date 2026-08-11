@@ -2053,8 +2053,8 @@ const Index = () => {
                     const exists = await documentExists(loadDocumentId.trim());
                     if (!exists) {
                       toast({
-                        title: 'Document Not Found',
-                        description: 'No document with this ID exists in local storage. If you have a JSON export file, use "Import JSON" instead.',
+                        title: lt.documentNotFoundTitle,
+                        description: lt.documentNotFoundDesc,
                         variant: 'destructive',
                       });
                       return;
@@ -2070,13 +2070,13 @@ const Index = () => {
                       setLoadDocumentId('');
                       
                       toast({
-                        title: 'Document Loaded',
-                        description: 'Your document has been loaded successfully',
+                        title: lt.documentLoadedTitle,
+                        description: lt.documentLoadedDesc,
                       });
                     } catch (error) {
                       toast({
-                        title: 'Incorrect Code',
-                        description: 'The security code is incorrect',
+                        title: lt.incorrectCodeTitle,
+                        description: lt.incorrectCodeDesc,
                         variant: 'destructive',
                       });
                     }
@@ -2086,11 +2086,11 @@ const Index = () => {
                   disabled={!loadDocumentId.trim() || inputCode.replace(/-/g, '').length !== 12}
                 >
                   <Unlock className="mr-2 h-5 w-5" />
-                  Load Document
+                  {lt.loadDocumentButton}
                 </Button>
 
                 <Button onClick={() => { setWelcomeStep('initial'); setLoadDocumentId(''); setInputCode(''); }} variant="outline" className="w-full">
-                  Back
+                  {lt.backButton}
                 </Button>
               </div>
             )}
@@ -2100,21 +2100,21 @@ const Index = () => {
 
 
                 <div>
-                  <Label className="text-lg font-semibold mb-4 block text-primary">Choose what fits you</Label>
+                  <Label className="text-lg font-semibold mb-4 block text-primary">{lt.chooseWhatFitsYou}</Label>
                   <RadioGroup value={selectedCourseType || ''} onValueChange={(value) => setSelectedCourseType(value as CourseType)} className="gap-8">
 
                     {/* Section 1 — Create new from scratch */}
                     <div className="space-y-3">
                       <div className="text-sm font-medium text-muted-foreground">
-                        Create new from scratch
+                        {lt.createFromScratch}
                       </div>
                       <Card className="p-4 cursor-pointer hover:border-primary hover:shadow-[0_0_0_2px_hsl(var(--primary)/0.15)] transition-all duration-200">
                         <div className="flex items-start space-x-3">
                           <RadioGroupItem value="standalone" id="standalone" className="mt-1" />
                           <Label htmlFor="standalone" className="cursor-pointer flex-1 space-y-1">
-                            <div className="font-medium text-base">Standalone Course</div>
+                            <div className="font-medium text-base">{lt.standaloneTitle}</div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              A simple learning offer without formal assessment (non-credit bearing).
+                              {lt.standaloneDesc}
                             </div>
                           </Label>
                         </div>
@@ -2124,9 +2124,9 @@ const Index = () => {
                         <div className="flex items-start space-x-3">
                           <RadioGroupItem value="micro-credential" id="micro-credential" className="mt-1" />
                           <Label htmlFor="micro-credential" className="cursor-pointer flex-1 space-y-1">
-                            <div className="font-medium text-base">Micro-Credential</div>
+                            <div className="font-medium text-base">{lt.microCredentialTitle}</div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              A complete, credit-bearing offer with formal assessment and EU metadata.
+                              {lt.microCredentialDesc}
                             </div>
                           </Label>
                         </div>
@@ -2136,7 +2136,7 @@ const Index = () => {
                     {/* Section 2 — Build a new MC based on existing work */}
                     <div className="space-y-3">
                       <div className="text-sm font-medium text-muted-foreground">
-                        Build a new Micro-Credential based on existing standalone courses
+                        {lt.buildOnExisting}
                       </div>
                       <Card className="p-4 cursor-pointer hover:border-primary hover:shadow-[0_0_0_2px_hsl(var(--primary)/0.15)] transition-all duration-200">
                         <div className="flex items-start space-x-3">
@@ -2144,10 +2144,10 @@ const Index = () => {
                           <Label htmlFor="new-from-file" className="cursor-pointer flex-1 space-y-1">
                             <div className="font-medium text-base flex items-center gap-2">
                               <FileText className="h-4 w-4 text-primary" />
-                              New Micro-Credential based on one or multiple existing files
+                              {lt.newMcFromFilesTitle}
                             </div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              Upload one or more existing course or MC files as a starting point. All accepted files will be merged into <strong>one new Micro-Credential with one associated standalone element</strong>, with a new unique ID and security code — every field can be freely edited afterwards. The original files are not modified. Files marked with <strong>No</strong> under reuse of learning content within the alliance cannot be loaded and will be skipped automatically.
+                              {lt.newMcFromFilesDesc.split('{bold1}')[0]}<strong>{lt.newMcFromFilesBold1}</strong>{lt.newMcFromFilesDesc.split('{bold1}')[1].split('{bold2}')[0]}<strong>{lt.newMcFromFilesBold2}</strong>{lt.newMcFromFilesDesc.split('{bold2}')[1]}
                             </div>
                           </Label>
                         </div>
@@ -2159,10 +2159,10 @@ const Index = () => {
                           <Label htmlFor="composite-mc" className="cursor-pointer flex-1 space-y-1">
                             <div className="font-medium text-base flex items-center gap-2">
                               <Layers className="h-4 w-4 text-primary" />
-                              Composite Micro-Credential (combine 2+ standalone courses)
+                              {lt.compositeMcTitle}
                             </div>
                             <div className="text-sm text-muted-foreground font-normal">
-                              Combine at least two existing standalone courses into a brand-new micro-credential. A new unique ID and security code are generated.
+                              {lt.compositeMcDesc}
                             </div>
                           </Label>
                         </div>
@@ -2173,38 +2173,38 @@ const Index = () => {
 
                 {selectedCourseType && selectedCourseType !== 'composite-micro-credential' && (selectedCourseType as string) !== '__import__' && (selectedCourseType as string) !== '__new_from_file__' && (
                   <Button onClick={createNewDocument} className="w-full" size="lg">
-                    Continue
+                    {lt.continueButton}
                   </Button>
                 )}
 
                 {selectedCourseType === 'composite-micro-credential' && (
                   <Button onClick={() => setWelcomeStep('compositeUpload')} className="w-full" size="lg">
-                    Continue to multiple file uploads
+                    {lt.continueToMultiUpload}
                   </Button>
                 )}
 
                 {(selectedCourseType as string) === '__import__' && (
                   <Button onClick={() => handleImport('continue')} className="w-full" size="lg">
                     <Upload className="mr-2 h-5 w-5" />
-                    Choose JSON File to Continue
+                    {lt.chooseJsonToContinue}
                   </Button>
                 )}
 
                 {(selectedCourseType as string) === '__new_from_file__' && (
                   <Button onClick={() => setWelcomeStep('newFromFileUpload')} className="w-full" size="lg">
                     <Upload className="mr-2 h-5 w-5" />
-                    Continue to file uploads
+                    {lt.continueToFileUploads}
                   </Button>
                 )}
 
                 {/* Footer — pointer back to landing page for continuing existing work */}
                 <div className="pt-6 mt-2 border-t border-border space-y-3">
                   <div className="text-sm font-medium text-muted-foreground">
-                    Continue existing work?
+                    {lt.continueExistingWork}
                   </div>
                   <div className="p-4 rounded-lg bg-muted/40 text-sm text-muted-foreground">
                     <p className="mb-3 leading-relaxed">
-                      This screen is for starting something new. To continue working on an existing document, go back to the welcome screen and use <span className="text-foreground">Load Existing Document</span>.
+                      {lt.continueExistingWorkDesc.split('{loadExisting}')[0]}<span className="text-foreground">{lt.loadExistingDocumentLabel}</span>{lt.continueExistingWorkDesc.split('{loadExisting}')[1]}
                     </p>
                     <Button
                       variant="outline"
@@ -2212,7 +2212,7 @@ const Index = () => {
                       onClick={() => { setSelectedCourseType(null); setWelcomeStep('initial'); }}
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
-                      Back to welcome screen
+                      {lt.backToWelcomeScreen}
                     </Button>
                   </div>
                 </div>
@@ -2250,18 +2250,18 @@ const Index = () => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Document Locked</h2>
+            <h2 className="text-2xl font-bold mb-2">{lt.documentLocked}</h2>
             <p className="text-muted-foreground text-sm">
-              Enter your 12-character security code to unlock
+              {lt.enterCodeToUnlock}
             </p>
             <p className="text-xs text-muted-foreground mt-2">
-              Document ID: {courseData.documentId.slice(0, 8)}...
+              {lt.documentIdLabel} {courseData.documentId.slice(0, 8)}...
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="code">Security Code</Label>
+              <Label htmlFor="code">{lt.securityCodeLabel}</Label>
               <Input
                 id="code"
                 type="text"
@@ -2275,7 +2275,7 @@ const Index = () => {
                 disabled={isUnlocking}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Find your code on your PDF or JSON export
+                {lt.findCodeHint}
               </p>
             </div>
 
@@ -2283,7 +2283,7 @@ const Index = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Verifying code and loading document…</span>
+                  <span>{lt.verifyingCode}</span>
                 </div>
                 <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-primary/20">
                   <div className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-primary animate-[indeterminate_1.2s_ease-in-out_infinite]" />
@@ -2295,18 +2295,18 @@ const Index = () => {
               {isUnlocking ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Unlocking…
+                  {lt.unlocking}
                 </>
               ) : (
                 <>
                   <Unlock className="mr-2 h-5 w-5" />
-                  Unlock
+                  {lt.unlockButton}
                 </>
               )}
             </Button>
 
             <Button onClick={() => { sessionStorage.removeItem(SESSION_KEY); setCourseData(null); setIsLocked(true); setWelcomeStep('initial'); }} variant="outline" className="w-full" disabled={isUnlocking}>
-              Cancel
+              {lt.cancelButton}
             </Button>
           </div>
         </Card>
@@ -2320,7 +2320,7 @@ const Index = () => {
               <div className="flex items-center gap-3">
                 <Lock className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Security Code (save this)</p>
+                  <p className="text-xs text-muted-foreground mb-1">{lt.securityCodeSaveThis}</p>
                   <p className="font-mono font-semibold text-sm">{securityCode}</p>
                 </div>
               </div>
@@ -2497,11 +2497,11 @@ const Index = () => {
         {courseData.currentPhaseId === 'phase4' && currentItem?.id === '4.1' && (
           <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-semibold text-primary mb-1.5">Topics and skills</h3>
+              <h3 className="text-sm font-semibold text-primary mb-1.5">{lt.topicsAndSkillsTitle}</h3>
               <div className="text-sm text-muted-foreground space-y-2">
-                <p>Topics and skills define the core subject areas learners must engage with to achieve the learning outcomes.</p>
-                <p>In this step, you identify what must be taught in order for learners to do what the learning outcomes require.</p>
-                <p>This prevents gaps in content design and ensures transparency, coherence and constructive alignment across the micro-credential.</p>
+                <p>{lt.topicsAndSkillsP1}</p>
+                <p>{lt.topicsAndSkillsP2}</p>
+                <p>{lt.topicsAndSkillsP3}</p>
               </div>
             </div>
             <hr className="border-primary/20" />

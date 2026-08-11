@@ -4,6 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Info, Lightbulb } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { forms56cTranslations } from '@/lib/translations/forms56c';
 
 interface EvaluationPlanFormProps {
   data: {
@@ -15,6 +17,8 @@ interface EvaluationPlanFormProps {
 }
 
 export default function EvaluationPlanForm({ data, onChange, courseType }: EvaluationPlanFormProps) {
+  const { language, t } = useLanguage();
+  const lt = forms56cTranslations[language];
   return (
     <div className="space-y-8">
 
@@ -22,31 +26,24 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
       <Card>
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold">Review of learning delivery and content</h3>
+            <h3 className="text-lg font-semibold">{lt.epReviewSectionTitle}</h3>
             <Dialog>
               <DialogTrigger asChild>
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                  aria-label="Why this matters"
+                  aria-label={lt.epReviewInfoAria}
                 >
                   <Info className="w-5 h-5" />
                 </button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Why review learning delivery and content?</DialogTitle>
+                  <DialogTitle>{lt.epReviewDialogTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 text-muted-foreground">
-                  <p>
-                    Reviewing learning delivery and content over time ensures that the micro-credential 
-                    remains relevant, accurate, and aligned with current professional practices and 
-                    labour-market needs.
-                  </p>
-                  <p>
-                    Regular review helps identify opportunities for improvement and ensures the 
-                    learning experience continues to meet learner expectations.
-                  </p>
+                  <p>{lt.epReviewDialogP1}</p>
+                  <p>{lt.epReviewDialogP2}</p>
                 </div>
               </DialogContent>
             </Dialog>
@@ -55,22 +52,22 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
                 <button
                   type="button"
                   className="text-warning hover:text-warning/80 transition-colors flex-shrink-0"
-                  aria-label="Inspiration for reviewing learning delivery"
+                  aria-label={lt.epReviewInspirationAria}
                 >
                   <Lightbulb className="w-5 h-5" />
                 </button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Inspiration: Reviewing learning delivery and content</DialogTitle>
+                  <DialogTitle>{lt.epReviewInspirationTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 text-muted-foreground">
-                  <p className="font-medium">You may consider:</p>
+                  <p className="font-medium">{lt.epYouMayConsider}</p>
                   <ul className="space-y-2 list-disc list-inside pl-2">
-                    <li>Learner feedback after course completion</li>
-                    <li>Relevance to current professional or labour-market needs</li>
-                    <li>Periodic academic or programme-level review</li>
-                    <li>Triggers for updating content (e.g. changes in practice, regulation, or technology)</li>
+                    <li>{lt.epReviewBullet1}</li>
+                    <li>{lt.epReviewBullet2}</li>
+                    <li>{lt.epReviewBullet3}</li>
+                    <li>{lt.epReviewBullet4}</li>
                   </ul>
                 </div>
               </DialogContent>
@@ -79,14 +76,14 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
 
           <div className="space-y-2">
             <Label htmlFor="learningDeliveryReview" className="text-base">
-              How will the learning format and academic content be reviewed over time?
+              {lt.epReviewQuestion}
               <span className="text-destructive ml-1">*</span>
             </Label>
             <Textarea
               id="learningDeliveryReview"
               value={data.learningDeliveryReview || ''}
               onChange={(e) => onChange({ ...data, learningDeliveryReview: e.target.value })}
-              placeholder="Describe how you plan to review, update, or validate the learning format and content after delivery."
+              placeholder={lt.epReviewPlaceholder}
               rows={5}
               className="transition-all duration-200 focus:ring-2 focus:ring-primary"
             />
@@ -98,30 +95,24 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
       <Card>
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold">Review and calibration of assessment practices</h3>
+            <h3 className="text-lg font-semibold">{lt.epCalibrationSectionTitle}</h3>
             <Dialog>
               <DialogTrigger asChild>
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                  aria-label="Why this matters"
+                  aria-label={lt.epReviewInfoAria}
                 >
                   <Info className="w-5 h-5" />
                 </button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Why review and calibrate assessment practices?</DialogTitle>
+                  <DialogTitle>{lt.epCalibrationDialogTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 text-muted-foreground">
-                  <p>
-                    Calibrating assessment practices ensures that grading remains consistent, fair, 
-                    and reliable across different assessors and course runs.
-                  </p>
-                  <p>
-                    Regular calibration helps maintain the credibility and recognition value of 
-                    the micro-credential over time.
-                  </p>
+                  <p>{lt.epCalibrationDialogP1}</p>
+                  <p>{lt.epCalibrationDialogP2}</p>
                 </div>
               </DialogContent>
             </Dialog>
@@ -130,23 +121,23 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
                 <button
                   type="button"
                   className="text-warning hover:text-warning/80 transition-colors flex-shrink-0"
-                  aria-label="Inspiration for assessment calibration"
+                  aria-label={lt.epCalibrationInspirationAria}
                 >
                   <Lightbulb className="w-5 h-5" />
                 </button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Inspiration: Assessment calibration</DialogTitle>
+                  <DialogTitle>{lt.epCalibrationInspirationTitle}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 text-muted-foreground">
-                  <p className="font-medium">You may consider:</p>
+                  <p className="font-medium">{lt.epYouMayConsider}</p>
                   <ul className="space-y-2 list-disc list-inside pl-2">
-                    <li>Use of shared criteria or rubrics</li>
-                    <li>Review of sample or exemplar assessments</li>
-                    <li>Dialogue or moderation between assessors</li>
-                    <li>Periodic review of assessment outcomes</li>
-                    <li>Adjustments based on feedback or identified inconsistencies</li>
+                    <li>{lt.epCalibrationBullet1}</li>
+                    <li>{lt.epCalibrationBullet2}</li>
+                    <li>{lt.epCalibrationBullet3}</li>
+                    <li>{lt.epCalibrationBullet4}</li>
+                    <li>{lt.epCalibrationBullet5}</li>
                   </ul>
                 </div>
               </DialogContent>
@@ -155,14 +146,14 @@ export default function EvaluationPlanForm({ data, onChange, courseType }: Evalu
 
           <div className="space-y-2">
             <Label htmlFor="assessmentCalibration" className="text-base">
-              How will assessment practices be reviewed and calibrated over time?
+              {lt.epCalibrationQuestion}
               <span className="text-destructive ml-1">*</span>
             </Label>
             <Textarea
               id="assessmentCalibration"
               value={data.assessmentCalibration || ''}
               onChange={(e) => onChange({ ...data, assessmentCalibration: e.target.value })}
-              placeholder="Describe how you will ensure consistent, fair, and reliable assessment across assessors and course runs."
+              placeholder={lt.epCalibrationPlaceholder}
               rows={5}
               className="transition-all duration-200 focus:ring-2 focus:ring-primary"
             />

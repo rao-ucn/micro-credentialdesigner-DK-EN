@@ -1,12 +1,16 @@
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { CourseData } from '@/types/course';
-import { phases } from '@/data/phases';
+import type { Language } from '@/lib/i18n';
+import { pdfLabels } from '@/lib/translations/pdfLabels';
+import { getPhases } from '@/data/phases';
 import { getIscedBroad, getIscedNarrow, getIscedDetailed } from '@/data/isced';
 
 const PRIMARY_COLOR = '#195562';
 
-export async function generatePDF(data: CourseData): Promise<void> {
+export async function generatePDF(data: CourseData, lang: Language = 'en'): Promise<void> {
+  const pl = pdfLabels[lang];
+  const phases = getPhases(lang);
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -46,7 +50,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
 
   // Get the course title from Phase 2.1 (workingTitle)
   const phase21Data = data.data['2.1'] || {};
-  const courseTitle = phase21Data.workingTitle || 'Untitled Course';
+  const courseTitle = phase21Data.workingTitle || pl.untitledCourse;
 
   // COVER PAGE
   doc.setFillColor(PRIMARY_COLOR);
@@ -55,7 +59,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'normal');
-  doc.text('Course Design', pageWidth / 2, 20, { align: 'center' });
+  doc.text(pl.courseDesign, pageWidth / 2, 20, { align: 'center' });
 
   // Course title - main heading
   doc.setFontSize(22);
@@ -68,10 +72,10 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setFont('helvetica', 'normal');
   const typeLabel =
     data.courseType === 'composite-micro-credential'
-      ? 'Composite Micro-Credential'
+      ? pl.compositeMicroCredential
       : data.courseType === 'micro-credential'
-      ? 'Micro-Credential'
-      : 'Standalone Course';
+      ? pl.microCredential
+      : pl.standaloneCourse;
   doc.text(
     typeLabel,
     pageWidth / 2,
@@ -137,7 +141,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   // Composite / single-source basis banner
   type SourceLine = { title: string; details: string[] };
   const buildSourceLines = (s: any): SourceLine => {
-    const title = s.workingTitle || s.fileName || s.documentId || 'Untitled';
+    const title = s.workingTitle || s.fileName || s.documentId || pl.untitled;
     const details: string[] = [];
 
     const p21 = s?.data?.['2.1'] || {};
@@ -205,7 +209,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   }
 
   if (sourceEntries.length > 0) {
-    const heading = 'This Micro-Credential is based on the following standalone courses:';
+    const heading = pl.basedOnStandaloneCourses;
 
     const bulletLines: { text: string; bold: boolean; indent: number }[] = [];
     sourceEntries.forEach((entry) => {
@@ -246,7 +250,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text('Document Information', margin, yPos);
+  doc.text(pl.documentInformation, margin, yPos);
   yPos += 12;
 
   // Document ID - prominent styling
@@ -255,7 +259,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(0, 124, 113);
-  doc.text('Document ID:', margin + 5, yPos + 4);
+  doc.text(pl.documentIdLabel, margin + 5, yPos + 4);
   doc.setFontSize(14);
   doc.text(data.documentId, margin + 45, yPos + 4);
   doc.setTextColor(0, 0, 0);
@@ -273,12 +277,12 @@ export async function generatePDF(data: CourseData): Promise<void> {
   // QR Code and reopen instructions
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('Reopen & Edit', margin, yPos);
+  doc.text(pl.reopenAndEdit, margin, yPos);
   yPos += 10;
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text('Scan QR code or visit the link below:', margin, yPos);
+  doc.text(pl.scanQrCode, margin, yPos);
   yPos += 7;
 
   // Add QR code
@@ -299,7 +303,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(9);
   doc.setFont('helvetica', 'italic');
-  doc.text('You will need to enter your unique 12-character security code to reopen.', margin, yPos);
+  doc.text(pl.securityCodeNotice, margin, yPos);
 
   // Add security code if available
   if (data.displaySecurityCode) {
@@ -307,7 +311,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-    doc.text('Security Code:', margin, yPos);
+    doc.text(pl.securityCodeLabel, margin, yPos);
     yPos += 7;
     doc.setFontSize(14);
     doc.setTextColor(0, 124, 113);
@@ -363,16 +367,16 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Classification
         checkNewPage(15);
         doc.setFont('helvetica', 'bold');
-        doc.text('Project Classification *', margin + 3, yPos);
+        doc.text(pl.projectClassificationRequired, margin + 3, yPos);
         yPos += 6;
         
         doc.setFont('helvetica', 'normal');
         const classification = itemData.projectClassification;
         const classificationText = classification === 'approved' 
-          ? 'Approved activity' 
+          ? pl.approvedActivity 
           : classification === 'developed'
-          ? 'Developed activity'
-          : 'To be filled for completion';
+          ? pl.developedActivity
+          : pl.toBeFilled;
         
         if (!classification) {
           doc.setTextColor(150, 150, 150);
@@ -386,17 +390,17 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Developers table
         checkNewPage(40);
         doc.setFont('helvetica', 'bold');
-        doc.text('Developing Institutions', margin + 3, yPos);
+        doc.text(pl.developingInstitutions, margin + 3, yPos);
         yPos += 8;
         
         const developers = itemData.developers || [];
         if (developers.length > 0) {
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
-          doc.text('Name', margin + 3, yPos);
-          doc.text('Institution', margin + 45, yPos);
-          doc.text('Contact', margin + 95, yPos);
-          doc.text('Notes', margin + 135, yPos);
+          doc.text(pl.name, margin + 3, yPos);
+          doc.text(pl.institution, margin + 45, yPos);
+          doc.text(pl.contact, margin + 95, yPos);
+          doc.text(pl.notes, margin + 135, yPos);
           yPos += 5;
           
           doc.setFont('helvetica', 'normal');
@@ -417,7 +421,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setFont('helvetica', 'italic');
           doc.setTextColor(150, 150, 150);
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -427,18 +431,18 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // External developers table
         checkNewPage(40);
         doc.setFont('helvetica', 'bold');
-        doc.text('External Developers / Stakeholders', margin + 3, yPos);
+        doc.text(pl.externalDevelopersStakeholders, margin + 3, yPos);
         yPos += 8;
         
         const externalDevelopers = itemData.externalDevelopers || [];
         if (externalDevelopers.length > 0) {
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
-          doc.text('Organisation', margin + 3, yPos);
-          doc.text('Type', margin + 45, yPos);
-          doc.text('Role', margin + 70, yPos);
-          doc.text('Contact', margin + 105, yPos);
-          doc.text('Notes', margin + 145, yPos);
+          doc.text(pl.organisation, margin + 3, yPos);
+          doc.text(pl.type, margin + 45, yPos);
+          doc.text(pl.role, margin + 70, yPos);
+          doc.text(pl.contact, margin + 105, yPos);
+          doc.text(pl.notes, margin + 145, yPos);
           yPos += 5;
           
           doc.setFont('helvetica', 'normal');
@@ -461,7 +465,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setFont('helvetica', 'italic');
           doc.setTextColor(150, 150, 150);
-          doc.text('No external developers specified', margin + 3, yPos);
+          doc.text(pl.noExternalDevelopers, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -471,7 +475,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Academic field of study (ISCED-F 2013)
         checkNewPage(30);
         doc.setFont('helvetica', 'bold');
-        doc.text('Academic field of study (ISCED-F 2013)', margin + 3, yPos);
+        doc.text(pl.academicFieldOfStudy, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         const broad = getIscedBroad(itemData.iscedBroadField);
@@ -479,9 +483,9 @@ export async function generatePDF(data: CourseData): Promise<void> {
         const detailed = getIscedDetailed(itemData.iscedBroadField, itemData.iscedNarrowField, itemData.iscedDetailedField);
         if (broad || narrow || detailed) {
           const rows: Array<[string, string]> = [
-            ['Broad field', broad ? `${broad.code} – ${broad.label}` : 'To be filled for completion'],
-            ['Narrow field', narrow ? `${narrow.code} – ${narrow.label}` : 'To be filled for completion'],
-            ['Detailed field', detailed ? `${detailed.code} – ${detailed.label}` : 'To be filled for completion'],
+            [pl.broadField, broad ? `${broad.code} – ${broad.label}` : pl.toBeFilled],
+            [pl.narrowField, narrow ? `${narrow.code} – ${narrow.label}` : pl.toBeFilled],
+            [pl.detailedField, detailed ? `${detailed.code} – ${detailed.label}` : pl.toBeFilled],
           ];
           for (const [label, value] of rows) {
             checkNewPage(10);
@@ -492,7 +496,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setFont('helvetica', 'italic');
           doc.setTextColor(150, 150, 150);
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -507,7 +511,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Section A: Labour Market Need
         doc.setFont('helvetica', 'bold');
-        doc.text('What is the labour-market need you are addressing?', margin + 3, yPos);
+        doc.text(pl.labourMarketNeedQuestion, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -518,7 +522,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -529,7 +533,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(100, 100, 100);
         const reminderLines = doc.splitTextToSize(
-          'If you have produced any analyses, studies, or other supporting material, you are encouraged to keep them as appendices to this work.',
+          pl.appendicesReminder,
           pageWidth - 2 * margin - 6
         );
         checkNewPage(reminderLines.length * 5 + 4);
@@ -541,7 +545,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Section B: Long-term Relevance
         checkNewPage(20);
         doc.setFont('helvetica', 'bold');
-        doc.text('Why is this need relevant in a long-term perspective?', margin + 3, yPos);
+        doc.text(pl.longTermRelevanceQuestion, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -552,7 +556,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -561,13 +565,13 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Section C: Competences
         checkNewPage(20);
         doc.setFont('helvetica', 'bold');
-        doc.text('Which competences or skills are required?', margin + 3, yPos);
+        doc.text(pl.competencesQuestion, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
         const escoCompetences = marketData.escoCompetences || [];
         if (escoCompetences.length > 0) {
-          doc.text('ESCO competences:', margin + 3, yPos);
+          doc.text(pl.escoCompetences, margin + 3, yPos);
           yPos += 6;
           for (const skill of escoCompetences) {
             checkNewPage(8);
@@ -582,7 +586,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (marketData.additionalCompetences) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Additional competences:', margin + 3, yPos);
+          doc.text(pl.additionalCompetences, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const compLines = doc.splitTextToSize(marketData.additionalCompetences, pageWidth - 2 * margin - 6);
@@ -593,7 +597,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (escoCompetences.length === 0 && !marketData.additionalCompetences) {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -609,15 +613,15 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Learning Activities
         doc.setFont('helvetica', 'bold');
-        doc.text('Learning Activities', margin + 3, yPos);
+        doc.text(pl.learningActivitiesTitle, margin + 3, yPos);
         yPos += 8;
         
         const learningActivities = ectsData.learningActivities || [];
         if (learningActivities.length > 0 && learningActivities.some((a: any) => a.name || a.hours)) {
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
-          doc.text('Activity', margin + 3, yPos);
-          doc.text('Hours', margin + 120, yPos);
+          doc.text(pl.activity, margin + 3, yPos);
+          doc.text(pl.hours, margin + 120, yPos);
           yPos += 5;
           
           doc.setFont('helvetica', 'normal');
@@ -633,7 +637,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setFont('helvetica', 'italic');
           doc.setTextColor(150, 150, 150);
-          doc.text('No learning activities defined', margin + 3, yPos);
+          doc.text(pl.noLearningActivitiesDefined, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -644,15 +648,15 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (data.courseType === 'micro-credential') {
           checkNewPage(30);
           doc.setFont('helvetica', 'bold');
-          doc.text('Assessment Activities', margin + 3, yPos);
+          doc.text(pl.assessmentActivitiesTitle, margin + 3, yPos);
           yPos += 8;
           
           const assessmentActivities = ectsData.assessmentActivities || [];
           if (assessmentActivities.length > 0 && assessmentActivities.some((a: any) => a.name || a.hours)) {
             doc.setFontSize(8);
             doc.setFont('helvetica', 'bold');
-            doc.text('Activity', margin + 3, yPos);
-            doc.text('Hours', margin + 120, yPos);
+            doc.text(pl.activity, margin + 3, yPos);
+            doc.text(pl.hours, margin + 120, yPos);
             yPos += 5;
             
             doc.setFont('helvetica', 'normal');
@@ -668,7 +672,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           } else {
             doc.setFont('helvetica', 'italic');
             doc.setTextColor(150, 150, 150);
-            doc.text('No assessment activities defined', margin + 3, yPos);
+            doc.text(pl.noAssessmentActivitiesDefined, margin + 3, yPos);
             yPos += 6;
             doc.setTextColor(0, 0, 0);
             doc.setFont('helvetica', 'normal');
@@ -680,7 +684,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (ectsData.results) {
           checkNewPage(40);
           doc.setFont('helvetica', 'bold');
-          doc.text('ECTS Calculation Results', margin + 3, yPos);
+          doc.text(pl.ectsCalculationResults, margin + 3, yPos);
           yPos += 8;
           
           doc.setFont('helvetica', 'normal');
@@ -714,7 +718,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           
           doc.setFontSize(8);
           doc.setFont('helvetica', 'italic');
-          doc.text('(Calculated using ECTS standard: 1 ECTS = 25-30 hours of workload)', margin + 3, yPos);
+          doc.text(pl.ectsStandardNote, margin + 3, yPos);
           yPos += 6;
           doc.setFontSize(10);
           doc.setFont('helvetica', 'normal');
@@ -722,7 +726,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           checkNewPage(15);
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('ECTS not yet calculated', margin + 3, yPos);
+          doc.text(pl.ectsNotYetCalculated, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -738,7 +742,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Descriptor matches
         doc.setFont('helvetica', 'bold');
-        doc.text('EQF descriptor matches', margin + 3, yPos);
+        doc.text(pl.eqfDescriptorMatches, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -785,7 +789,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -795,7 +799,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Suggested and chosen level
         checkNewPage(15);
         doc.setFont('helvetica', 'bold');
-        doc.text('EQF level determination', margin + 3, yPos);
+        doc.text(pl.eqfLevelDetermination, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -832,7 +836,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           ) {
             checkNewPage(15);
             doc.setFont('helvetica', 'bold');
-            doc.text('Justification for different level:', margin + 3, yPos);
+            doc.text(pl.justificationForDifferentLevel, margin + 3, yPos);
             yPos += 6;
             doc.setFont('helvetica', 'normal');
             const justLines = doc.splitTextToSize(justification, pageWidth - 2 * margin - 6);
@@ -842,7 +846,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -853,13 +857,13 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (eqfData.strategicResponses) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Strategic considerations', margin + 3, yPos);
+          doc.text(pl.strategicConsiderations, margin + 3, yPos);
           yPos += 8;
           
           if (eqfData.strategicResponses.descriptorExplanation) {
             checkNewPage(15);
             doc.setFont('helvetica', 'bold');
-            doc.text('Descriptor alignment explanation:', margin + 3, yPos);
+            doc.text(pl.descriptorAlignmentExplanation, margin + 3, yPos);
             yPos += 6;
             doc.setFont('helvetica', 'normal');
             const descLines = doc.splitTextToSize(eqfData.strategicResponses.descriptorExplanation, pageWidth - 2 * margin - 6);
@@ -870,7 +874,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           if (eqfData.strategicResponses.mobilityRecognition) {
             checkNewPage(15);
             doc.setFont('helvetica', 'bold');
-            doc.text('Mobility and recognition:', margin + 3, yPos);
+            doc.text(pl.mobilityAndRecognition, margin + 3, yPos);
             yPos += 6;
             doc.setFont('helvetica', 'normal');
             const mobLines = doc.splitTextToSize(eqfData.strategicResponses.mobilityRecognition, pageWidth - 2 * margin - 6);
@@ -881,7 +885,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           if (eqfData.strategicResponses.metadataIntegration) {
             checkNewPage(15);
             doc.setFont('helvetica', 'bold');
-            doc.text('Metadata integration:', margin + 3, yPos);
+            doc.text(pl.metadataIntegration, margin + 3, yPos);
             yPos += 6;
             doc.setFont('helvetica', 'normal');
             const metaLines = doc.splitTextToSize(eqfData.strategicResponses.metadataIntegration, pageWidth - 2 * margin - 6);
@@ -899,7 +903,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         checkNewPage(20);
         
         doc.setFont('helvetica', 'bold');
-        doc.text('Who are the primary learners?', margin + 3, yPos);
+        doc.text(pl.primaryLearnersQuestion, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
@@ -910,7 +914,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -948,7 +952,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -969,7 +973,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1012,7 +1016,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1050,7 +1054,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           'practical-performance': 'Practical performance task',
           'presentation': 'Presentation',
           'observation-checklist': 'Observation checklist',
-          'other': 'Other',
+          'other': pl.other,
         };
         
         checkNewPage(20);
@@ -1060,7 +1064,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         doc.text('Overall assessment type', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(assessmentTypeLabels[assessmentData.assessmentType] || assessmentData.assessmentType || 'To be determined', margin + 3, yPos);
+        doc.text(assessmentTypeLabels[assessmentData.assessmentType] || assessmentData.assessmentType || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Individual or Group
@@ -1069,7 +1073,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         doc.text('Assessment format', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(individualGroupLabels[assessmentData.individualOrGroup] || assessmentData.individualOrGroup || 'To be determined', margin + 3, yPos);
+        doc.text(individualGroupLabels[assessmentData.individualOrGroup] || assessmentData.individualOrGroup || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Delivery Mode
@@ -1078,7 +1082,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         doc.text('Delivery mode', margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(deliveryModeLabels[assessmentData.deliveryMode] || assessmentData.deliveryMode || 'To be determined', margin + 3, yPos);
+        doc.text(deliveryModeLabels[assessmentData.deliveryMode] || assessmentData.deliveryMode || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Activity Types
@@ -1105,7 +1109,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.activityDescription) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Activity description', margin + 3, yPos);
+          doc.text(pl.activityDescriptionLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const descLines = doc.splitTextToSize(assessmentData.activityDescription, pageWidth - 2 * margin - 6);
@@ -1123,7 +1127,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Themes
         doc.setFont('helvetica', 'bold');
-        doc.text('Topics and themes', margin + 3, yPos);
+        doc.text(pl.topicsAndThemes, margin + 3, yPos);
         yPos += 8;
         
         const themes = topicsData.themes || [];
@@ -1143,7 +1147,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1158,20 +1162,20 @@ export async function generatePDF(data: CourseData): Promise<void> {
         checkNewPage(20);
         
         doc.setFont('helvetica', 'bold');
-        doc.text('Alignment confirmation', margin + 3, yPos);
+        doc.text(pl.alignmentConfirmation, margin + 3, yPos);
         yPos += 8;
         
         doc.setFont('helvetica', 'normal');
         if (alignmentData.alignmentConfirmed === 'aligned') {
-          doc.text('Learning outcomes, content and assessment are aligned', margin + 3, yPos);
+          doc.text(pl.alignedText, margin + 3, yPos);
           yPos += 6;
         } else if (alignmentData.alignmentConfirmed === 'misaligned') {
-          doc.text('Misalignment identified', margin + 3, yPos);
+          doc.text(pl.misalignmentIdentified, margin + 3, yPos);
           yPos += 6;
           if (alignmentData.misalignmentNote) {
             checkNewPage(15);
             doc.setFont('helvetica', 'bold');
-            doc.text('Misalignment note:', margin + 3, yPos);
+            doc.text(pl.misalignmentNoteLabel, margin + 3, yPos);
             yPos += 6;
             doc.setFont('helvetica', 'normal');
             const noteLines = doc.splitTextToSize(alignmentData.misalignmentNote, pageWidth - 2 * margin - 6);
@@ -1181,7 +1185,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be confirmed', margin + 3, yPos);
+          doc.text(pl.toBeConfirmed, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1210,7 +1214,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           'exploration': 'Exploration and experiencing together',
           'reflection': 'Reflection activities',
           'challenge-based': 'Challenge-based learning',
-          'other': 'Other',
+          'other': pl.other,
         };
         
         const applicationLabels: Record<string, string> = {
@@ -1218,7 +1222,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           'simulations': 'Simulations or scenarios',
           'project-portfolio': 'Project or portfolio elements',
           'real-world': 'Real-world or workplace-related activities',
-          'other': 'Other',
+          'other': pl.other,
         };
         
         checkNewPage(20);
@@ -1226,7 +1230,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Content Representation
         if (multimodalData.contentRepresentation?.length > 0) {
           doc.setFont('helvetica', 'bold');
-          doc.text('Content representation', margin + 3, yPos);
+          doc.text(pl.contentRepresentation, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const contentItem of multimodalData.contentRepresentation) {
@@ -1246,7 +1250,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (multimodalData.activeEngagement?.length > 0) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Active engagement with content', margin + 3, yPos);
+          doc.text(pl.activeEngagementWithContent, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const engagementItem of multimodalData.activeEngagement) {
@@ -1266,7 +1270,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (multimodalData.applicationTransfer?.length > 0) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Application and transfer of learning', margin + 3, yPos);
+          doc.text(pl.applicationAndTransfer, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const transferItem of multimodalData.applicationTransfer) {
@@ -1286,13 +1290,13 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (multimodalData.finalConfirmation) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Do the selected resources support learning outcomes in varied and meaningful ways?', margin + 3, yPos);
+          doc.text(pl.resourcesSupportOutcomesQuestion, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const confirmLabels: Record<string, string> = {
-            'yes': 'Yes',
+            'yes': pl.yes,
             'partly': 'Partly',
-            'no': 'No',
+            'no': pl.no,
           };
           doc.text(confirmLabels[multimodalData.finalConfirmation] || multimodalData.finalConfirmation, margin + 3, yPos);
           yPos += 6;
@@ -1325,13 +1329,13 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (hasDecisions) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Supplementary consideration decisions', margin + 3, yPos);
+          doc.text(pl.supplementaryConsiderationDecisions, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const decision of decisions) {
             if (supplementaryData[decision.field]) {
               checkNewPage(8);
-              const decisionText = supplementaryData[decision.field] === 'incorporate' ? 'Will incorporate' : 'Intentionally left out';
+              const decisionText = supplementaryData[decision.field] === 'incorporate' ? pl.willIncorporate : pl.intentionallyLeftOut;
               doc.text(`• ${decision.label}: ${decisionText}`, margin + 6, yPos);
               yPos += 5;
             }
@@ -1339,7 +1343,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           yPos += 5;
         } else {
           doc.setFont('helvetica', 'normal');
-          doc.text('No supplementary considerations required (all modalities already selected).', margin + 3, yPos);
+          doc.text(pl.noSupplementaryConsiderationsNeeded, margin + 3, yPos);
           yPos += 8;
         }
 
@@ -1347,12 +1351,12 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (supplementaryData.feedbackLiteracy) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Feedback literacy', margin + 3, yPos);
+          doc.text(pl.feedbackLiteracy, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const flText = supplementaryData.feedbackLiteracy === 'yes'
-            ? 'Yes, feedback literacy is explicitly supported'
-            : 'No, feedback literacy is not explicitly addressed';
+            ? pl.feedbackLiteracySupportedYes
+            : pl.feedbackLiteracySupportedNo;
           doc.text(`• ${flText}`, margin + 6, yPos);
           yPos += 6;
           if (supplementaryData.feedbackLiteracy === 'yes' && supplementaryData.feedbackLiteracyDescription) {
@@ -1363,8 +1367,8 @@ export async function generatePDF(data: CourseData): Promise<void> {
           }
           if (supplementaryData.feedbackLiteracy === 'no' && supplementaryData.feedbackLiteracyReconsider) {
             const reconsiderText = supplementaryData.feedbackLiteracyReconsider === 'leave-out'
-              ? 'Considered and intentionally left out'
-              : 'Will be reconsidered';
+              ? pl.feedbackLiteracyConsideredLeftOut
+              : pl.feedbackLiteracyWillReconsider;
             doc.text(`  (${reconsiderText})`, margin + 6, yPos);
             yPos += 5;
           }
@@ -1381,18 +1385,18 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Glossary status
         doc.setFont('helvetica', 'bold');
-        doc.text('Glossary', margin + 3, yPos);
+        doc.text(pl.glossary, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         
         if (glossaryData.isComplete) {
           doc.setTextColor(0, 124, 113);
-          doc.text('Glossary completed', margin + 3, yPos);
+          doc.text(pl.glossaryCompleted, margin + 3, yPos);
           doc.setTextColor(0, 0, 0);
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be completed', margin + 3, yPos);
+          doc.text(pl.toBeCompleted, margin + 3, yPos);
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
         }
@@ -1404,7 +1408,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (filledEntries.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Terms and definitions', margin + 3, yPos);
+          doc.text(pl.termsAndDefinitions, margin + 3, yPos);
           yPos += 8;
           
           for (const entry of filledEntries) {
@@ -1421,7 +1425,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('No glossary entries defined yet', margin + 3, yPos);
+          doc.text(pl.noGlossaryEntries, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1440,7 +1444,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         if (filledActivities.length > 0) {
           doc.setFont('helvetica', 'bold');
-          doc.text('Learning activities', margin + 3, yPos);
+          doc.text(pl.learningActivitiesLabel, margin + 3, yPos);
           yPos += 8;
           
           const deliveryLabels: Record<string, string> = {
@@ -1486,7 +1490,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1497,7 +1501,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           checkNewPage(10);
           doc.setTextColor(0, 124, 113);
           doc.setFont('helvetica', 'italic');
-          doc.text('Learning activities confirmed as complete', margin + 3, yPos);
+          doc.text(pl.learningActivitiesConfirmed, margin + 3, yPos);
           yPos += 8;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1520,7 +1524,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.assessmentProcessDescription) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Assessment process description', margin + 3, yPos);
+          doc.text(pl.assessmentProcessDescription, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const procLines = doc.splitTextToSize(assessmentData.assessmentProcessDescription, pageWidth - 2 * margin - 6);
@@ -1534,13 +1538,13 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (filledAssessors.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Assessors', margin + 3, yPos);
+          doc.text(pl.assessorsLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const assessorTypeLabels: Record<string, string> = {
             'internal': 'Internal assessor',
             'external': 'External assessor',
-            'other': 'Other',
+            'other': pl.other,
           };
           for (const assessor of filledAssessors) {
             checkNewPage(8);
@@ -1559,7 +1563,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (transparencyMeasures.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Transparency measures', margin + 3, yPos);
+          doc.text(pl.transparencyMeasuresLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const measureLabels: Record<string, string> = {
@@ -1588,7 +1592,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.assessmentAccessModel) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Assessment access model', margin + 3, yPos);
+          doc.text(pl.assessmentAccessModelLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const accessLabels: Record<string, string> = {
@@ -1628,7 +1632,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
             if (required.length > 0) {
               checkNewPage(8);
               doc.setFont('helvetica', 'bold');
-              doc.text('Required (must all be completed):', margin + 3, yPos);
+              doc.text(pl.requiredMustAllBeCompleted, margin + 3, yPos);
               yPos += 5;
               doc.setFont('helvetica', 'normal');
               for (const id of required) {
@@ -1644,7 +1648,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
               const usedGroups = Array.from(new Set(either.map(id => groups[id]).filter((g): g is number => typeof g === 'number'))).sort((a, b) => a - b);
               checkNewPage(8);
               doc.setFont('helvetica', 'bold');
-              doc.text('Either / or groups (at least one alternative per group must be completed):', margin + 3, yPos);
+              doc.text(pl.eitherOrGroups, margin + 3, yPos);
               yPos += 5;
               doc.setFont('helvetica', 'normal');
               for (const g of usedGroups) {
@@ -1661,7 +1665,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
             if (required.length === 0 && either.length === 0) {
               checkNewPage(6);
               doc.setFont('helvetica', 'italic');
-              doc.text('(No standalone parts have been marked as required.)', margin + 3, yPos);
+              doc.text(pl.noStandalonePartsRequired, margin + 3, yPos);
               doc.setFont('helvetica', 'normal');
               yPos += 6;
             }
@@ -1674,7 +1678,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.gradingSystem) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Grading system', margin + 3, yPos);
+          doc.text(pl.gradingSystemLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           let gradingText = gradingLabels[assessmentData.gradingSystem] || assessmentData.gradingSystem;
@@ -1689,7 +1693,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.resitDescription) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Resit opportunities', margin + 3, yPos);
+          doc.text(pl.resitOpportunities, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const resitLines = doc.splitTextToSize(assessmentData.resitDescription, pageWidth - 2 * margin - 6);
@@ -1701,7 +1705,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.resitAdminNotes) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Resit administrative notes', margin + 3, yPos);
+          doc.text(pl.resitAdministrativeNotes, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const adminLines = doc.splitTextToSize(assessmentData.resitAdminNotes, pageWidth - 2 * margin - 6);
@@ -1713,7 +1717,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.qualityFrameworkType) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Quality framework', margin + 3, yPos);
+          doc.text(pl.qualityFrameworkLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           let fwText = assessmentData.qualityFrameworkType;
@@ -1728,7 +1732,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.responsibleInstitution) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Responsible institution for assessment', margin + 3, yPos);
+          doc.text(pl.responsibleInstitutionForAssessment, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const instLines = doc.splitTextToSize(assessmentData.responsibleInstitution, pageWidth - 2 * margin - 6);
@@ -1740,10 +1744,10 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.hasAuthenticElements !== undefined) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Authentic assessment elements', margin + 3, yPos);
+          doc.text(pl.authenticAssessmentElements, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.text(assessmentData.hasAuthenticElements ? 'Yes' : 'No', margin + 3, yPos);
+          doc.text(assessmentData.hasAuthenticElements ? pl.yes : pl.no, margin + 3, yPos);
           yPos += 6;
           if (assessmentData.authenticDescription) {
             const authLines = doc.splitTextToSize(assessmentData.authenticDescription, pageWidth - 2 * margin - 6);
@@ -1757,15 +1761,15 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.authenticCaseBasedUsed) {
           checkNewPage(10);
           doc.setFont('helvetica', 'bold');
-          doc.text('Authentic case-based assessment', margin + 3, yPos);
+          doc.text(pl.authenticCaseBasedAssessment, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.text(assessmentData.authenticCaseBasedUsed === 'yes' ? 'Used' : 'Not used', margin + 3, yPos);
+          doc.text(assessmentData.authenticCaseBasedUsed === 'yes' ? pl.used : pl.notUsed, margin + 3, yPos);
           yPos += 6;
           if (assessmentData.authenticCaseBasedUsed === 'no' && assessmentData.authenticCaseBasedReconsider) {
             const reconsiderLabel = assessmentData.authenticCaseBasedReconsider === 'reconsider'
-              ? 'Will reconsider authentic case-based elements'
-              : 'Proceeding without authentic case-based elements';
+              ? pl.willReconsiderAuthenticCaseBased
+              : pl.proceedingWithoutAuthenticCaseBased;
             doc.text(`  (${reconsiderLabel})`, margin + 3, yPos);
             yPos += 6;
           }
@@ -1779,7 +1783,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentPrereqs.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Additional prerequisites', margin + 3, yPos);
+          doc.text(pl.additionalPrerequisitesLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const prereq of assessmentPrereqs) {
@@ -1795,7 +1799,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.successCriteria) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Success criteria', margin + 3, yPos);
+          doc.text(pl.successCriteria, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const critLines = doc.splitTextToSize(assessmentData.successCriteria, pageWidth - 2 * margin - 6);
@@ -1808,7 +1812,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (calibrationMethods.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Calibration methods', margin + 3, yPos);
+          doc.text(pl.calibrationMethods, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const method of calibrationMethods) {
@@ -1823,10 +1827,10 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (assessmentData.fourEyeApplied !== undefined) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Four-eye principle', margin + 3, yPos);
+          doc.text(pl.fourEyePrinciple, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.text(assessmentData.fourEyeApplied ? 'Applied' : 'Not applied', margin + 3, yPos);
+          doc.text(assessmentData.fourEyeApplied ? pl.applied : pl.notApplied, margin + 3, yPos);
           yPos += 6;
           if (assessmentData.fourEyeJustification) {
             const justLines = doc.splitTextToSize(assessmentData.fourEyeJustification, pageWidth - 2 * margin - 6);
@@ -1841,7 +1845,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           checkNewPage(10);
           doc.setTextColor(0, 124, 113);
           doc.setFont('helvetica', 'italic');
-          doc.text('Assessment design confirmed as complete', margin + 3, yPos);
+          doc.text(pl.assessmentDesignConfirmed, margin + 3, yPos);
           yPos += 8;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -1859,7 +1863,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         const platforms: string[] = (techData.platforms || []).filter((p: string) => p && p.trim());
         if (platforms.length > 0) {
           doc.setFont('helvetica', 'bold');
-          doc.text('Digital platforms / external tools', margin + 3, yPos);
+          doc.text(pl.digitalPlatformsExternalTools, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const p of platforms) {
@@ -1875,17 +1879,17 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (techData.requiresSoftwarePurchase) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Requires additional software purchase', margin + 3, yPos);
+          doc.text(pl.requiresAdditionalSoftwarePurchase, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          const label = techData.requiresSoftwarePurchase === 'yes' ? 'Yes' : techData.requiresSoftwarePurchase === 'no' ? 'No' : techData.requiresSoftwarePurchase;
+          const label = techData.requiresSoftwarePurchase === 'yes' ? pl.yes : techData.requiresSoftwarePurchase === 'no' ? pl.no : techData.requiresSoftwarePurchase;
           doc.text(label, margin + 3, yPos);
           yPos += 7;
 
           const purchaseRes: string[] = techData.selectedPurchaseResources || [];
           if (techData.requiresSoftwarePurchase === 'yes' && purchaseRes.length > 0) {
             doc.setFont('helvetica', 'italic');
-            doc.text('Resources requiring purchase:', margin + 3, yPos);
+            doc.text(pl.resourcesRequiringPurchase, margin + 3, yPos);
             yPos += 5;
             doc.setFont('helvetica', 'normal');
             for (const r of purchaseRes) {
@@ -1913,7 +1917,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (accEntries.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Accessibility checklist (UDL / WCAG)', margin + 3, yPos);
+          doc.text(pl.accessibilityChecklistTitle, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const [key, val] of accEntries) {
@@ -1942,17 +1946,17 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Reuse Condition
         doc.setFont('helvetica', 'bold');
-        doc.text('Content reuse within alliance', margin + 3, yPos);
+        doc.text(pl.contentReuseWithinAlliance, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
-        doc.text(reuseLabels[reuseData.reuseCondition] || reuseData.reuseCondition || 'To be determined', margin + 3, yPos);
+        doc.text(reuseLabels[reuseData.reuseCondition] || reuseData.reuseCondition || pl.toBeDetermined, margin + 3, yPos);
         yPos += 10;
         
         // Physical Presence
         if (reuseData.physicalDays !== undefined && reuseData.physicalDays > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Physical presence requirements', margin + 3, yPos);
+          doc.text(pl.physicalPresenceRequirements, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           doc.text(`${reuseData.physicalDays} teaching day(s)`, margin + 3, yPos);
@@ -1968,11 +1972,11 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (reuseData.courseDurationMode) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Course duration', margin + 3, yPos);
+          doc.text(pl.courseDuration, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           if (reuseData.courseDurationMode === 'async') {
-            doc.text('Fully asynchronous - no fixed learning period', margin + 3, yPos);
+            doc.text(pl.fullyAsynchronousNoFixedPeriod, margin + 3, yPos);
           } else if (reuseData.courseDurationMode === 'time-bound' && reuseData.estimatedWeeks) {
             doc.text(`Time-bound: ${reuseData.estimatedWeeks} week(s)`, margin + 3, yPos);
           }
@@ -1985,7 +1989,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (alignedSkills.length > 0 || additionalSkills.length > 0) {
           checkNewPage(20);
           doc.setFont('helvetica', 'bold');
-          doc.text('Market-relevant skills alignment', margin + 3, yPos);
+          doc.text(pl.marketRelevantSkillsAlignment, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           
@@ -2011,15 +2015,15 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (filledInstructors.length > 0) {
           checkNewPage(30);
           doc.setFont('helvetica', 'bold');
-          doc.text('Who will lead the course', margin + 3, yPos);
+          doc.text(pl.whoWillLeadTheCourse, margin + 3, yPos);
           yPos += 8;
           
           doc.setFontSize(8);
           doc.setFont('helvetica', 'bold');
-          doc.text('Name', margin + 3, yPos);
-          doc.text('Title', margin + 40, yPos);
-          doc.text('Institution', margin + 80, yPos);
-          doc.text('Additional info', margin + 125, yPos);
+          doc.text(pl.name, margin + 3, yPos);
+          doc.text(pl.title, margin + 40, yPos);
+          doc.text(pl.institution, margin + 80, yPos);
+          doc.text(pl.additionalInfo, margin + 125, yPos);
           yPos += 5;
           
           doc.setFont('helvetica', 'normal');
@@ -2042,7 +2046,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (reusePrereqs.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Additional prerequisites', margin + 3, yPos);
+          doc.text(pl.additionalPrerequisitesLabel, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const prereq of reusePrereqs) {
@@ -2058,7 +2062,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (reuseData.confirmedTitle) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Confirmed course title', margin + 3, yPos);
+          doc.text(pl.confirmedCourseTitle, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const titleLines = doc.splitTextToSize(reuseData.confirmedTitle, pageWidth - 2 * margin - 6);
@@ -2073,7 +2077,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         if (adminNotes.length > 0) {
           checkNewPage(15);
           doc.setFont('helvetica', 'bold');
-          doc.text('Additional information regarding this learning unit', margin + 3, yPos);
+          doc.text(pl.additionalInfoRegardingUnit, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           for (const note of adminNotes) {
@@ -2096,7 +2100,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Learner-facing description
         if (learnerData.learnerFacingDescription) {
           doc.setFont('helvetica', 'bold');
-          doc.text('How learners will engage with this course', margin + 3, yPos);
+          doc.text(pl.howLearnersWillEngage, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           const descLines = doc.splitTextToSize(learnerData.learnerFacingDescription, pageWidth - 2 * margin - 6);
@@ -2104,12 +2108,12 @@ export async function generatePDF(data: CourseData): Promise<void> {
           yPos += descLines.length * 5 + 8;
         } else {
           doc.setFont('helvetica', 'bold');
-          doc.text('How learners will engage with this course', margin + 3, yPos);
+          doc.text(pl.howLearnersWillEngage, margin + 3, yPos);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -2120,7 +2124,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           checkNewPage(10);
           doc.setTextColor(0, 124, 113);
           doc.setFont('helvetica', 'italic');
-          doc.text('Modularity and flexibility confirmed', margin + 3, yPos);
+          doc.text(pl.modularityFlexibilityConfirmed, margin + 3, yPos);
           yPos += 8;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -2136,7 +2140,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         
         // Learning Delivery Review
         doc.setFont('helvetica', 'bold');
-        doc.text('Learning format and content review plan', margin + 3, yPos);
+        doc.text(pl.learningFormatContentReviewPlan, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         
@@ -2147,7 +2151,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -2156,7 +2160,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Assessment Calibration
         checkNewPage(20);
         doc.setFont('helvetica', 'bold');
-        doc.text('Assessment calibration plan', margin + 3, yPos);
+        doc.text(pl.assessmentCalibrationPlan, margin + 3, yPos);
         yPos += 6;
         doc.setFont('helvetica', 'normal');
         
@@ -2167,7 +2171,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         } else {
           doc.setTextColor(150, 150, 150);
           doc.setFont('helvetica', 'italic');
-          doc.text('To be filled for completion', margin + 3, yPos);
+          doc.text(pl.toBeFilled, margin + 3, yPos);
           yPos += 6;
           doc.setTextColor(0, 0, 0);
           doc.setFont('helvetica', 'normal');
@@ -2196,7 +2200,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
           const value = data.data[item.id]?.[field.name];
           const displayValue = value && value !== '' && value !== false
             ? String(value)
-            : 'To be filled for completion';
+            : pl.toBeFilled;
 
           const valueLines = doc.splitTextToSize(displayValue, pageWidth - 2 * margin - 6);
           

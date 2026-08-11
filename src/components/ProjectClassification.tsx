@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { CourseType } from '@/types/course';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { coreuiTranslations } from '@/lib/translations/coreui';
 
 interface Developer {
   name: string;
@@ -46,7 +48,9 @@ interface ProjectClassificationProps {
 }
 
 export function ProjectClassification({ values, onChange, courseType = 'micro-credential', standaloneSources }: ProjectClassificationProps) {
-  const courseLabel = courseType === 'standalone' ? 'standalone course' : courseType === 'composite-micro-credential' ? 'micro-credential' : 'micro-credential';
+  const { language, t } = useLanguage();
+  const lt = coreuiTranslations[language];
+  const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : courseType === 'composite-micro-credential' ? lt.courseLabelMc : lt.courseLabelMc;
   const [workingTitle, setWorkingTitle] = useState(values.workingTitle || '');
   // The classification choice has been removed — every activity follows the
   // "approved activity" structure (single developing institution).
@@ -257,19 +261,19 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
   return (
     <div className="space-y-8">
       <div className="border-l-4 border-primary pl-4">
-        <h2 className="text-2xl font-bold text-foreground">Project classification</h2>
+        <h2 className="text-2xl font-bold text-foreground">{lt.projectClassificationTitle}</h2>
       </div>
 
       {/* Meta text */}
       <div className="bg-muted/30 border border-border rounded-lg p-6 space-y-4">
         <p className="text-foreground leading-relaxed">
-          Before starting the design process, it is essential to clarify under which conditions the learning activity is developed.
+          {lt.pcIntro1}
         </p>
         <p className="text-foreground leading-relaxed">
-          An approved activity is a learning offer developed by a single institution and later aligned to the alliance framework. External stakeholders such as companies, NGOs, or public agencies can still participate in design or validation.
+          {lt.pcIntro2}
         </p>
         <p className="text-foreground leading-relaxed">
-          This ensures transparency about ownership, responsibilities, and quality assurance, and defines which metadata and institutional references must be included in the final {courseLabel}.
+          {lt.pcIntro3.replace('{courseLabel}', courseLabel)}
         </p>
       </div>
 
@@ -277,7 +281,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Label htmlFor="workingTitle" className="text-base font-medium">
-            Working title
+            {lt.workingTitleLabel}
           </Label>
           <TooltipProvider>
             <Tooltip>
@@ -285,32 +289,32 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label="Help"
+                  aria-label={lt.helpAriaLabel}
                 >
                   <Info className="w-4 h-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p>Give your {courseLabel} a working title. This can be changed later and is used to help identify your project during development.</p>
+                <p>{lt.workingTitleTooltip.replace('{courseLabel}', courseLabel)}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
         
         <p className="text-sm text-muted-foreground">
-          Enter a working title for your {courseLabel}. This helps identify the project during development.
+          {lt.workingTitleDescription.replace('{courseLabel}', courseLabel)}
         </p>
 
         <Input
           id="workingTitle"
           value={workingTitle}
           onChange={(e) => setWorkingTitle(e.target.value)}
-          placeholder={`Enter working title for your ${courseLabel}...`}
+          placeholder={lt.workingTitlePlaceholder.replace('{courseLabel}', courseLabel)}
           className="max-w-xl"
         />
 
         <p className="text-sm text-muted-foreground italic">
-          You will have the opportunity to revise the title later in Phase 6.
+          {lt.workingTitleRevise}
         </p>
       </div>
 
@@ -319,11 +323,11 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
         <div className="space-y-4">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-foreground">
-              Developer (Institution)
+              {lt.developerSectionTitle}
               <span className="text-destructive ml-1">*</span>
             </h3>
             <p className="text-sm text-muted-foreground">
-              List the institution directly developing this activity. For approved activities, list your own institution.
+              {lt.developerSectionDescription}
             </p>
           </div>
 
@@ -332,10 +336,10 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Institution / Developer</TableHead>
-                    <TableHead>Contact information</TableHead>
-                    <TableHead>Notes (optional)</TableHead>
+                    <TableHead>{lt.tableColName}</TableHead>
+                    <TableHead>{lt.tableColInstitution}</TableHead>
+                    <TableHead>{lt.tableColContact}</TableHead>
+                    <TableHead>{lt.tableColNotes}</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -346,28 +350,28 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                         <Input
                           value={dev.name}
                           onChange={(e) => updateDeveloper(index, 'name', e.target.value)}
-                          placeholder="Name"
+                          placeholder={lt.namePlaceholder}
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           value={dev.institution}
                           onChange={(e) => updateDeveloper(index, 'institution', e.target.value)}
-                          placeholder="Institution"
+                          placeholder={lt.institutionPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           value={dev.contact}
                           onChange={(e) => updateDeveloper(index, 'contact', e.target.value)}
-                          placeholder="Email or phone"
+                          placeholder={lt.contactPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           value={dev.notes}
                           onChange={(e) => updateDeveloper(index, 'notes', e.target.value)}
-                          placeholder="Additional notes"
+                          placeholder={lt.notesPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
@@ -390,23 +394,23 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
           <div className="flex gap-2">
             <Button onClick={addDeveloper} variant="outline" className="flex-1">
               <Plus className="w-4 h-4 mr-2" />
-              Add developer
+              {lt.addDeveloperButton}
             </Button>
             {(courseType === 'composite-micro-credential' || (standaloneSources && standaloneSources.length > 0)) && availableDevelopers.length > 0 && (
               <Dialog open={importDevOpen} onOpenChange={setImportDevOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="gap-2" disabled={importableDevelopers.length === 0}>
                     <Download className="w-4 h-4" />
-                      Choose from sources ({importableDeveloperSourceCount})
+                      {lt.chooseFromSources.replace('{count}', String(importableDeveloperSourceCount))}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>Import developers from standalone sources</DialogTitle>
+                    <DialogTitle>{lt.importDevelopersDialogTitle}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
                     {importableDeveloperGroups.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-4">All developers from your sources have already been added.</p>
+                      <p className="text-sm text-muted-foreground py-4">{lt.allDevelopersImported}</p>
                     ) : (
                       importableDeveloperGroups.map(({ sourceDocumentId, sourceTitle, developers: groupedDevelopers }) => (
                         <label
@@ -426,7 +430,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                             <div className="space-y-1">
                               {groupedDevelopers.map((dev, index) => (
                                 <div key={`${sourceDocumentId}-dev-${index}`} className="text-sm text-muted-foreground">
-                                  <span className="text-foreground">{dev.name || '(no name)'}</span>
+                                  <span className="text-foreground">{dev.name || lt.noNamePlaceholder}</span>
                                   {dev.institution ? ` · ${dev.institution}` : ''}
                                   {dev.contact ? ` · ${dev.contact}` : ''}
                                   {dev.notes && <span className="italic"> · {dev.notes}</span>}
@@ -439,9 +443,9 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                     )}
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => { setImportDevOpen(false); setSelectedDevs(new Set()); }}>Cancel</Button>
+                    <Button variant="outline" onClick={() => { setImportDevOpen(false); setSelectedDevs(new Set()); }}>{lt.cancelButton}</Button>
                     <Button onClick={handleImportDevelopers} disabled={selectedDevs.size === 0}>
-                      Import {selectedDevs.size > 0 ? `(${selectedDevs.size})` : ''}
+                      {lt.importButton} {selectedDevs.size > 0 ? `(${selectedDevs.size})` : ''}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -450,7 +454,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
           </div>
 
           {developers.length < 1 && (
-            <p className="text-sm text-destructive">At least 1 developer is required for approved activities.</p>
+            <p className="text-sm text-destructive">{lt.developerRequiredWarning}</p>
           )}
         </div>
       )}
@@ -460,10 +464,10 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
         <div className="space-y-4">
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-foreground">
-              External Developers / Stakeholders (Optional)
+              {lt.externalDevelopersSectionTitle}
             </h3>
             <p className="text-sm text-muted-foreground">
-              External participants can be involved in an approved activity. Use this section to record their role in co-design, validation, or pilot implementation.
+              {lt.externalDevelopersSectionDescription}
             </p>
           </div>
 
@@ -472,11 +476,11 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Organisation / Person</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Contact information</TableHead>
-                    <TableHead>Notes (optional)</TableHead>
+                    <TableHead>{lt.tableColOrganisation}</TableHead>
+                    <TableHead>{lt.tableColType}</TableHead>
+                    <TableHead>{lt.tableColRole}</TableHead>
+                    <TableHead>{lt.tableColContact}</TableHead>
+                    <TableHead>{lt.tableColNotes}</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -487,7 +491,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                         <Input
                           value={ext.organisation}
                           onChange={(e) => updateExternalDeveloper(index, 'organisation', e.target.value)}
-                          placeholder="Name"
+                          placeholder={lt.orgPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
@@ -496,14 +500,14 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                           onValueChange={(val) => updateExternalDeveloper(index, 'type', val)}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder={lt.selectTypePlaceholder} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="company">Company</SelectItem>
-                            <SelectItem value="ngo">NGO</SelectItem>
-                            <SelectItem value="agency">Agency</SelectItem>
-                            <SelectItem value="individual">Individual</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="company">{lt.typeCompany}</SelectItem>
+                            <SelectItem value="ngo">{lt.typeNgo}</SelectItem>
+                            <SelectItem value="agency">{lt.typeAgency}</SelectItem>
+                            <SelectItem value="individual">{lt.typeIndividual}</SelectItem>
+                            <SelectItem value="other">{lt.typeOther}</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -513,14 +517,14 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                           onValueChange={(val) => updateExternalDeveloper(index, 'role', val)}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select role" />
+                            <SelectValue placeholder={lt.selectRolePlaceholder} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="co-designer">Co-designer</SelectItem>
-                            <SelectItem value="validator">Validator</SelectItem>
-                            <SelectItem value="pilot-partner">Pilot partner</SelectItem>
-                            <SelectItem value="qa-reviewer">QA reviewer</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="co-designer">{lt.roleCoDesigner}</SelectItem>
+                            <SelectItem value="validator">{lt.roleValidator}</SelectItem>
+                            <SelectItem value="pilot-partner">{lt.rolePilotPartner}</SelectItem>
+                            <SelectItem value="qa-reviewer">{lt.roleQaReviewer}</SelectItem>
+                            <SelectItem value="other">{lt.roleOther}</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -528,14 +532,14 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                         <Input
                           value={ext.contact}
                           onChange={(e) => updateExternalDeveloper(index, 'contact', e.target.value)}
-                          placeholder="Email or phone"
+                          placeholder={lt.contactPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           value={ext.notes}
                           onChange={(e) => updateExternalDeveloper(index, 'notes', e.target.value)}
-                          placeholder="Additional notes"
+                          placeholder={lt.notesPlaceholder}
                         />
                       </TableCell>
                       <TableCell>
@@ -558,23 +562,23 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
           <div className="flex gap-2">
             <Button onClick={addExternalDeveloper} variant="outline" className="flex-1">
               <Plus className="w-4 h-4 mr-2" />
-              Add external developer
+              {lt.addExternalDeveloperButton}
             </Button>
             {(courseType === 'composite-micro-credential' || (standaloneSources && standaloneSources.length > 0)) && availableExternals.length > 0 && (
               <Dialog open={importExtOpen} onOpenChange={setImportExtOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline" className="gap-2" disabled={importableExternals.length === 0}>
                     <Download className="w-4 h-4" />
-                      Choose from sources ({importableExternalSourceCount})
+                      {lt.chooseFromSources.replace('{count}', String(importableExternalSourceCount))}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>Import external developers from standalone sources</DialogTitle>
+                    <DialogTitle>{lt.importExternalDialogTitle}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-2 max-h-[400px] overflow-y-auto">
                     {importableExternalGroups.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-4">All external developers from your sources have already been added.</p>
+                      <p className="text-sm text-muted-foreground py-4">{lt.allExternalsImported}</p>
                     ) : (
                       importableExternalGroups.map(({ sourceDocumentId, sourceTitle, externals }) => (
                         <label
@@ -594,7 +598,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                             <div className="space-y-1">
                               {externals.map((ext, index) => (
                                 <div key={`${sourceDocumentId}-ext-${index}`} className="text-sm text-muted-foreground">
-                                  <span className="text-foreground">{ext.organisation || '(no name)'}</span>
+                                  <span className="text-foreground">{ext.organisation || lt.noNamePlaceholder}</span>
                                   {ext.type ? ` · ${ext.type}` : ''}
                                   {ext.role ? ` · ${ext.role}` : ''}
                                   {ext.contact ? ` · ${ext.contact}` : ''}
@@ -608,9 +612,9 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
                     )}
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => { setImportExtOpen(false); setSelectedExts(new Set()); }}>Cancel</Button>
+                    <Button variant="outline" onClick={() => { setImportExtOpen(false); setSelectedExts(new Set()); }}>{lt.cancelButton}</Button>
                     <Button onClick={handleImportExternals} disabled={selectedExts.size === 0}>
-                      Import {selectedExts.size > 0 ? `(${selectedExts.size})` : ''}
+                      {lt.importButton} {selectedExts.size > 0 ? `(${selectedExts.size})` : ''}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -624,21 +628,21 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       <Card>
         <CardContent className="pt-6 space-y-5">
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground">Academic field of study</h3>
+            <h3 className="text-lg font-semibold text-foreground">{lt.academicFieldTitle}</h3>
             <p className="text-sm text-muted-foreground">
-              Select the primary academic field that best represents this {courseLabel}. The ISCED-F 2013 classification is the European standard for describing fields of education and training. This information supports recognition, reporting, interoperability, and metadata exchange across higher education institutions.
+              {lt.academicFieldDescription1.replace('{courseLabel}', courseLabel)}
             </p>
             <p className="text-sm text-muted-foreground">
-              Select the field of education and training that best represents the {courseLabel}.
+              {lt.academicFieldDescription2.replace('{courseLabel}', courseLabel)}
             </p>
           </div>
 
           <div className="space-y-2">
             <Label className="text-base font-medium">
-              Broad field<span className="text-destructive ml-1">*</span>
+              {lt.broadFieldLabel}<span className="text-destructive ml-1">*</span>
             </Label>
 
-            <p className="text-sm text-muted-foreground">Select the broad field that best represents the {courseLabel}.</p>
+            <p className="text-sm text-muted-foreground">{lt.broadFieldDescription.replace('{courseLabel}', courseLabel)}</p>
             <Select
               value={iscedBroad}
               onValueChange={(v) => {
@@ -648,7 +652,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
               }}
             >
               <SelectTrigger className="max-w-xl bg-background">
-                <SelectValue placeholder="Select broad field..." />
+                <SelectValue placeholder={lt.selectBroadFieldPlaceholder} />
               </SelectTrigger>
               <SelectContent className="max-h-72">
                 {iscedBroadFields.map((b) => (
@@ -660,9 +664,9 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
 
           <div className="space-y-2">
             <Label className="text-base font-medium">
-              Narrow field <span className="text-muted-foreground font-normal">(optional)</span>
+              {lt.narrowFieldLabel} <span className="text-muted-foreground font-normal">({lt.optionalLabel})</span>
             </Label>
-            <p className="text-sm text-muted-foreground">Select the narrow field that best represents the {courseLabel}.</p>
+            <p className="text-sm text-muted-foreground">{lt.narrowFieldDescription.replace('{courseLabel}', courseLabel)}</p>
             <Select
               value={iscedNarrow}
               disabled={!iscedBroad}
@@ -672,7 +676,7 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
               }}
             >
               <SelectTrigger className="max-w-xl bg-background">
-                <SelectValue placeholder={iscedBroad ? 'Select narrow field...' : 'Select a broad field first'} />
+                <SelectValue placeholder={iscedBroad ? lt.selectNarrowFieldPlaceholder : lt.selectBroadFieldFirstPlaceholder} />
               </SelectTrigger>
               <SelectContent className="max-h-72">
                 {(getIscedBroad(iscedBroad)?.narrow || []).map((n) => (
@@ -684,16 +688,16 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
 
           <div className="space-y-2">
             <Label className="text-base font-medium">
-              Detailed field <span className="text-muted-foreground font-normal">(optional)</span>
+              {lt.detailedFieldLabel} <span className="text-muted-foreground font-normal">({lt.optionalLabel})</span>
             </Label>
-            <p className="text-sm text-muted-foreground">Select the most precise field available for the {courseLabel}.</p>
+            <p className="text-sm text-muted-foreground">{lt.detailedFieldDescription.replace('{courseLabel}', courseLabel)}</p>
             <Select
               value={iscedDetailed}
               disabled={!iscedNarrow}
               onValueChange={setIscedDetailed}
             >
               <SelectTrigger className="max-w-xl bg-background">
-                <SelectValue placeholder={iscedNarrow ? 'Select detailed field...' : 'Select a narrow field first'} />
+                <SelectValue placeholder={iscedNarrow ? lt.selectDetailedFieldPlaceholder : lt.selectNarrowFieldFirstPlaceholder} />
               </SelectTrigger>
               <SelectContent className="max-h-72">
                 {(getIscedNarrow(iscedBroad, iscedNarrow)?.detailed || []).map((x) => (
@@ -710,8 +714,8 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       {!isValid() && (
         <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
           {!iscedBroad
-            ? 'Please select the academic field of study (ISCED-F 2013) to continue.'
-            : 'Please complete the required developer information to continue.'}
+            ? lt.validationSelectField
+            : lt.validationCompleteDevelopers}
         </div>
       )}
     </div>
