@@ -4,7 +4,7 @@ import { CourseData } from '@/types/course';
 import { phases } from '@/data/phases';
 import { getIscedBroad, getIscedNarrow, getIscedDetailed } from '@/data/isced';
 
-const PRIMARY_COLOR = '#007c71';
+const PRIMARY_COLOR = '#195562';
 
 export async function generatePDF(data: CourseData): Promise<void> {
   const doc = new jsPDF();
