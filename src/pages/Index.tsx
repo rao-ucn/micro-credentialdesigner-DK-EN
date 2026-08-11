@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { CourseData, CourseType, StandaloneSource } from '@/types/course';
-import { phases } from '@/data/phases';
+import { getPhases } from '@/data/phases';
 import { PhaseNavigator } from '@/components/PhaseNavigator';
 import { ItemForm } from '@/components/ItemForm';
 import { generateSecurityCode, hashSecurityCode, verifySecurityCode } from '@/lib/crypto';
@@ -21,6 +21,7 @@ import { CompositeUploadForm } from '@/components/CompositeUploadForm';
 import { NewMcUploadForm } from '@/components/NewMcUploadForm';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { indexPageTranslations } from '@/lib/translations/indexPage';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +38,9 @@ const isMCType = (ct: CourseType) => ct === 'micro-credential' || ct === 'compos
 
 const Index = () => {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const lt = indexPageTranslations[language];
+  const phases = getPhases(language);
   const [welcomeStep, setWelcomeStep] = useState<'initial' | 'courseType' | 'compositeUpload' | 'newFromFileUpload' | 'loadExisting' | null>('initial');
   const [loadDocumentId, setLoadDocumentId] = useState('');
   
@@ -250,11 +253,11 @@ const Index = () => {
     setShowSecurityCodeDialog(true);
 
     toast({
-      title: 'New Micro-Credential Created',
+      title: lt.newMcCreatedTitle,
       description:
         sources.length === 1
-          ? 'A brand-new MC was created based on the uploaded file.'
-          : `A brand-new MC was created by merging ${sources.length} uploaded files.`,
+          ? lt.newMcCreatedSingleDesc
+          : lt.newMcCreatedMultiDesc.replace('{count}', String(sources.length)),
     });
   };
 
@@ -716,8 +719,8 @@ const Index = () => {
     const normalizedCode = inputCode.replace(/-/g, '').toUpperCase();
     if (!courseData || !inputCode || normalizedCode.length !== 12) {
       toast({
-        title: 'Invalid Code',
-        description: 'Please enter your 12-character security code (e.g., ABCD-EFGH-JKMN)',
+        title: lt.invalidCodeTitle,
+        description: lt.invalidCodeDesc,
         variant: 'destructive',
       });
       return;
@@ -760,8 +763,8 @@ const Index = () => {
         setIsImportedDocument(false);
         
         toast({
-          title: 'Unlocked & Saved',
-          description: 'Document imported and saved successfully',
+          title: lt.unlockedSavedTitle,
+          description: lt.unlockedSavedDesc,
         });
       } else {
         // Normal unlock from localStorage
@@ -772,14 +775,14 @@ const Index = () => {
         setInputCode('');
         
         toast({
-          title: 'Unlocked',
-          description: 'Document unlocked successfully',
+          title: lt.unlockedTitle,
+          description: lt.unlockedDesc,
         });
       }
     } catch (error) {
       toast({
-        title: 'Incorrect Code',
-        description: 'The security code is incorrect',
+        title: lt.incorrectCodeTitle,
+        description: lt.incorrectCodeDesc,
         variant: 'destructive',
       });
     } finally {
@@ -801,13 +804,13 @@ const Index = () => {
       setCourseData(updated);
       
       toast({
-        title: 'Saved',
-        description: 'Document saved successfully',
+        title: lt.savedTitle,
+        description: lt.savedDesc,
       });
     } catch (error) {
       toast({
-        title: 'Save Failed',
-        description: 'Failed to save document',
+        title: lt.saveFailedTitle,
+        description: lt.saveFailedDesc,
         variant: 'destructive',
       });
     }
@@ -836,8 +839,8 @@ const Index = () => {
     URL.revokeObjectURL(url);
 
     toast({
-      title: 'Exported',
-      description: 'Document exported as JSON',
+      title: lt.exportedTitle,
+      description: lt.exportedDesc,
     });
   };
 
@@ -956,8 +959,8 @@ const Index = () => {
         }
       } catch (error) {
         toast({
-          title: 'Import Failed',
-          description: 'Invalid JSON file. Make sure all selected files are valid export files.',
+          title: lt.importFailedTitle,
+          description: lt.importFailedDesc,
           variant: 'destructive',
         });
       } finally {
@@ -976,8 +979,8 @@ const Index = () => {
       const reuseCondition = pendingImport.data?.['6.5']?.contentReuseData?.reuseCondition;
       if (reuseCondition === 'no') {
         toast({
-          title: 'Reuse Restricted',
-          description: 'This file cannot be used to build a new micro-credential because reuse of learning content is marked as "No" within the alliance.',
+          title: lt.reuseRestrictedTitle,
+          description: lt.reuseRestrictedDesc,
           variant: 'destructive',
         });
         setPendingImport(null);
@@ -1023,8 +1026,8 @@ const Index = () => {
       setShowSecurityCodeDialog(true);
 
       toast({
-        title: 'New Micro-Credential Created',
-        description: 'A brand-new MC was created based on the uploaded file with a unique ID and security code.',
+        title: lt.newMcCreatedTitle,
+        description: lt.newMcFromUploadDesc,
       });
       return;
     }
@@ -1035,8 +1038,8 @@ const Index = () => {
     setWelcomeStep(null);
     setPendingImport(null);
     toast({
-      title: 'Imported',
-      description: 'Document imported. Please enter your security code to unlock and save locally.',
+      title: lt.importedTitle,
+      description: lt.importedDesc,
     });
   };
 
@@ -1047,16 +1050,16 @@ const Index = () => {
           <AlertDialogTitle>
             {importMode === 'new-from-file'
               ? ((pendingImport as any)?._mergedSourceCount > 1
-                  ? `Create new MC from ${(pendingImport as any)._mergedSourceCount} files?`
-                  : 'Create new MC from this file?')
-              : 'Import detected'}
+                  ? lt.createNewMcFromFilesTitle.replace('{count}', String((pendingImport as any)._mergedSourceCount))
+                  : lt.createNewMcFromFileTitle)
+              : lt.importDetectedTitle}
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             <div className="space-y-2 pt-2">
               {(pendingImport as any)?._mergedSourceCount > 1 ? (
                 <>
                   <p>
-                    We detected <strong>{(pendingImport as any)._mergedSourceCount} files</strong> that will be merged into one new Micro-Credential.
+                    {lt.detectedFilesMergedPrefix} <strong>{(pendingImport as any)._mergedSourceCount} {lt.standaloneCourseLabel ? '' : ''}</strong>{lt.detectedFilesMergedSuffix}
                   </p>
                   <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-0.5">
                     {((pendingImport as any)._mergedSourceNames || []).map((n: string, i: number) => (
@@ -1067,40 +1070,40 @@ const Index = () => {
               ) : (
                 <>
                   <p>
-                    We detected a <strong>
-                      {pendingImport?.courseType === 'standalone' && 'Standalone Course'}
-                      {pendingImport?.courseType === 'micro-credential' && 'Micro-Credential'}
-                      {pendingImport?.courseType === 'composite-micro-credential' && 'Composite Micro-Credential'}
-                    </strong> in this file.
+                    {lt.detectedTypePrefix} <strong>
+                      {pendingImport?.courseType === 'standalone' && lt.standaloneCourseLabel}
+                      {pendingImport?.courseType === 'micro-credential' && lt.microCredentialLabel}
+                      {pendingImport?.courseType === 'composite-micro-credential' && lt.compositeMcLabel}
+                    </strong> {lt.detectedTypeSuffix}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Source Document ID: <span className="font-mono">{pendingImport?.documentId}</span>
+                    {lt.sourceDocumentIdLabel} <span className="font-mono">{pendingImport?.documentId}</span>
                   </p>
                 </>
               )}
               {importMode === 'new-from-file' ? (
                 <div className="text-sm space-y-2 rounded-md border border-primary/30 bg-primary/5 p-3">
                   <p className="font-semibold text-foreground">
-                    A brand-new Micro-Credential will be created.
+                    {lt.newMcWillBeCreated}
                   </p>
                   <p className="text-muted-foreground">
                     {(pendingImport as any)?._mergedSourceCount > 1
-                      ? 'All uploaded files will be merged into a single editable Micro-Credential. Lists (learning outcomes, activities, etc.) are combined; for non-list fields the first file\'s values are used. A new unique document ID and security code will be generated. The original files are not modified.'
-                      : 'A new unique document ID and a new security code will be generated. The original file is not modified. To keep editing the same document instead, cancel and use Continue from a JSON file.'}
+                      ? lt.mergeFilesNote
+                      : lt.singleFileNote}
                   </p>
                 </div>
               ) : (
                 <p className="text-sm">
-                  Continue editing this document? You'll be asked for the security code on the next screen.
+                  {lt.continueEditingQuestion}
                 </p>
               )}
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setPendingImport(null)}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => setPendingImport(null)}>{lt.cancel}</AlertDialogCancel>
           <AlertDialogAction onClick={confirmImport}>
-            {importMode === 'new-from-file' ? 'Create new MC' : 'Continue'}
+            {importMode === 'new-from-file' ? lt.createNewMc : lt.continueLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

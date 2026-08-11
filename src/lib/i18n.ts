@@ -64,7 +64,7 @@ export const translations = {
   da: {
     appTitle: 'The Micro-Credential Designer',
     courseType: 'Kursustype',
-    standalone: 'Selvstændigt kursus',
+    standalone: 'Standalone-kursus',
     microCredential: 'Micro-Credential',
     documentId: 'Dokument-ID',
     save: 'Gem',
@@ -101,14 +101,14 @@ export const translations = {
     // Header
     type: 'Type',
     saving: 'Gemmer...',
-    standaloneLong: 'Selvstændigt kursus (ikke pointgivende)',
+    standaloneLong: 'Standalone (ikke pointgivende)',
     microCredentialLong: 'Micro-Credential (pointgivende)',
     compositeMC: 'Sammensat Micro-Credential',
     compositeInspired: 'Udvikl ny micro-credential inspireret af flere andre kurser',
     courseTypeChanged: 'Kursustype ændret',
     switchedTo: 'Skiftet til',
     // Welcome screen
-    welcomeTagline: 'Design selvstændige kurser og micro-credentials med en struktureret, fasebaseret ramme',
+    welcomeTagline: 'Design standalone-kurser og micro-credentials med en struktureret, fasebaseret ramme',
     startNew: 'Start nyt dokument',
     continueSaved: 'Fortsæt med et gemt dokument (hvis det ikke er udløbet)',
     continueJson: 'Fortsæt fra en JSON-fil',
