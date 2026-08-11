@@ -2495,8 +2495,6 @@ const Index = () => {
               <div className="text-sm text-muted-foreground space-y-2">
                 <p>Topics and skills define the core subject areas learners must engage with to achieve the learning outcomes.</p>
                 <p>In this step, you identify what must be taught in order for learners to do what the learning outcomes require.</p>
-                <p>The topics you define here will later be used to automatically generate a BoKSA (Body of Knowledge, Skills and Attitudes).</p>
-                <p>While learning outcomes describe what the learner must demonstrate at the end, the BoKSA makes explicit the underlying knowledge, skills and professional attitudes that must be in place to support those outcomes.</p>
                 <p>This prevents gaps in content design and ensures transparency, coherence and constructive alignment across the micro-credential.</p>
               </div>
             </div>

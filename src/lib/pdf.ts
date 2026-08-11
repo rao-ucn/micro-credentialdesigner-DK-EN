@@ -1149,66 +1149,6 @@ export async function generatePDF(data: CourseData): Promise<void> {
           doc.setFont('helvetica', 'normal');
         }
         
-        // BoKSA Content
-        const boksaContent = topicsData.boksaContent;
-        if (boksaContent && topicsData.boksaGenerated) {
-          checkNewPage(30);
-          doc.setFont('helvetica', 'bold');
-          doc.text('Body of Knowledge, Skills and Attitudes (BoKSA)', margin + 3, yPos);
-          yPos += 8;
-          
-          // Knowledge
-          const filledKnowledge = (boksaContent.knowledge || []).filter((k: string) => k.trim());
-          if (filledKnowledge.length > 0) {
-            checkNewPage(15);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Knowledge:', margin + 3, yPos);
-            yPos += 6;
-            doc.setFont('helvetica', 'normal');
-            for (const knowledgeItem of filledKnowledge) {
-              checkNewPage(8);
-              const itemLines = doc.splitTextToSize(`• ${knowledgeItem}`, pageWidth - 2 * margin - 12);
-              doc.text(itemLines, margin + 6, yPos);
-              yPos += itemLines.length * 5;
-            }
-            yPos += 4;
-          }
-          
-          // Skills
-          const filledSkills = (boksaContent.skills || []).filter((s: string) => s.trim());
-          if (filledSkills.length > 0) {
-            checkNewPage(15);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Skills:', margin + 3, yPos);
-            yPos += 6;
-            doc.setFont('helvetica', 'normal');
-            for (const skillItem of filledSkills) {
-              checkNewPage(8);
-              const itemLines = doc.splitTextToSize(`• ${skillItem}`, pageWidth - 2 * margin - 12);
-              doc.text(itemLines, margin + 6, yPos);
-              yPos += itemLines.length * 5;
-            }
-            yPos += 4;
-          }
-          
-          // Attitudes
-          const filledAttitudes = (boksaContent.attitudes || []).filter((a: string) => a.trim());
-          if (filledAttitudes.length > 0) {
-            checkNewPage(15);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Attitudes:', margin + 3, yPos);
-            yPos += 6;
-            doc.setFont('helvetica', 'normal');
-            for (const attitudeItem of filledAttitudes) {
-              checkNewPage(8);
-              const itemLines = doc.splitTextToSize(`• ${attitudeItem}`, pageWidth - 2 * margin - 12);
-              doc.text(itemLines, margin + 6, yPos);
-              yPos += itemLines.length * 5;
-            }
-            yPos += 4;
-          }
-        }
-        
         yPos += 5;
       } else if (item.id === '4.3') {
         // Special handling for Phase 4.3 - Constructive Alignment
