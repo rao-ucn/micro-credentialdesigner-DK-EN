@@ -805,7 +805,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     const isComposite = courseType === 'composite-micro-credential';
     const sourcesList = (standaloneSources || []).map((s, i) => {
       const id = s.documentId || s.fileName || `source-${i}`;
-      const label = s.workingTitle || s.fileName || s.documentId || `Standalone source ${i + 1}`;
+      const label = s.workingTitle || s.fileName || s.documentId || lt.dafStandaloneSourceFallback.replace('{n}', String(i + 1));
       return { id, label };
     });
     const required = formData.partiallyFixedRequiredSources || [];
@@ -848,23 +848,23 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     return (
     <Card className="p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">Assessment access model</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">{lt.dafAccessModelTitle}</h3>
         <p className="text-sm text-muted-foreground">
-          This step defines how learners gain access to assessment. It clarifies whether the micro-credential allows direct access to assessment or requires completion of defined learning activities before assessment is permitted.
+          {lt.dafAccessModelIntro}
         </p>
       </div>
 
       <div className="flex items-start gap-2 p-4 rounded-lg border-2 border-destructive/40 bg-destructive/10">
         <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
         <div className="text-sm text-foreground">
-          <span className="font-bold text-destructive">VERY IMPORTANT:</span>{' '}
-          The access model you choose here directly determines learner eligibility for assessment and shapes the entire learning pathway. {isComposite && 'For a Composite Micro-Credential — which combines several standalone courses — this choice also defines whether some or all of those uploaded standalone parts must be completed before the final assessment. '}Be deliberate: this decision affects fairness, validity of recognition, and the learner contract. Once published, changing it later may require a new version of the micro-credential.
+          <span className="font-bold text-destructive">{lt.dafVeryImportant}</span>{' '}
+          {lt.dafAccessModelImportantText1}{isComposite && lt.dafAccessModelCompositeClause}{lt.dafAccessModelImportantText2}
         </div>
       </div>
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">
-          How is access to assessment structured in this micro-credential?
+          {lt.dafAccessModelQuestion}
         </Label>
         
         <RadioGroup
@@ -876,10 +876,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <RadioGroupItem value="open" id="access-open" className="mt-1" />
             <div className="space-y-1">
               <Label htmlFor="access-open" className="font-medium cursor-pointer">
-                Open assessment pathway
+                {lt.dafOpenPathway}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Learners may attempt the assessment directly, without completing the learning activities.
+                {lt.dafOpenPathwayDesc}
               </p>
             </div>
           </div>
@@ -888,10 +888,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <RadioGroupItem value="fixed" id="access-fixed" className="mt-1" />
             <div className="space-y-1">
               <Label htmlFor="access-fixed" className="font-medium cursor-pointer">
-                Fixed learning pathway
+                {lt.dafFixedPathway}
               </Label>
                 <p className="text-sm text-muted-foreground">
-                  Learners must complete <span className="font-medium">all</span> the defined learning activities — and therefore all uploaded standalone elements — before being eligible for assessment.
+                  {lt.dafFixedPathwayDescPre} <span className="font-medium">{lt.dafAllBold}</span> {lt.dafFixedPathwayDescPost}
                 </p>
             </div>
           </div>
@@ -901,10 +901,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               <RadioGroupItem value="partially-fixed" id="access-partial" className="mt-1" />
               <div className="space-y-1 flex-1">
                 <Label htmlFor="access-partial" className="font-medium cursor-pointer">
-                  Partially Fixed learning pathway
+                  {lt.dafPartialPathway}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Only some of the uploaded standalone courses / learning activities must be completed before the assessment. Select below which uploaded parts are mandatory prerequisites — the remaining parts stay optional for the learner.
+                  {lt.dafPartialPathwayDesc}
                 </p>
               </div>
             </div>
@@ -915,7 +915,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
       {formData.assessmentAccessModel === 'open' && (
         <div className="space-y-4 p-4 bg-accent/50 border border-accent rounded-lg">
           <p className="text-sm text-foreground">
-            This model assumes that learners may already possess the required competencies and choose to demonstrate them directly through assessment.
+            {lt.dafOpenModelText}
           </p>
           
           <div className="flex items-start space-x-3">
@@ -925,7 +925,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               onCheckedChange={(checked) => updateField('assessmentAccessConfirmed', checked === true)}
             />
             <Label htmlFor="access-confirmed" className="text-sm font-normal cursor-pointer">
-              I confirm that the assessment alone is sufficient to validly demonstrate all learning outcomes
+              {lt.dafOpenConfirmLabel}
             </Label>
           </div>
         </div>
@@ -937,18 +937,18 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
           <div>
             <Label className="text-sm font-medium">
-              Which uploaded standalone parts must be completed before the assessment?
+              {lt.dafPartialQuestion}
             </Label>
             <p className="text-xs text-muted-foreground mt-1">
-              For each standalone part, choose:
-              <span className="font-medium"> Required</span> = must be completed before assessment;
-              <span className="font-medium"> Optional</span> = not required for assessment.
+              {lt.dafPartialHelpIntro}
+              <span className="font-medium"> {lt.dafRequiredLabel}</span> {lt.dafRequiredMeaning}
+              <span className="font-medium"> {lt.dafOptionalLabel}</span> {lt.dafOptionalMeaning}
             </p>
           </div>
 
           {sourcesList.length === 0 ? (
             <p className="text-sm text-muted-foreground italic">
-              No uploaded standalone sources were detected for this composite micro-credential.
+              {lt.dafNoSources}
             </p>
           ) : (
             <div className="space-y-2">
@@ -971,7 +971,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                               : 'bg-background hover:bg-secondary/50 border-border'
                           }`}
                         >
-                          {m === 'required' ? 'Required' : 'Optional'}
+                          {m === 'required' ? lt.dafRequiredLabel : lt.dafOptionalLabel}
                         </button>
                       ))}
                     </div>
@@ -983,7 +983,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
           {sourcesList.length > 0 && required.length === 0 && (
             <p className="text-xs text-destructive">
-              Select at least one mandatory standalone part — otherwise consider choosing the Open assessment pathway instead.
+              {lt.dafSelectMandatoryWarning}
             </p>
           )}
 
@@ -991,11 +991,9 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <div className="rounded-md border border-warning/40 bg-warning/10 p-3 flex gap-2">
               <AlertTriangle className="h-4 w-4 text-warning-foreground flex-shrink-0 mt-0.5" />
               <div className="text-xs text-foreground space-y-1">
-                <p className="font-semibold">All standalone parts are marked as Required.</p>
+                <p className="font-semibold">{lt.dafAllRequiredTitle}</p>
                 <p className="text-muted-foreground">
-                  If every uploaded standalone part must be completed before assessment, you should
-                  choose the <span className="font-medium text-foreground">Fixed learning pathway</span> instead
-                  of Partially fixed — it more accurately describes this design.
+                  {lt.dafAllRequiredText.replace('{fixedPathway}', lt.dafFixedPathway)}
                 </p>
               </div>
             </div>

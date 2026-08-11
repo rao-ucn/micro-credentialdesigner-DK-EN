@@ -815,32 +815,32 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Remove learning activity?
+                {lt.laRemoveTitle}
               </DialogTitle>
               <DialogDescription asChild>
                 <div className="space-y-3 text-sm">
                   {courseType === 'composite-micro-credential' ? (
                     <>
                       <p>
-                        This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                        {lt.laCompositeWarning1}
                       </p>
                       <p>
-                        Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                        {lt.laCompositeWarning2}
                       </p>
                       <p>
-                        This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to imported learning activities must break that original structure.
+                        {lt.laCompositeWarning3Remove}
                       </p>
                     </>
                   ) : (
                     <>
                       <p>
-                        This micro-credential is currently based directly on a single existing standalone course. If you remove a learning activity, it will no longer be a faithful representation of that source course.
+                        {lt.laSingleWarning1Remove}
                       </p>
                       <p>
-                        It will be treated as an independent micro-credential going forward, and the link to the original standalone course will be considered modified.
+                        {lt.laSingleWarning2}
                       </p>
                       <p>
-                        This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                        {lt.laSingleWarning3}
                       </p>
                     </>
                   )}
@@ -849,9 +849,9 @@ export default function LearningActivitiesForm({
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => { setPendingRemovalIndex(null); setRemovalDialogStep(null); }}>
-                Cancel
+                {lt.laCancel}
               </Button>
-              <Button onClick={openFinalRemovalConfirmation}>Continue</Button>
+              <Button onClick={openFinalRemovalConfirmation}>{lt.laContinue}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -866,21 +866,21 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Are you sure?
+                {lt.laAreYouSure}
               </DialogTitle>
               <DialogDescription>
-                This cannot be undone.
+                {lt.laCannotUndo}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => setRemovalDialogStep('warning')}>
-                Go back
+                {lt.laGoBack}
               </Button>
               <Button
                 onClick={confirmRemoveActivity}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Yes, continue
+                {lt.laYesContinue}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -902,32 +902,32 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Add learning activity?
+                {lt.laAddTitle}
               </DialogTitle>
               <DialogDescription asChild>
                 <div className="space-y-3 text-sm">
                   {courseType === 'composite-micro-credential' ? (
                     <>
                       <p>
-                        This composite micro-credential will no longer remain a combined micro-credential based on independent standalone courses if you continue.
+                        {lt.laCompositeWarning1}
                       </p>
                       <p>
-                        Instead, the imported standalone courses will be treated as one combined standalone course that can be edited as a single whole.
+                        {lt.laCompositeWarning2}
                       </p>
                       <p>
-                        This is required because the standalone courses used here are packaged and quality-assured as independent units, and changes to imported learning activities must break that original structure.
+                        {lt.laCompositeWarning3Add}
                       </p>
                     </>
                   ) : (
                     <>
                       <p>
-                        This micro-credential is currently based directly on a single existing standalone course. If you add a new learning activity, it will no longer be a faithful representation of that source course.
+                        {lt.laSingleWarning1Add}
                       </p>
                       <p>
-                        It will be treated as an independent micro-credential going forward, and the link to the original standalone course will be considered modified.
+                        {lt.laSingleWarning2}
                       </p>
                       <p>
-                        This is required because the source standalone course is packaged and quality-assured as an independent unit.
+                        {lt.laSingleWarning3}
                       </p>
                     </>
                   )}
@@ -936,9 +936,9 @@ export default function LearningActivitiesForm({
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => { setPendingAddActivity(false); setAddDialogStep(null); }}>
-                Cancel
+                {lt.laCancel}
               </Button>
-              <Button onClick={() => setAddDialogStep('confirm')}>Continue</Button>
+              <Button onClick={() => setAddDialogStep('confirm')}>{lt.laContinue}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -953,21 +953,21 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                Are you sure?
+                {lt.laAreYouSure}
               </DialogTitle>
               <DialogDescription>
-                This cannot be undone.
+                {lt.laCannotUndo}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button variant="outline" onClick={() => setAddDialogStep('warning')}>
-                Go back
+                {lt.laGoBack}
               </Button>
               <Button
                 onClick={confirmAddActivity}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Yes, continue
+                {lt.laYesContinue}
               </Button>
             </DialogFooter>
           </DialogContent>
