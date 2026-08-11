@@ -726,37 +726,37 @@ export default function LearningActivitiesForm({
         <Dialog open={showActivityInfoDialog} onOpenChange={setShowActivityInfoDialog}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Learning activity</DialogTitle>
+              <DialogTitle>{lt.laActivityDialogTitle}</DialogTitle>
               <DialogDescription className="sr-only">
-                Guidance on writing learning activities
+                {lt.laActivityDialogDesc}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 text-sm text-muted-foreground">
               <p>
-                Describe the activity from the learner's perspective. Focus on what the learner actively does, not on the teaching format or material type.
+                {lt.laActivityDialogP1}
               </p>
               <div>
-                <p className="font-medium text-foreground mb-2">A learning activity should:</p>
+                <p className="font-medium text-foreground mb-2">{lt.laActivityDialogShouldTitle}</p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>describe a concrete learner action</li>
-                  <li>show how the learner engages with content, others, or practice</li>
-                  <li>support progression towards the learning outcomes</li>
+                  <li>{lt.laActivityShould1}</li>
+                  <li>{lt.laActivityShould2}</li>
+                  <li>{lt.laActivityShould3}</li>
                 </ul>
               </div>
               <p>
-                Avoid listing formats alone (e.g. "video", "group work"). Instead, describe the learner's action in relation to the format.
+                {lt.laActivityDialogP2}
               </p>
               <div>
-                <p className="font-medium text-foreground mb-2">Examples of well-formulated learning activities:</p>
+                <p className="font-medium text-foreground mb-2">{lt.laActivityExamplesTitle}</p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Watch a short video and identify key concepts</li>
-                  <li>Read a case and analyse the main challenge using the framework</li>
-                  <li>Participate in a discussion to compare alternative solutions</li>
-                  <li>Apply the method to a new scenario individually</li>
-                  <li>Collaborate in a group to develop a shared solution</li>
-                  <li>Complete a quiz to check understanding</li>
-                  <li>Present findings and receive peer feedback</li>
-                  <li>Reflect in writing on how the concept applies to own practice</li>
+                  <li>{lt.laActivityExample1}</li>
+                  <li>{lt.laActivityExample2}</li>
+                  <li>{lt.laActivityExample3}</li>
+                  <li>{lt.laActivityExample4}</li>
+                  <li>{lt.laActivityExample5}</li>
+                  <li>{lt.laActivityExample6}</li>
+                  <li>{lt.laActivityExample7}</li>
+                  <li>{lt.laActivityExample8}</li>
                 </ul>
               </div>
             </div>
@@ -769,16 +769,15 @@ export default function LearningActivitiesForm({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-primary" />
-                Multimodal approach coverage
+                {lt.laCoverageDialogTitle}
               </DialogTitle>
               <DialogDescription className="sr-only">
-                Some multimodal approaches are not reflected in your activities
+                {lt.laCoverageDialogDesc}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-muted-foreground">
-                Based on your earlier selections for multimodal learning resources, some approaches are not yet reflected in the learning activities.
-                You may revise the activities now or continue and address this later.
+                {lt.laCoverageDialogText}
               </p>
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
@@ -786,7 +785,7 @@ export default function LearningActivitiesForm({
                 variant="outline"
                 onClick={() => setShowCoverageDialog(false)}
               >
-                Revise learning activities
+                {lt.laReviseActivities}
               </Button>
               <Button
                 onClick={() => {
@@ -794,7 +793,7 @@ export default function LearningActivitiesForm({
                   setShowCoverageDialog(false);
                 }}
               >
-                Continue anyway
+                {lt.laContinueAnyway}
               </Button>
             </DialogFooter>
           </DialogContent>

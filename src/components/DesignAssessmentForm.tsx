@@ -543,7 +543,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
 
       <Card className="p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">Number of assessors</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafAssessorsTitle}</h3>
           <button
             type="button"
             onClick={() => {
@@ -553,13 +553,13 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             }}
             className="text-sm text-primary hover:text-primary/80 font-medium"
           >
-            + Add assessor
+            {lt.dafAddAssessor}
           </button>
         </div>
         
         {(!formData.assessors || formData.assessors.length === 0) && (
           <p className="text-sm text-muted-foreground italic">
-            No assessors added yet. Click "Add assessor" to specify who will assess.
+            {lt.dafNoAssessors}
           </p>
         )}
         
@@ -581,7 +581,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                     }}
                   >
                     <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select assessor type" />
+                      <SelectValue placeholder={lt.dafSelectAssessorType} />
                     </SelectTrigger>
                     <SelectContent>
                       {ASSESSOR_TYPE_OPTIONS.map((option) => (
@@ -601,7 +601,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                         );
                         updateField('assessors', updated);
                       }}
-                      placeholder="Describe the assessor type..."
+                      placeholder={lt.dafAssessorOtherPlaceholder}
                       className="bg-background"
                     />
                   )}
@@ -632,10 +632,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
               </div>
               <div className="space-y-2">
                 <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                  Recommendation: Four-eye principle
+                  {lt.dafFourEyeRecTitle}
                 </p>
                 <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
-                  Where feasible, involving more than one assessor is recommended. Using two assessors can strengthen fairness, consistency, and reliability of assessment decisions by reducing individual bias and supporting shared judgement.
+                  {lt.dafFourEyeRecText}
                 </p>
               </div>
             </div>
@@ -653,11 +653,11 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
                   htmlFor="keepOneAssessor" 
                   className="text-sm text-blue-700 dark:text-blue-300 cursor-pointer"
                 >
-                  Keep one assessor
+                  {lt.dafKeepOneAssessor}
                 </Label>
               </div>
               <p className="text-xs text-blue-600/80 dark:text-blue-400/80">
-                This confirms that a single-assessor setup is an intentional design choice.
+                {lt.dafKeepOneAssessorHelp}
               </p>
             </div>
           </div>
@@ -681,10 +681,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
   };
 
   const TRANSPARENCY_MEASURES = [
-    { value: 'informed-performance', label: 'Learners are informed about what constitutes satisfactory performance' },
-    { value: 'grading-basis', label: 'The basis for grading or pass/fail decisions is clearly described' },
-    { value: 'shared-criteria', label: 'Assessors use shared criteria or rubrics to ensure consistent judgement' },
-    { value: 'other', label: 'Other (please specify)' },
+    { value: 'informed-performance', label: lt.dafTransparencyInformedPerformance },
+    { value: 'grading-basis', label: lt.dafTransparencyGradingBasis },
+    { value: 'shared-criteria', label: lt.dafTransparencySharedCriteria },
+    { value: 'other', label: lt.dafOtherSpecify },
   ];
 
   const hasAtLeastOneTransparencyMeasure = (formData.transparencyMeasures || []).length > 0;
@@ -694,7 +694,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
     <Card className="p-6 space-y-6">
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="text-lg font-semibold text-foreground">Transparent evaluation design</h3>
+          <h3 className="text-lg font-semibold text-foreground">{lt.dafTransparencyTitle}</h3>
           <Dialog>
             <DialogTrigger asChild>
               <button className="text-primary hover:text-primary/80">
@@ -703,10 +703,10 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Why?</DialogTitle>
+                <DialogTitle>{lt.dafWhy}</DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">
-                Transparent evaluation helps learners understand expectations, supports fairness, and strengthens trust in assessment decisions.
+                {lt.dafTransparencyWhyText}
               </p>
             </DialogContent>
           </Dialog>
@@ -714,51 +714,51 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
             <DialogTrigger asChild>
               <button className="text-warning hover:text-warning/80 flex items-center gap-1">
                 <Lightbulb className="h-4 w-4" />
-                <span className="text-sm">Inspiration</span>
+                <span className="text-sm">{lt.dafInspiration}</span>
               </button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Assessment quality inspiration</DialogTitle>
+                <DialogTitle>{lt.dafInspirationDialogTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <p className="text-muted-foreground">
-                  International quality frameworks emphasise transparency, shared criteria, and clear communication:
+                  {lt.dafInspirationIntro}
                 </p>
                 
                 <div className="space-y-3">
                   <div className="p-4 bg-secondary/50 rounded-lg">
-                    <h4 className="font-semibold text-foreground mb-1">Australian Qualifications Framework (AQF)</h4>
+                    <h4 className="font-semibold text-foreground mb-1">{lt.dafAqfTitle}</h4>
                     <p className="text-muted-foreground">
-                      Emphasises clarity of standards, explicit performance expectations, and consistent judgement.
+                      {lt.dafAqfText}
                     </p>
                   </div>
                   
                   <div className="p-4 bg-secondary/50 rounded-lg">
-                    <h4 className="font-semibold text-foreground mb-1">EADTU Excellence Framework (Assessment chapter)</h4>
+                    <h4 className="font-semibold text-foreground mb-1">{lt.dafEadtuTitle}</h4>
                     <p className="text-muted-foreground">
-                      Highlights transparent criteria, learner-facing explanations, and consistency across assessors in online and blended assessment.
+                      {lt.dafEadtuText}
                     </p>
                   </div>
                 </div>
                 
                 <p className="text-xs text-muted-foreground italic border-t pt-3">
-                  These frameworks are provided as inspiration. You are not required to adopt a specific framework.
+                  {lt.dafFrameworksNote}
                 </p>
               </div>
             </DialogContent>
           </Dialog>
         </div>
         <p className="text-sm text-muted-foreground">
-          This step focuses on transparency in evaluation. You are asked to confirm how learners will understand what counts as satisfactory performance and how assessment decisions are made consistently.
+          {lt.dafTransparencyIntro}
         </p>
       </div>
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">
-          How is transparency ensured in the evaluation process? <span className="text-destructive">*</span>
+          {lt.dafTransparencyQuestion} <span className="text-destructive">*</span>
         </Label>
-        <p className="text-xs text-muted-foreground">Select at least one option</p>
+        <p className="text-xs text-muted-foreground">{lt.dafSelectAtLeastOne}</p>
         
         <div className="space-y-3">
           {TRANSPARENCY_MEASURES.map((measure) => (
@@ -781,12 +781,12 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         {(formData.transparencyMeasures || []).includes('other') && (
           <div className="ml-6 space-y-2">
             <Label className="text-sm font-medium">
-              Describe the additional transparency measure <span className="text-destructive">*</span>
+              {lt.dafDescribeOtherMeasure} <span className="text-destructive">*</span>
             </Label>
             <Textarea
               value={formData.transparencyOther || ''}
               onChange={(e) => updateField('transparencyOther', e.target.value)}
-              placeholder="Briefly describe how transparency is ensured."
+              placeholder={lt.dafTransparencyOtherPlaceholder}
               className="bg-background"
               rows={3}
             />
@@ -794,7 +794,7 @@ const DesignAssessmentForm: React.FC<DesignAssessmentFormProps> = ({
         )}
         
         {!hasAtLeastOneTransparencyMeasure && (
-          <p className="text-xs text-destructive">Please select at least one transparency measure.</p>
+          <p className="text-xs text-destructive">{lt.dafTransparencyRequired}</p>
         )}
       </div>
     </Card>
