@@ -24,7 +24,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CourseType } from '@/types/heroes';
+import { CourseType } from '@/types/course';
 
 interface ESCOSkill {
   uri: string;

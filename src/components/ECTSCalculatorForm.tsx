@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Trash2, Plus, Calculator, Info, Lightbulb, RotateCcw, AlertTriangle, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { CourseType } from "@/types/heroes";
+import { CourseType } from "@/types/course";
 import {
   Dialog,
   DialogContent,
@@ -620,7 +620,7 @@ const ECTSCalculatorForm = ({ data, onChange, courseType, predefinedLearningActi
                 <div>
                   <p className="font-medium text-destructive">Workload is below minimum</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    In HEROES, micro-credentials must have a minimum of 1 ECTS credit. 
+                    Micro-credentials must have a minimum of 1 ECTS credit. 
                     Please add more learning or assessment activities to reach at least 25 hours of total workload.
                   </p>
                 </div>

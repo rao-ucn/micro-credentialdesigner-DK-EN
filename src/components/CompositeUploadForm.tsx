@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { StandaloneSource } from '@/types/heroes';
+import { StandaloneSource } from '@/types/course';
 import { importFromJSON } from '@/lib/storage';
 import { Upload, X, FileText, AlertTriangle, Check, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -111,7 +111,7 @@ export function CompositeUploadForm({ onComplete, onBack }: CompositeUploadFormP
         } catch (error) {
           toast({
             title: 'Invalid File',
-            description: `"${file.name}" is not a valid HEROES export file.`,
+            description: `"${file.name}" is not a valid export file.`,
             variant: 'destructive',
           });
         }

@@ -360,7 +360,7 @@ export function EQFLevelForm({ value, onChange, courseType = 'standalone', learn
               </p>
               <p>
                 Choosing an appropriate EQF level increases transparency, enables recognition and mobility, 
-                and ensures comparability across HEROES institutions and the wider European education landscape.
+                and ensures comparability across partner institutions and the wider European education landscape.
               </p>
             </div>
           </DialogContent>

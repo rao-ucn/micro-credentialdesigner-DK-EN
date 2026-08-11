@@ -1,4 +1,4 @@
-import { Phase } from '@/types/heroes';
+import { Phase } from '@/types/course';
 
 export const phases: Phase[] = [
   {
@@ -43,7 +43,7 @@ export const phases: Phase[] = [
       {
         id: '2.1',
         title: 'Project classification',
-        description: 'Define the classification of your HEROES activity',
+        description: 'Define the classification of your activity',
         fields: [
           {
             name: 'projectClassification',

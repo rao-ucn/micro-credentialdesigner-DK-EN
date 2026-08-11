@@ -9,29 +9,29 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 180 20% 15%;
+    --foreground: 191 30% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 180 20% 15%;
+    --card-foreground: 191 30% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 180 20% 15%;
+    --popover-foreground: 191 30% 14%;
 
-    /* HEROES primary color #007c71 */
-    --primary: 175 100% 24%;
+    /* Primary color #195562 */
+    --primary: 191 59% 24%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-light: 175 100% 35%;
-    --primary-dark: 175 100% 18%;
+    --primary-light: 191 55% 36%;
+    --primary-dark: 191 62% 16%;
 
-    --secondary: 175 15% 95%;
-    --secondary-foreground: 175 100% 24%;
+    --secondary: 191 20% 95%;
+    --secondary-foreground: 191 59% 24%;
 
-    --muted: 175 10% 96%;
-    --muted-foreground: 175 8% 45%;
+    --muted: 191 12% 96%;
+    --muted-foreground: 191 10% 42%;
 
-    --accent: 175 50% 88%;
-    --accent-foreground: 175 100% 24%;
+    --accent: 191 45% 90%;
+    --accent-foreground: 191 59% 24%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -39,16 +39,16 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 175 15% 88%;
-    --input: 175 15% 88%;
-    --ring: 175 100% 24%;
+    --border: 191 18% 88%;
+    --input: 191 18% 88%;
+    --ring: 191 59% 24%;
 
     --radius: 0.5rem;
     
-    /* Custom HEROES tokens */
-    --heroes-gradient: linear-gradient(135deg, hsl(175 100% 24%), hsl(175 100% 35%));
-    --shadow-soft: 0 2px 8px rgba(0, 124, 113, 0.1);
-    --shadow-medium: 0 4px 16px rgba(0, 124, 113, 0.15);
+    /* Custom brand tokens */
+    --brand-gradient: linear-gradient(135deg, hsl(191 59% 24%), hsl(191 55% 36%));
+    --shadow-soft: 0 2px 8px rgba(25, 85, 98, 0.1);
+    --shadow-medium: 0 4px 16px rgba(25, 85, 98, 0.15);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
@@ -69,29 +69,29 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 180 25% 8%;
-    --foreground: 175 15% 95%;
+    --background: 191 30% 8%;
+    --foreground: 191 15% 95%;
 
-    --card: 180 20% 12%;
-    --card-foreground: 175 15% 95%;
+    --card: 191 25% 12%;
+    --card-foreground: 191 15% 95%;
 
-    --popover: 180 20% 12%;
-    --popover-foreground: 175 15% 95%;
+    --popover: 191 25% 12%;
+    --popover-foreground: 191 15% 95%;
 
-    --primary: 175 100% 35%;
+    --primary: 191 55% 45%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-light: 175 100% 45%;
-    --primary-dark: 175 100% 28%;
+    --primary-light: 191 55% 55%;
+    --primary-dark: 191 55% 35%;
 
-    --secondary: 180 15% 18%;
-    --secondary-foreground: 175 15% 95%;
+    --secondary: 191 18% 18%;
+    --secondary-foreground: 191 15% 95%;
 
-    --muted: 180 15% 18%;
-    --muted-foreground: 175 10% 60%;
+    --muted: 191 18% 18%;
+    --muted-foreground: 191 12% 62%;
 
-    --accent: 175 30% 25%;
-    --accent-foreground: 175 15% 95%;
+    --accent: 191 30% 25%;
+    --accent-foreground: 191 15% 95%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
@@ -99,9 +99,9 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 180 15% 20%;
-    --input: 180 15% 20%;
-    --ring: 175 100% 45%;
+    --border: 191 18% 22%;
+    --input: 191 18% 22%;
+    --ring: 191 55% 45%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

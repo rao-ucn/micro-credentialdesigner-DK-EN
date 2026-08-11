@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
-import { CourseData } from '@/types/heroes';
+import { CourseData } from '@/types/course';
 import { phases } from '@/data/phases';
 import { getIscedBroad, getIscedNarrow, getIscedDetailed } from '@/data/isced';
 
@@ -55,7 +55,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'normal');
-  doc.text('HEROES Course Design', pageWidth / 2, 20, { align: 'center' });
+  doc.text('Course Design', pageWidth / 2, 20, { align: 'center' });
 
   // Course title - main heading
   doc.setFontSize(22);
@@ -369,9 +369,9 @@ export async function generatePDF(data: CourseData): Promise<void> {
         doc.setFont('helvetica', 'normal');
         const classification = itemData.projectClassification;
         const classificationText = classification === 'approved' 
-          ? 'HEROES approved activity' 
+          ? 'Approved activity' 
           : classification === 'developed'
-          ? 'HEROES developed activity'
+          ? 'Developed activity'
           : 'To be filled for completion';
         
         if (!classification) {
@@ -386,7 +386,7 @@ export async function generatePDF(data: CourseData): Promise<void> {
         // Developers table
         checkNewPage(40);
         doc.setFont('helvetica', 'bold');
-        doc.text('Developers (HEROES Institutions)', margin + 3, yPos);
+        doc.text('Developing Institutions', margin + 3, yPos);
         yPos += 8;
         
         const developers = itemData.developers || [];
@@ -2300,6 +2300,6 @@ export async function generatePDF(data: CourseData): Promise<void> {
     : null;
   const filename = sanitizedTitle 
     ? `${sanitizedTitle}.pdf`
-    : `HEROES_${data.courseType}_${data.documentId.slice(0, 8)}.pdf`;
+    : `CourseDesign_${data.courseType}_${data.documentId.slice(0, 8)}.pdf`;
   doc.save(filename);
 }

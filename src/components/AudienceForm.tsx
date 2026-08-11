@@ -3,7 +3,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Info, Lightbulb } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { CourseType } from '@/types/heroes';
+import { CourseType } from '@/types/course';
 
 interface AudienceFormProps {
   value: any;
