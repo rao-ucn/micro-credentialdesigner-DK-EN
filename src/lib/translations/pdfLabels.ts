@@ -200,7 +200,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
     assessmentAccessModelLabel: 'Assessment access model',
     accessModelLabels: {
       open: 'Open assessment pathway',
-      fixed: 'Fixed learning pathway (all defined learning activities / standalone elements must be completed)',
+      fixed: 'Fixed learning pathway (all learning activities defined as mandatory by the teacher must be completed)',
       'partially-fixed': 'Partially Fixed learning pathway (only specified standalone parts must be completed)',
     },
     accessConfirmedOpen: 'Confirmed: assessment alone is sufficient to demonstrate all learning outcomes.',
@@ -612,7 +612,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
     assessmentAccessModelLabel: 'Evalueringsadgangsmodel',
     accessModelLabels: {
       open: 'Åben evalueringsvej',
-      fixed: 'Fast læringsvej (alle definerede læringsaktiviteter/standalone-elementer skal gennemføres)',
+      fixed: 'Fast læringsvej (alle læringsaktiviteter, som underviseren har markeret som obligatoriske, skal gennemføres)',
       'partially-fixed': 'Delvist fast læringsvej (kun udvalgte standalone-dele skal gennemføres)',
     },
     accessConfirmedOpen: 'Bekræftet: evalueringen alene er tilstrækkelig til at dokumentere alle læringsmål.',
