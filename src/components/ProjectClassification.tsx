@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Plus, Info, Download } from 'lucide-react';
+import { Trash2, Plus, Info, Download, BookOpen } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -628,7 +629,31 @@ export function ProjectClassification({ values, onChange, courseType = 'micro-cr
       <Card>
         <CardContent className="pt-6 space-y-5">
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground">{lt.academicFieldTitle}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-foreground">{lt.academicFieldTitle}</h3>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                    aria-label={lt.iscedReadMoreAria}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 text-sm space-y-2">
+                  <p>{lt.iscedReadMoreText}</p>
+                  <a
+                    href="https://esco.ec.europa.eu/en/about-esco/escopedia/escopedia/international-standard-classification-education-fields-education-and"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline break-all"
+                  >
+                    https://esco.ec.europa.eu/en/about-esco/escopedia/escopedia/international-standard-classification-education-fields-education-and
+                  </a>
+                </PopoverContent>
+              </Popover>
+            </div>
             <p className="text-sm text-muted-foreground">
               {lt.academicFieldDescription1.replace('{courseLabel}', courseLabel)}
             </p>

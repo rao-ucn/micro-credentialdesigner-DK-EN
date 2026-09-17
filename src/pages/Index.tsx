@@ -169,22 +169,16 @@ const Index = () => {
       }
     }
 
-    // Restore MC-unique items (2.1 working title, 3.10/5.5 assessment).
-    // For a SINGLE source we prefill from that source as a sensible starting point.
-    // For MULTIPLE sources, assessment items (3.10 Define + 5.5 Design) MUST be
-    // blank — same principle as composite — since assessment must be authored
-    // anew for the merged MC. 2.1 is handled separately below.
-    const MC_UNIQUE_ITEMS = ['2.1', '3.10', '5.5'];
+    // Assessment items (3.10 Define + 5.5 Design) MUST ALWAYS be blank —
+    // also when only a single source is uploaded — same principle as composite:
+    // assessment must be authored anew for the new MC.
+    // 2.1 is restored from the first source (and cleaned up below).
     const firstSource = sources[0];
-    for (const itemId of MC_UNIQUE_ITEMS) {
-      if (sources.length > 1 && (itemId === '3.10' || itemId === '5.5')) {
-        delete mergedData[itemId];
-        continue;
-      }
-      const fromFirst = firstSource.data?.[itemId];
-      if (fromFirst && typeof fromFirst === 'object') {
-        mergedData[itemId] = JSON.parse(JSON.stringify(fromFirst));
-      }
+    delete mergedData['3.10'];
+    delete mergedData['5.5'];
+    const fromFirst21 = firstSource.data?.['2.1'];
+    if (fromFirst21 && typeof fromFirst21 === 'object') {
+      mergedData['2.1'] = JSON.parse(JSON.stringify(fromFirst21));
     }
 
     // For item 2.1: keep project classification from the first source,

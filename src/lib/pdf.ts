@@ -1760,6 +1760,19 @@ export async function generatePDF(data: CourseData, lang: Language = 'en'): Prom
         }
         
         yPos += 5;
+      } else if (item.id === '6.2') {
+        // Phase 6.2 shares the technical requirements / accessibility form with 6.1
+        checkNewPage(15);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100, 100, 100);
+        const refLines = doc.splitTextToSize(
+          pl.phase62Reference,
+          pageWidth - 2 * margin - 6
+        );
+        doc.text(refLines, margin + 3, yPos);
+        yPos += refLines.length * 5 + 8;
+        doc.setTextColor(0, 0, 0);
+        doc.setFont('helvetica', 'normal');
       } else if (item.id === '6.1') {
         // Special handling for Phase 6.1 - Technical Requirements
         const itemData = data.data[item.id] || {};

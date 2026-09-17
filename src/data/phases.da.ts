@@ -274,21 +274,7 @@ export const phasesDa: Phase[] = [
       {
         id: '6.2',
         title: 'Sikr at formatet understøtter tilgængelighed, engagement og skalerbarhed',
-        fields: [
-          {
-            name: 'accessibilityFeatures',
-            label: 'Tilgængelighedsfunktioner',
-            type: 'textarea',
-            required: true,
-            helpText: 'WCAG-overholdelse, undertekster, alternativ tekst, skærmlæser-understøttelse',
-          },
-          {
-            name: 'scalabilityPlan',
-            label: 'Skalerbarhedsplan',
-            type: 'textarea',
-            required: false,
-          },
-        ],
+        fields: [],
       },
       {
         id: '6.3',
