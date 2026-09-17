@@ -197,6 +197,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
       'shared-criteria': 'Assessors use shared criteria or rubrics to ensure consistent judgement',
       other: 'Other (please specify)',
     },
+    phase62Reference: 'Documented together with the technical requirements and accessibility section above (platforms, software needs and the UDL/WCAG accessibility checklist).',
     assessmentAccessModelLabel: 'Assessment access model',
     accessModelLabels: {
       open: 'Open assessment pathway',
@@ -609,6 +610,7 @@ export const pdfLabels: Record<Language, Record<string, any>> = {
       'shared-criteria': 'Bedømmere anvender fælles kriterier eller rubrikker for at sikre ensartet vurdering',
       other: 'Andet (uddyb venligst)',
     },
+    phase62Reference: 'Dokumenteret sammen med afsnittet om tekniske krav og tilgængelighed ovenfor (platforme, softwarebehov og UDL/WCAG-tjeklisten for tilgængelighed).',
     assessmentAccessModelLabel: 'Evalueringsadgangsmodel',
     accessModelLabels: {
       open: 'Åben evalueringsvej',
