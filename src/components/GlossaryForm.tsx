@@ -45,7 +45,9 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
   const [validationError, setValidationError] = useState<string | null>(null);
   const [editDialogStep, setEditDialogStep] = useState<'warning' | 'confirm' | null>(null);
 
-  const integrityGuardActive = courseType === 'composite-micro-credential' || basedOnSingleSource === true;
+  // Only a composite micro-credential is protected: editing converts it into a
+  // regular micro-credential. MCs built from existing files are freely editable.
+  const integrityGuardActive = courseType === 'composite-micro-credential';
 
   // Initialize with one empty row if no entries exist
   const entries: GlossaryEntry[] = data.entries?.length > 0 
@@ -250,11 +252,9 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
       </div>
 
       <AlertDialog
-        open={editDialogStep === 'warning'}
+        open={editDialogStep !== null}
         onOpenChange={(open) => {
-          if (!open) {
-            setEditDialogStep((curr) => (curr === 'confirm' ? curr : null));
-          }
+          if (!open) setEditDialogStep(null);
         }}
       >
         <AlertDialogContent>
@@ -262,56 +262,14 @@ export default function GlossaryForm({ data, onChange, courseType, onBreakCompos
             <AlertDialogTitle>{lt.glEditDialogTitle}</AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
-                {courseType === 'composite-micro-credential' ? (
-                  <>
-                    <p>
-                      {lt.glEditCompositeText1}
-                    </p>
-                    <p>
-                      {lt.glEditCompositeText2}
-                    </p>
-                    <p>
-                      {lt.glEditCompositeText3}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p>
-                      {lt.glEditSingleText1}
-                    </p>
-                    <p>
-                      {lt.glEditSingleText2}
-                    </p>
-                    <p>
-                      {lt.glEditSingleText3}
-                    </p>
-                  </>
-                )}
+                <p>{lt.glEditCompositeText1}</p>
+                <p>{lt.glEditCompositeText2}</p>
+                <p>{lt.glEditCompositeText3}</p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{lt.glCancel}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setEditDialogStep('confirm')}>{lt.glContinue}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={editDialogStep === 'confirm'}
-        onOpenChange={(open) => {
-          if (!open) setEditDialogStep('warning');
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{lt.glAreYouSure}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {lt.glCannotBeUndone}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setEditDialogStep('warning')}>{lt.glGoBack}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmEdit}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

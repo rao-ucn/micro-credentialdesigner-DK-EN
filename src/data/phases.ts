@@ -276,21 +276,7 @@ export const phases: Phase[] = [
       {
         id: '6.2',
         title: 'Ensure the format supports accessibility, engagement, and scalability',
-        fields: [
-          {
-            name: 'accessibilityFeatures',
-            label: 'Accessibility Features',
-            type: 'textarea',
-            required: true,
-            helpText: 'WCAG compliance, captions, alt text, screen reader support',
-          },
-          {
-            name: 'scalabilityPlan',
-            label: 'Scalability Plan',
-            type: 'textarea',
-            required: false,
-          },
-        ],
+        fields: [],
       },
       {
         id: '6.3',
