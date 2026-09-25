@@ -101,6 +101,44 @@ const VERBS_BY_DOMAIN: Record<CognitiveDomain, string[]> = {
   ],
 };
 
+const VERBS_BY_DOMAIN_DA: Record<CognitiveDomain, string[]> = {
+  knowledge: [
+    'Ordne', 'Definere', 'Beskrive', 'Kopiere', 'Identificere', 'Mærke', 'Opliste', 'Matche',
+    'Memorere', 'Navngive', 'Sortere', 'Skitsere', 'Genkende', 'Relatere', 'Genkalde', 'Gentage',
+    'Reproducere', 'Vælge', 'Angive'
+  ],
+  comprehension: [
+    'Klassificere', 'Omforme', 'Forsvare', 'Beskrive', 'Diskutere', 'Skelne', 'Estimere',
+    'Forklare', 'Udtrykke', 'Udvide', 'Generalisere', 'Give eksempler', 'Identificere', 'Indikere',
+    'Udlede', 'Lokalisere', 'Omformulere', 'Forudsige', 'Genkende', 'Omskrive', 'Gennemgå', 'Vælge',
+    'Opsummere', 'Oversætte'
+  ],
+  application: [
+    'Anvende', 'Ændre', 'Vælge', 'Beregne', 'Demonstrere', 'Opdage', 'Dramatisere',
+    'Bruge', 'Illustrere', 'Fortolke', 'Manipulere', 'Modificere', 'Betjene', 'Øve',
+    'Forudsige', 'Forberede', 'Producere', 'Relatere', 'Planlægge', 'Vise', 'Skitsere', 'Løse',
+    'Udnytte', 'Skrive'
+  ],
+  analysis: [
+    'Analysere', 'Vurdere', 'Nedbryde', 'Beregne', 'Kategorisere', 'Sammenligne', 'Kontrastere',
+    'Kritisere', 'Diagrammere', 'Differentiere', 'Skelne', 'Adskille', 'Undersøge',
+    'Eksperimentere', 'Identificere', 'Illustrere', 'Udlede', 'Modellere', 'Skitsere', 'Påpege',
+    'Stille spørgsmål', 'Relatere', 'Vælge', 'Separere', 'Opdele', 'Teste'
+  ],
+  synthesis: [
+    'Ordne', 'Samle', 'Kategorisere', 'Indsamle', 'Kombinere', 'Efterkomme', 'Komponere',
+    'Konstruere', 'Skabe', 'Designe', 'Udvikle', 'Opfinde', 'Forklare', 'Formulere',
+    'Generere', 'Planlægge', 'Forberede', 'Omarrangere', 'Rekonstruere', 'Relatere', 'Reorganisere',
+    'Revidere', 'Omskrive', 'Opstille', 'Opsummere', 'Syntetisere', 'Fortælle', 'Skrive'
+  ],
+  evaluation: [
+    'Vurdere', 'Argumentere', 'Bedømme', 'Tillægge', 'Vælge', 'Sammenligne', 'Konkludere', 'Kontrastere',
+    'Forsvare', 'Beskrive', 'Skelne', 'Estimere', 'Evaluere', 'Forklare', 'Dømme',
+    'Begrunde', 'Fortolke', 'Relatere', 'Forudsige', 'Prioritere', 'Vælge', 'Opsummere', 'Understøtte',
+    'Værdisætte'
+  ],
+};
+
 const BLOOM_TO_EQF: Record<CognitiveDomain, EQFDimension> = {
   knowledge: 'knowledge',
   comprehension: 'knowledge',
