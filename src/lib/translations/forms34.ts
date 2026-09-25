@@ -580,7 +580,7 @@ export const forms34Translations = {
     mnReadMoreText1: 'Du kan udforske hele ESCO-klassifikationen af færdigheder, kompetencer og erhverv for bedre at forstå, hvordan du vælger relevante poster.',
     mnReadMoreText2: 'Besøg den officielle ESCO-database her:',
     mnEscoLabel: 'ESCO-kompetencer',
-    mnEscoHelp: 'Brug søgefeltet nedenfor til at finde og vælge kompetencer fra klassifikationen European Skills, Competences, Qualifications and Occupations (ESCO). ESCO tilbyder en standardiseret terminologi på tværs af EU, hvilket gør det nemmere at afstemme dit micro-credential med anerkendte kompetencer på arbejdsmarkedet.',
+    mnEscoHelp: 'Brug søgefeltet nedenfor til at finde og vælge kompetencer fra klassifikationen European Skills, Competences, Qualifications and Occupations (ESCO). ESCO tilbyder en standardiseret terminologi på tværs af EU, hvilket gør det nemmere at afstemme dit micro-credential med anerkendte kompetencer på arbejdsmarkedet. Bemærk: Kompetencetagging via ESCO foregår på engelsk, da ESCO-databasen anvendes på engelsk.',
     mnEscoSearchButton: 'Søg efter ESCO-færdigheder og -kompetencer...',
     mnEscoSearchPlaceholder: 'Skriv for at søge i ESCO...',
     mnEscoSearching: 'Søger i ESCO...',
