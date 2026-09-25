@@ -919,6 +919,9 @@ export default function ContentReuseForm({ data, onChange, courseType, learningA
               {/* ESCO Search */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium">{lt.searchEscoLabel}</Label>
+                {language === 'da' && (
+                  <p className="text-sm text-muted-foreground">{lt.escoEnglishNote}</p>
+                )}
                 <Popover open={escoSearchOpen} onOpenChange={setEscoSearchOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start gap-2">
