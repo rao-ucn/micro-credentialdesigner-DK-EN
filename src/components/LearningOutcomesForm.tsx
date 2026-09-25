@@ -226,6 +226,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
 }) => {
   const { language } = useLanguage();
   const lt = forms34Translations[language];
+  const verbsByDomain = language === 'da' ? VERBS_BY_DOMAIN_DA : VERBS_BY_DOMAIN;
   const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
 
   const COGNITIVE_DOMAINS: { value: CognitiveDomain; label: string }[] = [
