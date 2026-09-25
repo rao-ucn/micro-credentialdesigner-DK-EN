@@ -250,12 +250,12 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   ];
 
   const BLOOM_TAXONOMY_DATA = [
-    { domain: lt.loBloomKnowledgeDomain, definition: lt.loBloomKnowledgeDef, verbs: VERBS_BY_DOMAIN.knowledge.join(', ') },
-    { domain: lt.loBloomComprehensionDomain, definition: lt.loBloomComprehensionDef, verbs: VERBS_BY_DOMAIN.comprehension.join(', ') },
-    { domain: lt.loBloomApplicationDomain, definition: lt.loBloomApplicationDef, verbs: VERBS_BY_DOMAIN.application.join(', ') },
-    { domain: lt.loBloomAnalysisDomain, definition: lt.loBloomAnalysisDef, verbs: VERBS_BY_DOMAIN.analysis.join(', ') },
-    { domain: lt.loBloomSynthesisDomain, definition: lt.loBloomSynthesisDef, verbs: VERBS_BY_DOMAIN.synthesis.join(', ') },
-    { domain: lt.loBloomEvaluationDomain, definition: lt.loBloomEvaluationDef, verbs: VERBS_BY_DOMAIN.evaluation.join(', ') },
+    { domain: lt.loBloomKnowledgeDomain, definition: lt.loBloomKnowledgeDef, verbs: verbsByDomain.knowledge.join(', ') },
+    { domain: lt.loBloomComprehensionDomain, definition: lt.loBloomComprehensionDef, verbs: verbsByDomain.comprehension.join(', ') },
+    { domain: lt.loBloomApplicationDomain, definition: lt.loBloomApplicationDef, verbs: verbsByDomain.application.join(', ') },
+    { domain: lt.loBloomAnalysisDomain, definition: lt.loBloomAnalysisDef, verbs: verbsByDomain.analysis.join(', ') },
+    { domain: lt.loBloomSynthesisDomain, definition: lt.loBloomSynthesisDef, verbs: verbsByDomain.synthesis.join(', ') },
+    { domain: lt.loBloomEvaluationDomain, definition: lt.loBloomEvaluationDef, verbs: verbsByDomain.evaluation.join(', ') },
   ];
   
   const [approach, setApproach] = useState<FormulationApproach | undefined>(
@@ -566,7 +566,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               <SelectItem value="__define_own__" className="font-bold">
                 {lt.loDefineOwn}
               </SelectItem>
-              {VERBS_BY_DOMAIN[outcome.cognitiveDomain].map((verb) => (
+              {verbsByDomain[outcome.cognitiveDomain].map((verb) => (
                 <SelectItem key={verb} value={verb}>
                   {verb}
                 </SelectItem>
