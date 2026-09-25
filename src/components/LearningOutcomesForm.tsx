@@ -101,6 +101,44 @@ const VERBS_BY_DOMAIN: Record<CognitiveDomain, string[]> = {
   ],
 };
 
+const VERBS_BY_DOMAIN_DA: Record<CognitiveDomain, string[]> = {
+  knowledge: [
+    'Ordne', 'Definere', 'Beskrive', 'Kopiere', 'Identificere', 'Mærke', 'Opliste', 'Matche',
+    'Memorere', 'Navngive', 'Sortere', 'Skitsere', 'Genkende', 'Relatere', 'Genkalde', 'Gentage',
+    'Reproducere', 'Vælge', 'Angive'
+  ],
+  comprehension: [
+    'Klassificere', 'Omforme', 'Forsvare', 'Beskrive', 'Diskutere', 'Skelne', 'Estimere',
+    'Forklare', 'Udtrykke', 'Udvide', 'Generalisere', 'Give eksempler', 'Identificere', 'Indikere',
+    'Udlede', 'Lokalisere', 'Omformulere', 'Forudsige', 'Genkende', 'Omskrive', 'Gennemgå', 'Vælge',
+    'Opsummere', 'Oversætte'
+  ],
+  application: [
+    'Anvende', 'Ændre', 'Vælge', 'Beregne', 'Demonstrere', 'Opdage', 'Dramatisere',
+    'Bruge', 'Illustrere', 'Fortolke', 'Manipulere', 'Modificere', 'Betjene', 'Øve',
+    'Forudsige', 'Forberede', 'Producere', 'Relatere', 'Planlægge', 'Vise', 'Skitsere', 'Løse',
+    'Udnytte', 'Skrive'
+  ],
+  analysis: [
+    'Analysere', 'Vurdere', 'Nedbryde', 'Beregne', 'Kategorisere', 'Sammenligne', 'Kontrastere',
+    'Kritisere', 'Diagrammere', 'Differentiere', 'Skelne', 'Adskille', 'Undersøge',
+    'Eksperimentere', 'Identificere', 'Illustrere', 'Udlede', 'Modellere', 'Skitsere', 'Påpege',
+    'Stille spørgsmål', 'Relatere', 'Vælge', 'Separere', 'Opdele', 'Teste'
+  ],
+  synthesis: [
+    'Ordne', 'Samle', 'Kategorisere', 'Indsamle', 'Kombinere', 'Efterkomme', 'Komponere',
+    'Konstruere', 'Skabe', 'Designe', 'Udvikle', 'Opfinde', 'Forklare', 'Formulere',
+    'Generere', 'Planlægge', 'Forberede', 'Omarrangere', 'Rekonstruere', 'Relatere', 'Reorganisere',
+    'Revidere', 'Omskrive', 'Opstille', 'Opsummere', 'Syntetisere', 'Fortælle', 'Skrive'
+  ],
+  evaluation: [
+    'Vurdere', 'Argumentere', 'Bedømme', 'Tillægge', 'Vælge', 'Sammenligne', 'Konkludere', 'Kontrastere',
+    'Forsvare', 'Beskrive', 'Skelne', 'Estimere', 'Evaluere', 'Forklare', 'Dømme',
+    'Begrunde', 'Fortolke', 'Relatere', 'Forudsige', 'Prioritere', 'Vælge', 'Opsummere', 'Understøtte',
+    'Værdisætte'
+  ],
+};
+
 const BLOOM_TO_EQF: Record<CognitiveDomain, EQFDimension> = {
   knowledge: 'knowledge',
   comprehension: 'knowledge',
@@ -188,6 +226,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
 }) => {
   const { language } = useLanguage();
   const lt = forms34Translations[language];
+  const verbsByDomain = language === 'da' ? VERBS_BY_DOMAIN_DA : VERBS_BY_DOMAIN;
   const courseLabel = courseType === 'standalone' ? lt.courseLabelStandalone : lt.courseLabelMicroCredential;
 
   const COGNITIVE_DOMAINS: { value: CognitiveDomain; label: string }[] = [
@@ -212,12 +251,12 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
   ];
 
   const BLOOM_TAXONOMY_DATA = [
-    { domain: lt.loBloomKnowledgeDomain, definition: lt.loBloomKnowledgeDef, verbs: VERBS_BY_DOMAIN.knowledge.join(', ') },
-    { domain: lt.loBloomComprehensionDomain, definition: lt.loBloomComprehensionDef, verbs: VERBS_BY_DOMAIN.comprehension.join(', ') },
-    { domain: lt.loBloomApplicationDomain, definition: lt.loBloomApplicationDef, verbs: VERBS_BY_DOMAIN.application.join(', ') },
-    { domain: lt.loBloomAnalysisDomain, definition: lt.loBloomAnalysisDef, verbs: VERBS_BY_DOMAIN.analysis.join(', ') },
-    { domain: lt.loBloomSynthesisDomain, definition: lt.loBloomSynthesisDef, verbs: VERBS_BY_DOMAIN.synthesis.join(', ') },
-    { domain: lt.loBloomEvaluationDomain, definition: lt.loBloomEvaluationDef, verbs: VERBS_BY_DOMAIN.evaluation.join(', ') },
+    { domain: lt.loBloomKnowledgeDomain, definition: lt.loBloomKnowledgeDef, verbs: verbsByDomain.knowledge.join(', ') },
+    { domain: lt.loBloomComprehensionDomain, definition: lt.loBloomComprehensionDef, verbs: verbsByDomain.comprehension.join(', ') },
+    { domain: lt.loBloomApplicationDomain, definition: lt.loBloomApplicationDef, verbs: verbsByDomain.application.join(', ') },
+    { domain: lt.loBloomAnalysisDomain, definition: lt.loBloomAnalysisDef, verbs: verbsByDomain.analysis.join(', ') },
+    { domain: lt.loBloomSynthesisDomain, definition: lt.loBloomSynthesisDef, verbs: verbsByDomain.synthesis.join(', ') },
+    { domain: lt.loBloomEvaluationDomain, definition: lt.loBloomEvaluationDef, verbs: verbsByDomain.evaluation.join(', ') },
   ];
   
   const [approach, setApproach] = useState<FormulationApproach | undefined>(
@@ -528,7 +567,7 @@ const LearningOutcomesForm: React.FC<LearningOutcomesFormProps> = ({
               <SelectItem value="__define_own__" className="font-bold">
                 {lt.loDefineOwn}
               </SelectItem>
-              {VERBS_BY_DOMAIN[outcome.cognitiveDomain].map((verb) => (
+              {verbsByDomain[outcome.cognitiveDomain].map((verb) => (
                 <SelectItem key={verb} value={verb}>
                   {verb}
                 </SelectItem>
