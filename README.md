@@ -5,6 +5,12 @@ Et struktureret designværktøj til standalone-kurser og micro-credentials, opde
 **Live version:** https://micro-credentialdesigner.lovable.app
 Ingen login, ingen konto, ingen installation – åbn bare linket.
 
+## Vigtigt at vide
+
+**Udviklingsværktøj på eget ansvar.** Denne version er et designværktøj, der stilles til rådighed, som det er. Der er ingen garanti for drift, support eller fortsat videreudvikling, og ingen kan holdes ansvarlig for tabt arbejde eller fejl i de dokumenter, værktøjet producerer.
+
+**Ingen database eller filsystem.** Værktøjet gemmer intet på en server. Alle dokumenter findes kun i din egen browser, krypteret med din sikkerhedskode. Slettes browserdata, skiftes computer eller åbnes dokumentet i en anden browser, er det væk – medmindre du har eksporteret det som JSON.
+
 ## Kom i gang
 
 ### 1. Brug den fra nettet (anbefales til undervisere)
@@ -58,7 +64,3 @@ Værktøjet har **ingen backend**: ingen API-nøgler, ingen database, ingen clou
 ## Udgivelse
 
 `npm run build` producerer `dist/`, som kan lægges på enhver statisk host (Netlify, Cloudflare Pages, egen server). Vil du redigere i værktøjet via Lovable, skal du bruge en Lovable-konto – men det er ikke en forudsætning for at køre eller hoste koden.
-
-## Kontakt
-
-Vil du rapportere en fejl, foreslå en ændring eller have hjælp til at tilpasse værktøjet til din alliance, så opret et issue i repoet.
