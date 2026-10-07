@@ -1,73 +1,64 @@
-# Welcome to your Lovable project
+# The Micro-Credential Designer
 
-## Project info
+Et struktureret designværktøj til standalone-kurser og micro-credentials, opdelt i seks faser: fra markedsvurdering og læringsmål til didaktisk guide, afprøvning, eksamen og evaluering.
 
-**URL**: https://lovable.dev/projects/f94b61e5-7c6e-479c-9693-e099a45d9968
+**Live version:** https://micro-credentialdesigner.lovable.app
+Ingen login, ingen konto, ingen installation – åbn bare linket.
 
-## How can I edit this code?
+## Kom i gang
 
-There are several ways of editing your application.
+### 1. Brug den fra nettet (anbefales til undervisere)
 
-**Use Lovable**
+Åbn [micro-credentialdesigner.lovable.app](https://micro-credentialdesigner.lovable.app) i en browser.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f94b61e5-7c6e-479c-9693-e099a45d9968) and start prompting.
+- **Sprog:** DA/EN-knappen i toppen skifter hele værktøjet. ESCO-søgningen er på engelsk (databasen er engelsk).
+- **Gem:** "Gem" gemmer dokumentet krypteret i browseren. Ryddes browserdata, er dokumentet væk – brug derfor JSON-eksporten som backup.
+- **Del:** Eksportér JSON-filen, og del den sammen med sikkerhedskoden. Modtageren importerer filen og indtaster koden for at åbne eller viderebearbejde dokumentet.
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. Kør den lokalt (anbefales til videreudvikling)
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Krav: [Node.js](https://nodejs.org) 20 eller nyere.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+git clone <repoets-url>
+cd micro-credential-designer
+npm install
+npm run dev      # lokal udviklingsserver
+npm run build    # produktionsbyg til dist/
+npm run preview  # vis produktionsbygget lokalt
 ```
 
-**Edit a file directly in GitHub**
+Værktøjet har **ingen backend**: ingen API-nøgler, ingen database, ingen cloud-konto at sætte op. Det kører, hvor som helst der kan servere statiske filer.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Sådan virker det
 
-**Use GitHub Codespaces**
+- **Ingen konti.** Alle dokumenter gemmes lokalt i den enkelte brugers browser, krypteret med en sikkerhedskode på 12 tegn.
+- **Deling af dokumenter** sker via JSON-eksport/-import. Dokument-ID og sikkerhedskode hører sammen – ID alene rækker ikke for at åbne et dokument.
+- **PDF-eksport** (designvejledning og didaktisk guide) følger det sprog, der er valgt i værktøjet.
+- **Faserne** ligger i `src/data/phases.ts` (engelsk) og `src/data/phases.da.ts` (dansk).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Projektstruktur
 
-## What technologies are used for this project?
+| Sti | Hvad |
+| --- | --- |
+| `src/pages/Index.tsx` | Selve værktøjet: velkomstskærm, faser, gem/hent, eksport/import |
+| `src/components/` | De enkelte fase-skemaer |
+| `src/contexts/LanguageContext.tsx` | DA/EN-sprogskift |
+| `src/lib/storage.ts` | Krypteret lokalt lager (`mcd:`-nøgler i browseren) |
+| `src/lib/pdf.ts` | PDF-eksport, sprogafhængig |
+| `src/lib/translations/` | Danske og engelske tekstnøgler |
+| `src/data/phases.ts`, `phases.da.ts` | Fase- og trinindhold |
 
-This project is built with:
+## Brand og sprog
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Brandfarve: petrol `#195562`, defineret som semantisk token i `src/index.css` – ret den ét sted for at ændre temaet.
+- Appen er sprogneutral og uden alliance-branding, så den kan bruges af alle.
+- "Standalone" bruges som betegnelse på tværs af begge sprog.
 
-## How can I deploy this project?
+## Udgivelse
 
-Simply open [Lovable](https://lovable.dev/projects/f94b61e5-7c6e-479c-9693-e099a45d9968) and click on Share -> Publish.
+`npm run build` producerer `dist/`, som kan lægges på enhver statisk host (Netlify, Cloudflare Pages, egen server). Vil du redigere i værktøjet via Lovable, skal du bruge en Lovable-konto – men det er ikke en forudsætning for at køre eller hoste koden.
 
-## Can I connect a custom domain to my Lovable project?
+## Kontakt
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Vil du rapportere en fejl, foreslå en ændring eller have hjælp til at tilpasse værktøjet til din alliance, så opret et issue i repoet.
