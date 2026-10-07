@@ -19,7 +19,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     } catch {
       // localStorage unavailable — fall through to default
     }
-    return 'da';
+    return 'en';
   });
 
   const setLanguage = (lang: Language) => {

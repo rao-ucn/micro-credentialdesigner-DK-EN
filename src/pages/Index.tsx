@@ -1944,7 +1944,6 @@ const Index = () => {
       <>
         <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-primary/10 flex items-center justify-center p-4 relative">
           <div className="fixed top-4 right-4 z-10">
-            <LanguageToggle />
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -2410,7 +2409,6 @@ const Index = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <LanguageToggle />
               <Button onClick={handleSave} variant="default" size="sm">
                 <Save className="mr-2 h-4 w-4" />
                 {t.save}
