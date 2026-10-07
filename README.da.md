@@ -28,8 +28,8 @@ Ingen login, ingen konto, ingen installation – åbn bare linket.
 Krav: [Node.js](https://nodejs.org) 20 eller nyere.
 
 ```sh
-git clone <adressen fra Code-knappen på repoets forside>
-cd <det mappenavn, kommandoen selv opretter>
+git clone https://github.com/rao-ucn/micro-credentialdesigner-DK-EN.git
+cd micro-credentialdesigner-DK-EN
 npm install
 npm run dev      # lokal udviklingsserver
 npm run build    # produktionsbyg til dist/
