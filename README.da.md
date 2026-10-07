@@ -1,5 +1,7 @@
 # The Micro-Credential Designer
 
+**Engelsk udgave:** [README.md](README.md)
+
 Et struktureret designværktøj til standalone-kurser og micro-credentials, opdelt i seks faser: fra markedsvurdering og læringsmål til didaktisk guide, afprøvning, eksamen og evaluering.
 
 **Live version:** https://micro-credentialdesigner.lovable.app
