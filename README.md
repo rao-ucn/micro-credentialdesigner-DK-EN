@@ -26,8 +26,8 @@ Ingen login, ingen konto, ingen installation – åbn bare linket.
 Krav: [Node.js](https://nodejs.org) 20 eller nyere.
 
 ```sh
-git clone <repoets-url>
-cd <repoets-navn>
+git clone <adressen fra Code-knappen på repoets forside>
+cd <det mappenavn, kommandoen selv opretter>
 npm install
 npm run dev      # lokal udviklingsserver
 npm run build    # produktionsbyg til dist/
@@ -35,6 +35,8 @@ npm run preview  # vis produktionsbygget lokalt
 ```
 
 Værktøjet har **ingen backend**: ingen API-nøgler, ingen database, ingen cloud-konto at sætte op. Det kører, hvor som helst der kan servere statiske filer.
+
+**Rest fra platformen.** Mappen `src/integrations/supabase/`, mappen `supabase/` og filen `.env` stammer fra projektets oprettelse. Værktøjet bruger dem ikke – ingen kode refererer til dem – og de indeholder ingen hemmelige nøgler, kun et projekt-id og en offentlig nøgle. I en downloadet kopi kan de slettes uden at ændre ved funktionen.
 
 ## Sådan virker det
 
