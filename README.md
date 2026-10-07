@@ -1,68 +1,70 @@
 # The Micro-Credential Designer
 
-Et struktureret designværktøj til standalone-kurser og micro-credentials, opdelt i seks faser: fra markedsvurdering og læringsmål til didaktisk guide, afprøvning, eksamen og evaluering.
+A structured design tool for standalone courses and micro-credentials, divided into six phases: from market assessment and learning outcomes to a didactical guide, piloting, examination and evaluation.
 
 **Live version:** https://micro-credentialdesigner.lovable.app
-Ingen login, ingen konto, ingen installation – åbn bare linket.
+No login, no account, no installation – just open the link.
 
-## Vigtigt at vide
+**Danish version:** [README.da.md](README.da.md)
 
-**Udviklingsværktøj på eget ansvar.** Denne version er et designværktøj, der stilles til rådighed, som det er. Der er ingen garanti for drift, support eller fortsat videreudvikling, og ingen kan holdes ansvarlig for tabt arbejde eller fejl i de dokumenter, værktøjet producerer.
+## Important to know
 
-**Ingen database eller filsystem.** Værktøjet gemmer intet på en server. Alle dokumenter findes kun i din egen browser, krypteret med din sikkerhedskode. Slettes browserdata, skiftes computer eller åbnes dokumentet i en anden browser, er det væk – medmindre du har eksporteret det som JSON.
+**A development tool, used at your own risk.** This version is a design tool made available as it is. There is no guarantee of operation, support or continued development, and no one can be held responsible for lost work or errors in the documents the tool produces.
 
-## Kom i gang
+**No database or file system.** The tool stores nothing on a server. All documents exist only in your own browser, encrypted with your security code. If browser data is cleared, you switch computers, or you open the document in another browser, it is gone – unless you have exported it as JSON.
 
-### 1. Brug den fra nettet (anbefales til undervisere)
+## Getting started
 
-Åbn [micro-credentialdesigner.lovable.app](https://micro-credentialdesigner.lovable.app) i en browser.
+### 1. Use it from the web (recommended for teachers)
 
-- **Sprog:** DA/EN-knappen i toppen skifter hele værktøjet. ESCO-søgningen er på engelsk (databasen er engelsk).
-- **Gem:** "Gem" gemmer dokumentet krypteret i browseren. Ryddes browserdata, er dokumentet væk – brug derfor JSON-eksporten som backup.
-- **Del:** Eksportér JSON-filen, og del den sammen med sikkerhedskoden. Modtageren importerer filen og indtaster koden for at åbne eller viderebearbejde dokumentet.
+Open [micro-credentialdesigner.lovable.app](https://micro-credentialdesigner.lovable.app) in a browser.
 
-### 2. Kør den lokalt (anbefales til videreudvikling)
+- **Language:** the DA/EN button at the top switches the entire tool. ESCO search is in English (the database is English).
+- **Save:** "Save" stores the document encrypted in the browser. If browser data is cleared, the document is gone – use the JSON export as a backup.
+- **Share:** use "Download JSON" and share the file together with the security code. The recipient imports the file ("Import JSON") and enters the code to open or continue editing the document.
 
-Krav: [Node.js](https://nodejs.org) 20 eller nyere.
+### 2. Run it locally (recommended for further development)
+
+Requirements: [Node.js](https://nodejs.org) 20 or newer.
 
 ```sh
-git clone <adressen fra Code-knappen på repoets forside>
-cd <det mappenavn, kommandoen selv opretter>
+git clone <the address from the Code button on the repository's front page>
+cd <the folder name the command creates itself>
 npm install
-npm run dev      # lokal udviklingsserver
-npm run build    # produktionsbyg til dist/
-npm run preview  # vis produktionsbygget lokalt
+npm run dev      # local development server
+npm run build    # production build to dist/
+npm run preview  # serve the production build locally
 ```
 
-Værktøjet har **ingen backend**: ingen API-nøgler, ingen database, ingen cloud-konto at sætte op. Det kører, hvor som helst der kan servere statiske filer.
+The tool has **no backend**: no API keys, no database, no cloud account to set up. It runs anywhere static files can be served.
 
-**Rest fra platformen.** Mappen `src/integrations/supabase/`, mappen `supabase/` og filen `.env` stammer fra projektets oprettelse. Værktøjet bruger dem ikke – ingen kode refererer til dem – og de indeholder ingen hemmelige nøgler, kun et projekt-id og en offentlig nøgle. I en downloadet kopi kan de slettes uden at ændre ved funktionen.
+**Leftovers from the platform.** The `src/integrations/supabase/` folder, the `supabase/` folder and the `.env` file come from the project's creation. The tool does not use them – no code refers to them – and they contain no secret keys, only a project ID and a public key. In a downloaded copy they can be deleted without changing the tool's behaviour.
 
-## Sådan virker det
+## How it works
 
-- **Ingen konti.** Alle dokumenter gemmes lokalt i den enkelte brugers browser, krypteret med en sikkerhedskode på 12 tegn.
-- **Deling af dokumenter** sker via JSON-eksport/-import. Dokument-ID og sikkerhedskode hører sammen – ID alene rækker ikke for at åbne et dokument.
-- **PDF-eksport** (designvejledning og didaktisk guide) følger det sprog, der er valgt i værktøjet.
-- **Faserne** ligger i `src/data/phases.ts` (engelsk) og `src/data/phases.da.ts` (dansk).
+- **No accounts.** All documents are stored locally in each user's own browser, encrypted with a 12-character security code.
+- **Sharing documents** happens through JSON export/import. Document ID and security code belong together – the ID alone is not enough to open a document.
+- **PDF export** (design guide and didactical guide) follows the language selected in the tool.
+- **The phases** are in `src/data/phases.ts` (English) and `src/data/phases.da.ts` (Danish).
 
-## Projektstruktur
+## Project structure
 
-| Sti | Hvad |
+| Path | What |
 | --- | --- |
-| `src/pages/Index.tsx` | Selve værktøjet: velkomstskærm, faser, gem/hent, eksport/import |
-| `src/components/` | De enkelte fase-skemaer |
-| `src/contexts/LanguageContext.tsx` | DA/EN-sprogskift |
-| `src/lib/storage.ts` | Krypteret lokalt lager (`mcd:`-nøgler i browseren) |
-| `src/lib/pdf.ts` | PDF-eksport, sprogafhængig |
-| `src/lib/translations/` | Danske og engelske tekstnøgler |
-| `src/data/phases.ts`, `phases.da.ts` | Fase- og trinindhold |
+| `src/pages/Index.tsx` | The tool itself: welcome screen, phases, save/load, export/import |
+| `src/components/` | The individual phase forms |
+| `src/contexts/LanguageContext.tsx` | DA/EN language toggle |
+| `src/lib/storage.ts` | Encrypted local storage (`mcd:` keys in the browser) |
+| `src/lib/pdf.ts` | PDF export, language-aware |
+| `src/lib/translations/` | Danish and English text keys |
+| `src/data/phases.ts`, `phases.da.ts` | Phase and step content |
 
-## Brand og sprog
+## Brand and language
 
-- Brandfarve: petrol `#195562`, defineret som semantisk token i `src/index.css` – ret den ét sted for at ændre temaet.
-- Appen er sprogneutral og uden alliance-branding, så den kan bruges af alle.
-- "Standalone" bruges som betegnelse på tværs af begge sprog.
+- Brand colour: petrol `#195562`, defined as a semantic token in `src/index.css` – change it in one place to change the theme.
+- The app is language-neutral and free of alliance branding, so it can be used by anyone.
+- "Standalone" is used as the term across both languages.
 
-## Udgivelse
+## Publishing
 
-`npm run build` producerer `dist/`, som kan lægges på enhver statisk host (Netlify, Cloudflare Pages, egen server). Vil du redigere i værktøjet via Lovable, skal du bruge en Lovable-konto – men det er ikke en forudsætning for at køre eller hoste koden.
+`npm run build` produces `dist/`, which can be placed on any static host (Netlify, Cloudflare Pages, your own server). To edit the tool via Lovable you need a Lovable account – but that is not a requirement for running or hosting the code.
