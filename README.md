@@ -28,8 +28,8 @@ Open [micro-credentialdesigner.lovable.app](https://micro-credentialdesigner.lov
 Requirements: [Node.js](https://nodejs.org) 20 or newer.
 
 ```sh
-git clone <the address from the Code button on the repository's front page>
-cd <the folder name the command creates itself>
+git clone https://github.com/rao-ucn/micro-credentialdesigner-DK-EN.git
+cd micro-credentialdesigner-DK-EN
 npm install
 npm run dev      # local development server
 npm run build    # production build to dist/
