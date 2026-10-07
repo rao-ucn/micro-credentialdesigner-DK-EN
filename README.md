@@ -58,7 +58,3 @@ Værktøjet har **ingen backend**: ingen API-nøgler, ingen database, ingen clou
 ## Udgivelse
 
 `npm run build` producerer `dist/`, som kan lægges på enhver statisk host (Netlify, Cloudflare Pages, egen server). Vil du redigere i værktøjet via Lovable, skal du bruge en Lovable-konto – men det er ikke en forudsætning for at køre eller hoste koden.
-
-## Kontakt
-
-Vil du rapportere en fejl, foreslå en ændring eller have hjælp til at tilpasse værktøjet til din alliance, så opret et issue i repoet.
