@@ -21,7 +21,7 @@ Krav: [Node.js](https://nodejs.org) 20 eller nyere.
 
 ```sh
 git clone <repoets-url>
-cd micro-credential-designer
+cd <repoets-navn>
 npm install
 npm run dev      # lokal udviklingsserver
 npm run build    # produktionsbyg til dist/
