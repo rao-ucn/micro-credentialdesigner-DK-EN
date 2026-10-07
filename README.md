@@ -47,6 +47,24 @@ The tool has **no backend**: no API keys, no database, no cloud account to set u
 - **PDF export** (design guide and didactical guide) follows the language selected in the tool.
 - **The phases** are in `src/data/phases.ts` (English) and `src/data/phases.da.ts` (Danish).
 
+## Building English-only
+
+The Danish layer is optional, and removing it is two small edits:
+
+1. In `src/pages/Index.tsx`, delete the two lines that contain `<LanguageToggle />`.
+2. In `src/contexts/LanguageContext.tsx`, change the fallback `return 'da';` to `return 'en';`.
+
+That is all it takes: the welcome screen, every phase and both PDF exports then come out in English, and the DA/EN button is gone. The Danish wording can simply stay in the files – it is never loaded, and the build passes with it in place.
+
+**If you would rather delete it**, the Danish text sits in:
+
+- the `da:` block in each file under `src/lib/translations/`
+- `src/data/phases.da.ts`, which `src/data/phases.ts` imports – drop the `import { phasesDa }` line and the `lang === 'da' ? phasesDa : phases` line in the same change, or the build breaks
+- `src/components/LanguageToggle.tsx`
+- the Danish verb list `VERBS_BY_DOMAIN_DA` in `src/components/LearningOutcomesForm.tsx`
+
+Verified in this project: with the two edits applied, the type check passes and the app runs in English with no errors in the browser.
+
 ## Project structure
 
 | Path | What |
